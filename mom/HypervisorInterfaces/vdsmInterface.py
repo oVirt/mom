@@ -29,31 +29,19 @@ class vdsmInterface(HypervisorInterface):
     this class provides a single VDSM connection that can be shared by all
     threads.
     """
-    vdsm_cif = None
 
     def __init__(self):
         self.logger = logging.getLogger('mom.vdsmInterface')
         try:
-            self._check_conn()
-            self.vdsm_api = API.Global(self.vdsm_cif)
+            self.vdsm_api = API.Global()
             response = self.vdsm_api.ping()
             self._check_status(response)
         except vdsmException,e:
             e.handle_exception()
 
-    @classmethod
-    def setConnection(self, conn):
-        self.vdsm_cif = conn
-
     def _check_status(self, response):
         if response['status']['code']:
             raise statusException(response, self.logger)
-
-    def _check_conn(self):
-        if self.vdsm_cif == None:
-            msg = "VDSM client interface is not initialized yet"
-            self.logger.error(msg)
-            raise connectionException(msg, self.logger)
 
     def _vmIsRunning(self, vm):
         if vm['status'] == 'Up':
@@ -63,8 +51,7 @@ class vdsmInterface(HypervisorInterface):
 
     def getVmName(self, uuid):
         try:
-            self._check_conn()
-	    response = self.vdsm_api.getVMList(True, [uuid])
+            response = self.vdsm_api.getVMList(True, [uuid])
             self._check_status(response)
             return response['vmList'][0]['vmName']
         except vdsmException,e:
@@ -73,7 +60,6 @@ class vdsmInterface(HypervisorInterface):
 
     def getVmPid(self, uuid):
         try:
-            self._check_conn()
             response = self.vdsm_api.getVMList(True, [uuid])
             self._check_status(response)
             return response['vmList'][0]['pid']
@@ -84,7 +70,6 @@ class vdsmInterface(HypervisorInterface):
     def getVmList(self):
         vmIds = []
         try:
-            self._check_conn()
             response = self.vdsm_api.getVMList()
             self._check_status(response)
             vm_list = response['vmList']
@@ -101,8 +86,7 @@ class vdsmInterface(HypervisorInterface):
     def getVmMemoryStats(self, uuid):
         ret = {}
         try:
-            self._check_conn()
-            vm = API.VM(self.vdsm_cif, uuid)
+            vm = API.VM(uuid)
             response = vm.getStats()
             self._check_status(response)
             ret['memUsage'] = response['statsList'][0]['memUsage']
@@ -148,10 +132,6 @@ class vdsmException(Exception):
 class statusException(vdsmException):
       pass
 
-class connectionException(vdsmException):
-    def handle_exception(self):
-        vdsmException.handle_exception(self)
-        raise
 
 def instance(config):
     return vdsmInterface()
