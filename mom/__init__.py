@@ -188,4 +188,9 @@ class MOM:
             return None
 
     def getStatistics(self):
-        return self.funcs.getStatistics()
+        return self.momFuncs.getStatistics()
+
+    def setPolicy(self, policy):
+        ret = self.momFuncs.setPolicy(policy)
+        if not ret:
+            raise Exception("Set policy failed")
