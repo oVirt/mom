@@ -15,6 +15,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 from mom.Collectors.Collector import *
+from mom.HypervisorInterfaces.HypervisorInterface import *
+
+
 class GuestMemory(Collector):
     """
     This Collector uses hypervisor interface to collect guest memory statistics
@@ -40,8 +43,8 @@ class GuestMemory(Collector):
     def collect(self):
         try:
             stat = self.hypervisor_iface.getVmMemoryStats(self.uuid)
-        except:
-            self.stats_error('getVmMemoryStats() is not ready')
+        except HypervisorInterfaceError, e:
+            self.stats_error('getVmMemoryStats() is not ready: %s', e.message)
             # We don't raise a CollectionError here because a different
             # Collector (such as GuestQemuAgent) may be able to get them.
             # If not, the Monitor's collect method will detect the missing

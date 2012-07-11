@@ -89,12 +89,30 @@ class vdsmInterface(HypervisorInterface):
             vm = API.VM(uuid)
             response = vm.getStats()
             self._check_status(response)
-            ret['memUsage'] = response['statsList'][0]['memUsage']
-            self.logger.info(ret)
+            usage = int(response['statsList'][0]['memUsage'])
+            if usage == 0:
+                self.logger.warn("ovirt-guest-agent is not installed "
+                                 "in vm %s", uuid)
+                raise HypervisorInterfaceError("Guest %s memory stats is "
+                                               "not ready" % uuid)
+            stats = response['statsList'][0]['memoryStats']
+            if not stats:
+                self.logger.warn("Detailed guest memory stats are not "
+                    "available, please upgrade guest agent for vm %s", uuid)
+                raise HypervisorInterfaceError("Guest %s memory stats "
+                                               "is not ready" % uuid)
+
+            ret['mem_available'] = int(stats['mem_total']),
+            ret['mem_unused'] = int(stats['mem_unused'])
+            ret['mem_free'] = int(stats['mem_free'])
+            ret['major_fault'] = int(stats['majflt'])
+            ret['minor_fault'] = int(stats['pageflt']) - int(stats['majflt'])
+            ret['swap_in'] = int(stats['swap_in'])
+            ret['swap_out'] = int(stats['swap_out'])
+            self.logger.debug(ret)
             return ret
         except vdsmException,e:
-            e.handle_exception()
-            return None
+            raise HypervisorInterfaceError(e.msg)
 
     def vmSetBalloonTarget(self, vm, target):
         pass
@@ -109,8 +127,9 @@ class vdsmInterface(HypervisorInterface):
         return data
 
     def getStatsFields(self=None):
-        agent_stats = ['memUsage']
-        return set(agent_stats)
+        return set(['mem_available', 'mem_unused', 'mem_free',
+                    'major_fault', 'minor_fault', 'swap_in', 'swap_out'])
+
 
     def getVmBalloonInfo(self, uuid):
         balloon_stats = ['balloon_cur', 'balloon_max']

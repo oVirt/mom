@@ -64,3 +64,7 @@ class HypervisorInterface:
         This method is used to set KSM tuning parameters by the controller KSM.
         """
         pass
+
+
+class HypervisorInterfaceError(Exception):
+    pass
