@@ -43,11 +43,11 @@ class MOMFuncs(object):
         return True
 
     def getStatistics(self):
-        host_stats = self.threads['host_monitor'].interrogate().statistics[0]
+        host_stats = self.threads['host_monitor'].interrogate().statistics[-1]
         guest_stats = {}
         guest_entities = self.threads['guest_manager'].interrogate().values()
         for entity in guest_entities:
-            guest_stats[entity.properties['name']] = entity.statistics[0]
+            guest_stats[entity.properties['name']] = entity.statistics[-1]
         ret = { 'host': host_stats, 'guests': guest_stats }
         return ret
 
