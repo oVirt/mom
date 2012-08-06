@@ -79,7 +79,7 @@ class MOM:
         self.config.add_section('host')
         self.config.set('host', 'collectors', 'HostMemory')
         self.config.add_section('guest')
-        self.config.set('guest', 'collectors', 'GuestQemuProc, GuestLibvirt')
+        self.config.set('guest', 'collectors', 'GuestQemuProc, GuestMemory')
 
         # Override defaults from the config file
         self.config.read(fname)
