@@ -114,8 +114,13 @@ class vdsmInterface(HypervisorInterface):
         except vdsmException,e:
             raise HypervisorInterfaceError(e.msg)
 
-    def vmSetBalloonTarget(self, vm, target):
-        pass
+    def setVmBalloonTarget(self, uuid, target):
+        try:
+            vm = API.VM(uuid)
+            response = vm.setBalloonTarget(target)
+            self._check_status(response)
+        except vdsmException, e:
+            e.handle_exception()
 
     def getVmInfo(self, id):
         data = {}
@@ -132,7 +137,15 @@ class vdsmInterface(HypervisorInterface):
 
 
     def getVmBalloonInfo(self, uuid):
-        balloon_stats = ['balloon_cur', 'balloon_max']
+        try:
+            vm = API.VM(uuid)
+            response = vm.getStats()
+            self._check_status(response)
+            balloon_info = response['statsList'][0]['balloonInfo']
+            if balloon_info:
+                return balloon_info
+        except vdsmException, e:
+            e.handle_exception()
 
     def ksmTune(self, tuningParams):
         # When MOM is lauched by vdsm, it's running without root privileges.

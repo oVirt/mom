@@ -51,7 +51,7 @@ class HypervisorInterface:
         """
         pass
 
-    def setVmBalloonTarget(self, uuid):
+    def setVmBalloonTarget(self, uuid, target):
         """
         This method sets the balloon target of a given guest. It's used by the
         controller Balloon to inflate or deflate the balloon according to this
