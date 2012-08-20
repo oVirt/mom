@@ -186,7 +186,7 @@ class libvirtInterface(HypervisorInterface):
         if info is None or len(info.keys()) == 0:
             raise HypervisorInterfaceError('libvirt memoryStats() '
                                            'is not active')
-        for key in set(self.mem_stats.keys()) - set(info.keys()):
+        for key in set(self.mem_stats.keys()) & set(info.keys()):
             ret[key] = info[key]
         return ret
 
