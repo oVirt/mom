@@ -31,11 +31,10 @@ class KSM:
         
     def write_value(self, fname, value):
         try:
-            file = open(fname, 'w')
-            file.write(str(value))
+            with open(fname, 'w') as f:
+                f.write(str(value))
         except IOError, (errno, strerror):
             self.logger.warn("KSM: Failed to write %s: %s", fname, strerror)
-        file.close()
 
     def process(self, host, guests):
         outputs = {}

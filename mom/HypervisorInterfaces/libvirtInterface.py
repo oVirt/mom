@@ -226,11 +226,10 @@ class libvirtInterface(HypervisorInterface):
     def ksmTune(self, tuningParams):
         def write_value(fname, value):
             try:
-                file = open(fname, 'w')
-                file.write(str(value))
+                with open(fname, 'w') as f:
+                    f.write(str(value))
             except IOError, (errno, strerror):
                 self.logger.warn("KSM: Failed to write %s: %s", fname, strerror)
-            file.close()
 
         for (key, val) in tuningParams.items():
             write_value('/sys/kernel/mm/ksm/%s' % key, val)
