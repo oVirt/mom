@@ -20,7 +20,9 @@ import API
 import supervdsm
 import logging
 import traceback
-from mom.HypervisorInterfaces.HypervisorInterface import *
+from mom.HypervisorInterfaces.HypervisorInterface import HypervisorInterface, \
+    HypervisorInterfaceError
+
 
 class vdsmInterface(HypervisorInterface):
     """
@@ -36,12 +38,12 @@ class vdsmInterface(HypervisorInterface):
             self.vdsm_api = API.Global()
             response = self.vdsm_api.ping()
             self._check_status(response)
-        except vdsmException,e:
+        except vdsmException, e:
             e.handle_exception()
 
     def _check_status(self, response):
         if response['status']['code']:
-            raise statusException(response, self.logger)
+            raise vdsmException(response, self.logger)
 
     def _vmIsRunning(self, vm):
         if vm['status'] == 'Up':
@@ -54,7 +56,7 @@ class vdsmInterface(HypervisorInterface):
             response = self.vdsm_api.getVMList(True, [uuid])
             self._check_status(response)
             return response['vmList'][0]['vmName']
-        except vdsmException,e:
+        except vdsmException, e:
             e.handle_exception()
             return None
 
@@ -63,7 +65,7 @@ class vdsmInterface(HypervisorInterface):
             response = self.vdsm_api.getVMList(True, [uuid])
             self._check_status(response)
             return response['vmList'][0]['pid']
-        except vdsmException,e:
+        except vdsmException, e:
             e.handle_exception()
             return None
 
@@ -78,10 +80,9 @@ class vdsmInterface(HypervisorInterface):
                     vmIds.append(vm['vmId'])
             self.logger.info(vmIds)
             return vmIds
-        except vdsmException,e:
+        except vdsmException, e:
             e.handle_exception()
             return None
-
 
     def getVmMemoryStats(self, uuid):
         ret = {}
@@ -111,7 +112,7 @@ class vdsmInterface(HypervisorInterface):
             ret['swap_out'] = int(stats['swap_out'])
             self.logger.debug(ret)
             return ret
-        except vdsmException,e:
+        except vdsmException, e:
             raise HypervisorInterfaceError(e.msg)
 
     def setVmBalloonTarget(self, uuid, target):
@@ -135,7 +136,6 @@ class vdsmInterface(HypervisorInterface):
         return set(['mem_available', 'mem_unused', 'mem_free',
                     'major_fault', 'minor_fault', 'swap_in', 'swap_out'])
 
-
     def getVmBalloonInfo(self, uuid):
         try:
             vm = API.VM(uuid)
@@ -153,16 +153,16 @@ class vdsmInterface(HypervisorInterface):
         superVdsm = supervdsm.getProxy()
         superVdsm.ksmTune(tuningParams)
 
+
 class vdsmException(Exception):
+
     def __init__(self, msg, logger):
         self.msg = msg
         self.logger = logger
+
     def handle_exception(self):
         self.logger.error(self.msg)
         self.logger.error(traceback.format_exc())
-
-class statusException(vdsmException):
-      pass
 
 
 def instance(config):
