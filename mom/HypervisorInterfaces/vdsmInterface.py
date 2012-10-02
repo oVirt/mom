@@ -103,7 +103,7 @@ class vdsmInterface(HypervisorInterface):
                 raise HypervisorInterfaceError("Guest %s memory stats "
                                                "is not ready" % uuid)
 
-            ret['mem_available'] = int(stats['mem_total']),
+            ret['mem_available'] = int(stats['mem_total'])
             ret['mem_unused'] = int(stats['mem_unused'])
             ret['mem_free'] = int(stats['mem_free'])
             ret['major_fault'] = int(stats['majflt'])
