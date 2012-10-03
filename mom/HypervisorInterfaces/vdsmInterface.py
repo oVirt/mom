@@ -78,7 +78,7 @@ class vdsmInterface(HypervisorInterface):
             for vm in vm_list:
                 if self._vmIsRunning(vm):
                     vmIds.append(vm['vmId'])
-            self.logger.info(vmIds)
+            self.logger.debug('VM List: %s', vmIds)
             return vmIds
         except vdsmException, e:
             e.handle_exception()
@@ -92,16 +92,13 @@ class vdsmInterface(HypervisorInterface):
             self._check_status(response)
             usage = int(response['statsList'][0]['memUsage'])
             if usage == 0:
-                self.logger.warn("ovirt-guest-agent is not installed "
-                                 "in vm %s", uuid)
-                raise HypervisorInterfaceError("Guest %s memory stats is "
-                                               "not ready" % uuid)
+                msg = "The ovirt-guest-agent is not active"
+                raise HypervisorInterfaceError(msg)
             stats = response['statsList'][0]['memoryStats']
             if not stats:
-                self.logger.warn("Detailed guest memory stats are not "
-                    "available, please upgrade guest agent for vm %s", uuid)
-                raise HypervisorInterfaceError("Guest %s memory stats "
-                                               "is not ready" % uuid)
+                msg = "Detailed guest memory stats are not available, " \
+                        "please upgrade guest agent"
+                raise HypervisorInterfaceError(msg)
 
             ret['mem_available'] = int(stats['mem_total'])
             ret['mem_unused'] = int(stats['mem_unused'])
@@ -110,7 +107,7 @@ class vdsmInterface(HypervisorInterface):
             ret['minor_fault'] = int(stats['pageflt']) - int(stats['majflt'])
             ret['swap_in'] = int(stats['swap_in'])
             ret['swap_out'] = int(stats['swap_out'])
-            self.logger.debug(ret)
+            self.logger.debug('Memory stats: %s', ret)
             return ret
         except vdsmException, e:
             raise HypervisorInterfaceError(e.msg)

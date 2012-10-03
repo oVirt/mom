@@ -37,7 +37,7 @@ class GuestMemory(Collector):
         problem.  Otherwise the log will be overrun with noise.
         """
         if self.memstats_available:
-            self.logger.debug(msg)
+            self.logger.warn(msg)
         self.memstats_available = False
 
     def collect(self):
