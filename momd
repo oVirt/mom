@@ -40,7 +40,6 @@ def daemonize(pid_file):
     
     os.chdir("/")
     os.setsid()
-    os.umask(0)
     
     try:
         pid = os.fork()
