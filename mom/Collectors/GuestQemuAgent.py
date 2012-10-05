@@ -98,7 +98,7 @@ class GuestQemuAgent(Collector):
                 self.logger.debug("Connection failed: %s" % e)
         return self.agent is not None
 
-    def getfile(self, path):
+    def getfile(self, path, maxSize=1048576):
         """
         Convenience function to fetch a whole file using open/read/close APIs
         """
@@ -109,6 +109,9 @@ class GuestQemuAgent(Collector):
             data += ret['buf']
             if len(ret) < 1024:
                 break
+            if len(data) > maxSize:
+                raise CollectionError("Remote file '%s' is too large" % \
+                                      path)
         self.agent_cmd('file_close', fh)
         return data
 
