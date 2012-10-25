@@ -1,8 +1,8 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
 Name:           mom
-Version:        0.2.1
-Release:        6%{?dist}
+Version:        0.3.0
+Release:        1%{?dist}
 Summary:        Dynamically manage system resources on virtualization hosts
 
 Group:          Applications/System
@@ -91,8 +91,16 @@ fi
 
 
 %changelog
-* Mon Nov 21 2011 Adam Litke <agl@us.ibm.com> - 0.2.1-6
-- Merge out-of-tree patches into mom
+* Fri Oct 05 2012 Adam Litke <agl@us.ibm.com> - 0.3.0-1
+- Upgrade to version 0.3.0
+- Upstream fixes CVE-2012-4480
+
+* Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.2.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Thu Jan 12 2011 Adam Litke <agl@us.ibm.com> - 0.2.2-1
+- Upgrade to version 0.2.2
+- Packaging related changes merged upstream so patches dropped
 
 * Fri Jan 7 2011 Adam Litke <agl@us.ibm.com> - 0.2.1-5
 - Address review comments by Michael Schwendt
