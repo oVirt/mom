@@ -8,7 +8,7 @@ Summary:        Dynamically manage system resources on virtualization hosts
 Group:          Applications/System
 License:        GPLv2
 URL:            http://wiki.github.com/aglitke/mom
-Source0:        http://github.com/downloads/aglitke/mom/%{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
