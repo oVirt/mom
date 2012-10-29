@@ -17,12 +17,12 @@
 
 from distutils.core import setup
 
-setup(name='MOM',
-      version='0.1',
+setup(name='mom',
+      version='0.3.0',
       description='Memory Overcommitment Manager',
       author='Adam Litke',
       author_email='agl@us.ibm.com',
-      url='https://w3.tap.ibm.com/w3ki08/display/KVMTB/Memory+Overcommit+Manager',
+      url='http://www.ovirt.org',
       packages=['mom', 'mom.Collectors', 'mom.Controllers', 'mom.HypervisorInterfaces', 'mom.Policy',
                 'mom.debug' ],
       keywords=['Requires: libvirt'],
