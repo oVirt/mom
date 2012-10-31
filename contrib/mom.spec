@@ -54,7 +54,7 @@ cp $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}/examples/mom-balloon+ksm.conf \
 # Correct the installed location of documentation files
 mv $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name} \
    $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}
-cp LICENSE README $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}
+cp COPYING README $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}
 
 
 %clean
