@@ -1,3 +1,6 @@
 recursive-include doc * *.rules
+recursive-include contrib *
 include momd
 include mom-guestd
+include LICENSE
+include README
