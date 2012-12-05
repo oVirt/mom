@@ -18,7 +18,7 @@
 from distutils.core import setup
 
 setup(name='mom',
-      version='0.3.0',
+      version='@PACKAGE_VERSION@',
       description='Memory Overcommitment Manager',
       author='Adam Litke',
       author_email='agl@us.ibm.com',
