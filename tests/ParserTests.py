@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import unittest
-import Parser
+from mom.Policy import Parser
 
 class TestEval(unittest.TestCase):
     def setUp(self):
@@ -37,15 +37,15 @@ class TestEval(unittest.TestCase):
 
     def test_whitespace(self):
         pol = """
-        (+ 1 
+        (+ 1
         2)  (- 10 2)
         """
         self.verify(pol, [ 3, 8 ])
-        
+
     def test_string(self):
         pol = """
         "foo" "bar"
-        
+
         # Operators on strings have the same effect as for Python
         (+ "Hello " "World!")
         (+ (* 3 "Hey ") "!")
@@ -72,7 +72,7 @@ class TestEval(unittest.TestCase):
         """
         self.verify(pol, [ 10, 0, 0.3, 0, 3, 5, 5.5, 18, -8, 18, 4, 256, 18, 20,
                            10001.0 ])
-        
+
     def test_compare(self):
         pol = """
         (< 5 4)
@@ -84,7 +84,7 @@ class TestEval(unittest.TestCase):
         (== 0x0 0)
         """
         self.verify(pol, [ False, True, True, False, True, False, True ])
-        
+
     def test_logic(self):
         pol = """           # Again, these bahave according to Python rules
         (and 1 "")          # "" evaluates to false
@@ -96,7 +96,7 @@ class TestEval(unittest.TestCase):
         (not -0)
         """
         self.verify(pol, [ "", 0, 2, 17, "", True, True ])
-        
+
     def test_vars(self):
         pol = """
         (defvar foo "bar")
@@ -110,7 +110,7 @@ class TestEval(unittest.TestCase):
         (+ 1 e3)        # Make sure e3 is not mistaken for scientific notation
         """
         self.verify(pol, [ 'bar', 5, 6, 11, 8, 14, "barbar", 7, 8 ])
-        
+
     def test_funcs(self):
         pol = """
         (def foo () 10)
@@ -136,7 +136,7 @@ class TestEval(unittest.TestCase):
         a                               # Value of 'a' unaffected by let
         """
         self.verify(pol, [ 'foo', 2, 3, 2 ])
-        
+
     def test_if(self):
         pol = """
         (defvar a 1)
@@ -166,7 +166,7 @@ class TestEval(unittest.TestCase):
         (if (== a 5) (defvar a 4) 0)    # if does not create a new scope
         a
         """
-        self.verify(pol, [ 10, 'foo', 2, 2, 'foo', 4, 2, 5, 4, 5, 4, 4 ]) 
+        self.verify(pol, [ 10, 'foo', 2, 2, 'foo', 4, 2, 5, 4, 5, 4, 4 ])
 
     def test_multi_statements(self):
         pol = """
@@ -177,13 +177,13 @@ class TestEval(unittest.TestCase):
             c
         })
         (f 4 5)
-        
+
         (defvar q 11)
         (let ((q 2) (r 3)) {            # Use them for let statements
             q r
             (- r q)
         })
-        
+
         (if (== q 11) {                 # Use them in if statements
             "q maintains proper scope"
             (set q 12)
@@ -193,7 +193,7 @@ class TestEval(unittest.TestCase):
         (- q 10)
         """
         self.verify(pol, [ 4, 'f', 10, 11, 1, 12, 2 ])
-        
+
     def test_entities(self):
         class TestEntity(object):
             def __init__(self):
@@ -204,7 +204,7 @@ class TestEval(unittest.TestCase):
                 return self.a
         entity = TestEntity()
         self.e.stack.set('Entity', entity, True)
-        
+
         pol = """
         Entity.a                    # Read variables
         Entity.b
@@ -212,7 +212,7 @@ class TestEval(unittest.TestCase):
         """
         self.verify(pol, [ 12, 7, 3 ])
         self.assertEqual(entity.a, 3)   # The 'mod' function changes Entity.a
-        
+
     def test_entity_write(self):
         class TestEntity(object):
             def __init__(self):
@@ -230,7 +230,7 @@ class TestEval(unittest.TestCase):
         (+ (abs -21) (abs 21))
         """
         self.verify(pol, [ 42 ])
-        
+
     def test_with(self):
         class Guest(object):
             def __init__(self, num):
@@ -255,7 +255,7 @@ class TestEval(unittest.TestCase):
         (+ 2 2
         """
         self.assertRaises(Parser.PolicyError, Parser.eval, self.e, pol)
-        
+
     def test_parse_error(self):
         pol = """
         (2 + 2)
