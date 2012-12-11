@@ -9,13 +9,13 @@ from mom.HostMonitor import HostMonitor
 from mom.GuestManager import GuestManager
 from mom.PolicyEngine import PolicyEngine
 from mom.RPCServer import RPCServer
-from mom.MOMFuncs import MOMFuncs
+from mom.MOMFuncs import MOMFuncs, EXPORTED_ATTRIBUTE
 
 class MOM:
     def __init__(self, conf_file, conf_overrides=None):
-        self._load_config(conf_file, conf_overrides)       
+        self._load_config(conf_file, conf_overrides)
         self.logger = self._configure_logger()
-        
+
     def run(self):
         # Start threads
         self.logger.info("MOM starting")
@@ -31,8 +31,9 @@ class MOM:
         threads = { 'host_monitor': host_monitor,
                          'guest_manager': guest_manager,
                          'policy_engine': policy_engine }
-        self.momFuncs = MOMFuncs(self.config, threads)
-        rpc_server = RPCServer(self.config, self.momFuncs)
+        momFuncs = MOMFuncs(self.config, threads)
+        self._setupAPI(momFuncs)
+        rpc_server = RPCServer(self.config, momFuncs)
 
         interval = self.config.getint('main', 'main-loop-interval')
         while self.config.getint('__int__', 'running') == 1:
@@ -43,17 +44,28 @@ class MOM:
             # can be disabled.
             if not rpc_server.thread_ok():
                 self.config.set('__int__', 'running', '0')
-    
+
         rpc_server.shutdown()
         self._wait_for_thread(rpc_server, 5)
         self._wait_for_thread(policy_engine, 10)
         self._wait_for_thread(guest_manager, 5)
         self._wait_for_thread(host_monitor, 5)
         self.logger.info("MOM ending")
-        
+
     def shutdown(self):
         self.config.set('__int__', 'running', '0')
-        
+
+    def _setupAPI(self, funcs):
+        """
+        Initialize the public API in the MOMFuncs class and add its members to
+        this MOM instance so they can be called by our owner as well.
+        """
+
+        for funcName in dir(funcs):
+            funcObj = getattr(funcs, funcName)
+            if hasattr(funcObj, EXPORTED_ATTRIBUTE) and callable(funcObj):
+                setattr(self, funcName, funcObj)
+
     def _load_config(self, fname, overrides):
         self.config = ConfigParser.SafeConfigParser()
 
@@ -102,15 +114,15 @@ class MOM:
         plot_subdir = self._get_plot_subdir(self.config.get('main', 'plot-dir'))
         self.config.set('__int__', 'plot-subdir', plot_subdir)
 
-    def _configure_logger(self):    
+    def _configure_logger(self):
         logger = logging.getLogger('mom')
         # MOM is a module with its own logging facility. Don't impact any
         # logging that might be done by the program that loads this.
         logger.propagate = False
-        
+
         verbosity = self.config.get('logging', 'verbosity').lower()
         level = log_set_verbosity(logger, verbosity)
-    
+
         log = self.config.get('logging', 'log')
         if log.lower() == 'stdio':
             handler = logging.StreamHandler()
@@ -123,7 +135,7 @@ class MOM:
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         return logger
-    
+
     def _get_plot_subdir(self, basedir):
         """
         Create a new directory for plot files inside basedir.  The name is in the
@@ -132,7 +144,7 @@ class MOM:
         """
         if basedir == '':
             return ''
-    
+
         regex = re.compile('^momplot-(\d{3})$')
         try:
             names = os.listdir(basedir)
@@ -158,7 +170,7 @@ class MOM:
             self.logger.warn("Cannot create plot-dir %s: %s", dir, e.strerror)
             return ''
         return dir
-    
+
     def _threads_ok(self, threads):
         """
         Check to make sure a list of expected threads are still alive
@@ -175,7 +187,7 @@ class MOM:
         """
         if t.isAlive():
             t.join(timeout)
-    
+
     def get_hypervisor_interface(self):
 
         name = self.config.get('main', 'hypervisor-interface').lower()
@@ -186,11 +198,3 @@ class MOM:
         except ImportError:
             self.logger.error("Unable to import hypervisor interface: %s", name)
             return None
-
-    def getStatistics(self):
-        return self.momFuncs.getStatistics()
-
-    def setPolicy(self, policy):
-        ret = self.momFuncs.setPolicy(policy)
-        if not ret:
-            raise Exception("Set policy failed")

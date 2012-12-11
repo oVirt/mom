@@ -35,7 +35,7 @@ def start_mom():
         if not t.isAlive():
             return None
         try:
-            mom_instance.momFuncs.setVerbosity('critical')
+            mom_instance.setVerbosity('critical')
             break
         except AttributeError:
             time.sleep(1)
@@ -46,6 +46,8 @@ def start_mom():
 class GeneralTests(TestCaseBase):
     def testStartStop(self):
         mom_instance = start_mom()
+        self.assertTrue(mom_instance.ping())
         self.assertTrue('host' in mom_instance.getStatistics())
+        self.assertTrue(isinstance(mom_instance.getActiveGuests(), list))
         mom_instance.shutdown()
 

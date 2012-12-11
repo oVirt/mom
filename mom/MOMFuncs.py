@@ -17,31 +17,42 @@
 import logging
 from LogUtils import *
 
+EXPORTED_ATTRIBUTE = "__mom_exported__"
+
+def exported(f):
+    setattr(f, EXPORTED_ATTRIBUTE, True)
+    return f
+
 class MOMFuncs(object):
     def __init__(self, config, threads):
         self.config = config
         self.threads = threads
         self.logger = logging.getLogger('mom.RPCServer')
 
+    @exported
     def ping(self):
         self.logger.info("ping()")
         return True
 
+    @exported
     def setPolicy(self, policy):
         self.logger.info("setPolicy()")
         self.logger.debug("New Policy:\n %s", policy)
         return self.threads['policy_engine'].rpc_set_policy(policy)
 
+    @exported
     def getPolicy(self):
         self.logger.info("getPolicy()")
         return self.threads['policy_engine'].rpc_get_policy()
 
+    @exported
     def setVerbosity(self, verbosity):
         self.logger.info("setVerbosity()")
         logger = logging.getLogger()
         log_set_verbosity(logger, verbosity)
         return True
 
+    @exported
     def getStatistics(self):
         host_stats = self.threads['host_monitor'].interrogate().statistics[-1]
         guest_stats = {}
@@ -51,6 +62,7 @@ class MOMFuncs(object):
         ret = { 'host': host_stats, 'guests': guest_stats }
         return ret
 
+    @exported
     def getActiveGuests(self):
         self.logger.info("getActiveGuests()")
         return self.threads['guest_manager'].rpc_get_active_guests()
