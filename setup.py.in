@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -25,7 +25,7 @@ setup(name='mom',
       url='http://www.ovirt.org',
       packages=['mom', 'mom.Collectors', 'mom.Controllers', 'mom.HypervisorInterfaces', 'mom.Policy',
                 'mom.debug' ],
-      keywords=['Requires: libvirt'],
+      keywords=['Requires: libvirt', 'Requires: nose'],
       data_files=[('/usr/sbin', ['momd']),
                   ('/usr/share/doc/mom/examples',
                    ['doc/mom-balloon.conf', 'doc/balloon.rules',
