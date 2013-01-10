@@ -38,11 +38,15 @@ class Policy:
 
     def get_string(self):
         with self.policy_sem:
-            return self._cat_policies() or '0'
+            return self._cat_policies()
 
     def _cat_policies(self):
+        """
+        Concatenate the policies together.  If there are no policies, use '0'
+        to work around a bug in the policy evaluator.
+        """
         keys = sorted(self.policy_strings.iterkeys())
-        return '\n'.join(self.policy_strings[k] for k in keys)
+        return '\n'.join(self.policy_strings[k] for k in keys) or '0'
 
     def set_policy(self, name, policyStr):
         if name is None:
@@ -52,6 +56,7 @@ class Policy:
             if policyStr is None:
                 try:
                     del self.policy_strings[name]
+                    self.logger.info("Deleted policy '%s'", name)
                 except KeyError:
                     pass
             else:
@@ -65,6 +70,8 @@ class Policy:
                 else:
                     self.policy_strings[name] = oldStr
                 return False
+            if policyStr:
+                self.logger.info("Loaded policy '%s'", name)
             return True
 
     def clear_policy(self):

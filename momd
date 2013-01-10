@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -37,10 +37,10 @@ def daemonize(pid_file):
     except OSError, e:
         sys.stderr.write("momd: fork failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
-    
+
     os.chdir("/")
     os.setsid()
-    
+
     try:
         pid = os.fork()
         if pid > 0:
@@ -48,16 +48,16 @@ def daemonize(pid_file):
     except OSError, e:
         sys.stderr.write("momd: fork failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
-    
+
     pid = str(os.getpid())
     try:
         file(pid_file,'w+').write("%s\n" % pid)
     except EnvironmentError, e:
-        sys.stderr.write("momd: failed to write pid file: %d (%s)\n" % 
+        sys.stderr.write("momd: failed to write pid file: %d (%s)\n" %
                          (e.errno, e.strerror))
         sys.exit(1)
     atexit.register(delpid, pid_file)
-    
+
     sys.stdout.flush()
     sys.stderr.flush()
     si = file('/dev/null', 'r')
@@ -66,7 +66,7 @@ def daemonize(pid_file):
     os.dup2(si.fileno(), sys.stdin.fileno())
     os.dup2(so.fileno(), sys.stdout.fileno())
     os.dup2(se.fileno(), sys.stderr.fileno())
-    
+
 def delpid(pid_file):
     try:
         os.remove(pid_file)
@@ -77,7 +77,7 @@ def delpid(pid_file):
 def signal_quit(signum, frame):
     global mom_instance
     logger = logging.getLogger('momd')
-    logger.info("Caught signal -- shutting down") 
+    logger.info("Caught signal -- shutting down")
     mom_instance.shutdown()
 
 def get_option_overrides(options):
@@ -92,6 +92,8 @@ def get_option_overrides(options):
         config.set('logging', 'verbosity', options.verbosity)
     if options.rules_file is not None:
         config.set('main', 'policy', options.rules_file)
+    if options.policy_dir is not None:
+        config.set('main', 'policy-dir', options.policy_dir)
     return config
 
 def main():
@@ -103,6 +105,8 @@ def main():
                        default='/etc/mom.conf')
     cmdline.add_option('-r', '--rules-file', dest='rules_file',
                        help='Load rules from FILE', metavar='FILE')
+    cmdline.add_option('-P', '--policy-dir', dest='policy_dir',
+                       help='Load policies from DIR', metavar='DIR')
     cmdline.add_option('-p', '--plot-dir', dest='plot_dir',
                        help='Save data plot files in DIR', metavar='DIR')
     cmdline.add_option('-l', '--log', dest='log', metavar='TARGET',
@@ -113,10 +117,10 @@ def main():
     cmdline.add_option('', '--pid-file', dest='pid_file', metavar='FILE',
                        help='When running as a daemon, write pid to FILE',
                        default='/var/run/momd.pid')
-    
+
     (options, args) = cmdline.parse_args()
-    config_overrides = get_option_overrides(options)        
-    
+    config_overrides = get_option_overrides(options)
+
     if options.daemonize:
         daemonize(options.pid_file)
 

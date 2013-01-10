@@ -17,6 +17,10 @@ class MOM:
         self.logger = self._configure_logger()
 
     def run(self):
+        if not self._validate_config():
+            self.logger.error("Invalid configuration.  Unable to start")
+            return
+
         # Start threads
         self.logger.info("MOM starting")
         self.config.set('__int__', 'running', '1')
@@ -83,6 +87,7 @@ class MOM:
         self.config.set('main', 'plot-dir', '')
         self.config.set('main', 'rpc-port', '-1')
         self.config.set('main', 'policy', '')
+        self.config.set('main', 'policy-dir', '')
         self.config.add_section('logging')
         self.config.set('logging', 'log', 'stdio')
         self.config.set('logging', 'verbosity', 'info')
@@ -113,6 +118,15 @@ class MOM:
         self.config.set('__int__', 'running', '0')
         plot_subdir = self._get_plot_subdir(self.config.get('main', 'plot-dir'))
         self.config.set('__int__', 'plot-subdir', plot_subdir)
+
+    def _validate_config(self):
+        policy = self.config.get('main', 'policy')
+        policy_dir = self.config.get('main', 'policy-dir')
+        if policy and policy_dir:
+            self.logger.error("Only one of 'policy' and 'policy-dir' may be"
+                               "specified")
+            return False
+        return True
 
     def _configure_logger(self):
         logger = logging.getLogger('mom')

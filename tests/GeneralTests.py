@@ -18,14 +18,19 @@ from testrunner import MomTestCase as TestCaseBase
 
 import threading
 import time
+import tempfile
+import os
+import os.path
+import shutil
 import ConfigParser
 import mom
 
 
-def start_mom():
-    config = ConfigParser.SafeConfigParser()
-    config.add_section('logging')
-    config.set('logging', 'verbosity', 'critical')
+def start_mom(config=None):
+    if not config:
+        config = ConfigParser.SafeConfigParser()
+        config.add_section('logging')
+        config.set('logging', 'verbosity', 'critical')
 
     mom_instance = mom.MOM("", config)
     t = threading.Thread(target=mom_instance.run)
@@ -81,3 +86,33 @@ class GeneralTests(TestCaseBase):
         self.mom_instance.setNamedPolicy("20_test", None)
         policies = self.mom_instance.getNamedPolicies()
         self.assertFalse("20_test" in policies)
+
+class ConfigTests(TestCaseBase):
+    def testMultiplePolicies(self):
+        policies = {
+            '01_foo': '(+ 1 1)',
+            '02_bar': '(- 2 1)'
+        }
+        policy_dir = tempfile.mkdtemp()
+        for name, policy in policies.items():
+            with open(os.path.join(policy_dir, name + '.policy'), 'w') as f:
+                f.write(policy)
+
+
+        config = ConfigParser.SafeConfigParser()
+        config.add_section('main')
+        config.set('main', 'policy-dir', policy_dir)
+        config.add_section('logging')
+        config.set('logging', 'verbosity', 'critical')
+        mom_instance = start_mom(config)
+
+        try:
+            policies = mom_instance.getNamedPolicies()
+            self.assertEquals('(+ 1 1)', policies['01_foo'])
+            self.assertEquals('(- 2 1)', policies['02_bar'])
+
+            mom_instance.setNamedPolicy('02_bar', None)
+            mom_instance.setNamedPolicy('03_baz', '(/ 10 5)')
+            self.assertEquals("(+ 1 1)\n(/ 10 5)", mom_instance.getPolicy())
+        finally:
+            shutil.rmtree(policy_dir)

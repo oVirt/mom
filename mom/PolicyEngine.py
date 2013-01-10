@@ -17,6 +17,7 @@
 import threading
 import time
 import logging
+import os
 from Policy.Policy import Policy, PolicyError
 
 class PolicyEngine(threading.Thread):
@@ -37,38 +38,44 @@ class PolicyEngine(threading.Thread):
         }
 
         self.policy = Policy()
-        policy_file = self.config.get('main', 'policy')
-        policy_str = self.read_rules(policy_file)
-        if policy_str is None or not self.load_policy(policy_str):
-            self.logger.error("Policy Engine initialization failed")
-            return
+        self.load_policy()
         self.start()
 
-    def read_rules(self, fname):
-        if fname is None or fname == "":
-            return ""
-        try:
-            f = open(fname, 'r')
-            policyStr = f.read()
-            f.close()
-        except IOError, e:
-            self.logger.error("Unable to read policy file: %s" % e)
-            return None
-        return policyStr
+    def load_policy(self):
+        def read_policy(file_name, policy_name):
+            try:
+                with open(file_name, 'r') as f:
+                    policyStr = f.read()
+            except IOError, e:
+                self.logger.warn("Unable to read policy file: %s" % e)
+                return False
+            return self.policy.set_policy(policy_name, policyStr)
 
-    def load_policy(self, policyStr):
-        if policyStr is None or policyStr == "":
+        fname = self.config.get('main', 'policy')
+        if fname:
+            return read_policy(fname, None)
+
+        policy_dir = self.config.get('main', 'policy-dir')
+        if policy_dir:
+            try:
+                names = sorted(os.listdir(policy_dir))
+            except OSError, e:
+                self.logger.warn("Unable to read directory '%s': %s" % (
+                                    policy_dir, e.strerror))
+                return False
+            for name in names:
+                if name.startswith('.') or not name.endswith('.policy'):
+                    continue
+                fname = os.path.join(policy_dir, name)
+                read_policy(fname, name.split('.policy')[0])
             return True
-        if not self.policy.set_policy(None, policyStr):
-            return False
-        return True
 
     def rpc_get_policy(self):
         return self.policy.get_string()
 
     def rpc_set_policy(self, policyStr):
         self.policy.clear_policy()
-        return self.load_policy(policyStr)
+        return self.policy.set_policy(None, policyStr)
 
     def rpc_get_named_policies(self):
         return self.policy.get_strings()
