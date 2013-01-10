@@ -68,3 +68,16 @@ class GeneralTests(TestCaseBase):
 
         self.assertTrue(self.mom_instance.setPolicy(None))
         self.assertEquals('0', self.mom_instance.getPolicy())
+
+    def testMultiplePolicies(self):
+        self.assertEquals(0, len(self.mom_instance.getNamedPolicies().keys()))
+
+        self.mom_instance.setNamedPolicy("10_test", "(+ 1 1)")
+        self.mom_instance.setNamedPolicy("20_test", "(- 1 1)")
+        policies = self.mom_instance.getNamedPolicies()
+        self.assertEquals("(+ 1 1)", policies["10_test"])
+        self.assertEquals("(- 1 1)", policies["20_test"])
+
+        self.mom_instance.setNamedPolicy("20_test", None)
+        policies = self.mom_instance.getNamedPolicies()
+        self.assertFalse("20_test" in policies)

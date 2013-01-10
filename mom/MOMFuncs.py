@@ -41,9 +41,19 @@ class MOMFuncs(object):
         return self.threads['policy_engine'].rpc_set_policy(policy)
 
     @exported
+    def setNamedPolicy(self, name, policy):
+        self.logger.info("setNamedPolicy()")
+        return self.threads['policy_engine'].rpc_set_named_policy(name, policy)
+
+    @exported
     def getPolicy(self):
         self.logger.info("getPolicy()")
         return self.threads['policy_engine'].rpc_get_policy()
+
+    @exported
+    def getNamedPolicies(self):
+        self.logger.info("getNamedPolicies()")
+        return self.threads['policy_engine'].rpc_get_named_policies()
 
     @exported
     def setVerbosity(self, verbosity):

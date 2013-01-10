@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -30,13 +30,13 @@ class PolicyEngine(threading.Thread):
         self.setDaemon(True)
         self.config = config
         self.logger = logging.getLogger('mom.PolicyEngine')
-        self.policy_sem = threading.Semaphore()
         self.properties = {
             'hypervisor_iface': hypervisor_iface,
             'host_monitor': host_monitor,
             'guest_manager': guest_manager,
         }
 
+        self.policy = Policy()
         policy_file = self.config.get('main', 'policy')
         policy_str = self.read_rules(policy_file)
         if policy_str is None or not self.load_policy(policy_str):
@@ -49,40 +49,32 @@ class PolicyEngine(threading.Thread):
             return ""
         try:
             f = open(fname, 'r')
-            str = f.read()
+            policyStr = f.read()
             f.close()
         except IOError, e:
             self.logger.error("Unable to read policy file: %s" % e)
             return None
-        return str
+        return policyStr
 
-    def load_policy(self, str):
-        ret = True
-        if str is None or str == "":
-            self.logger.warn('%s: No policy specified.', self.getName())
-            str = "0" # XXX: Parser should accept an empty program
-
-        try:
-            new_pol = Policy(str)
-        except PolicyError as e:
-            self.logger.warn("Unable to load policy: %s" % e)
+    def load_policy(self, policyStr):
+        if policyStr is None or policyStr == "":
+            return True
+        if not self.policy.set_policy(None, policyStr):
             return False
-        self.policy_sem.acquire()
-        self.policy = new_pol
-        self.policy_sem.release()
         return True
 
     def rpc_get_policy(self):
-        self.policy_sem.acquire()
-        if self.policy is not None:
-            str = self.policy.get_string()
-        else:
-            str = ""
-        self.policy_sem.release()
-        return str
+        return self.policy.get_string()
 
-    def rpc_set_policy(self, str):
-        return self.load_policy(str)
+    def rpc_set_policy(self, policyStr):
+        self.policy.clear_policy()
+        return self.load_policy(policyStr)
+
+    def rpc_get_named_policies(self):
+        return self.policy.get_strings()
+
+    def rpc_set_named_policy(self, name, policyStr):
+        return self.policy.set_policy(name, policyStr)
 
     def get_controllers(self):
         """
@@ -111,10 +103,8 @@ class PolicyEngine(threading.Thread):
         if host is None:
             return
         guest_list = self.properties['guest_manager'].interrogate().values()
-        
-        self.policy_sem.acquire()
-        ret = self.policy.evaluate(host, guest_list)            
-        self.policy_sem.release()
+
+        ret = self.policy.evaluate(host, guest_list)
         if ret is False:
             return
         for c in self.controllers:
