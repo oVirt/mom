@@ -44,10 +44,27 @@ def start_mom():
 
 
 class GeneralTests(TestCaseBase):
-    def testStartStop(self):
-        mom_instance = start_mom()
-        self.assertTrue(mom_instance.ping())
-        self.assertTrue('host' in mom_instance.getStatistics())
-        self.assertTrue(isinstance(mom_instance.getActiveGuests(), list))
-        mom_instance.shutdown()
+    def setUp(self):
+        self.mom_instance = start_mom()
 
+    def tearDown(self):
+        self.mom_instance.shutdown()
+
+    def testQuery(self):
+        self.assertTrue(self.mom_instance.ping())
+        self.assertTrue('host' in self.mom_instance.getStatistics())
+        self.assertTrue(isinstance(self.mom_instance.getActiveGuests(),
+                                     list))
+    def testPolicyAPI(self):
+        self.assertEquals('0', self.mom_instance.getPolicy())
+
+        badPolicy = "("
+        self.assertFalse(self.mom_instance.setPolicy(badPolicy))
+        self.assertEquals('0', self.mom_instance.getPolicy())
+
+        goodPolicy = "(+ 1 1)"
+        self.assertTrue(self.mom_instance.setPolicy(goodPolicy))
+        self.assertEquals(goodPolicy, self.mom_instance.getPolicy())
+
+        self.assertTrue(self.mom_instance.setPolicy(None))
+        self.assertEquals('0', self.mom_instance.getPolicy())
