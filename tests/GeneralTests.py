@@ -114,5 +114,9 @@ class ConfigTests(TestCaseBase):
             mom_instance.setNamedPolicy('02_bar', None)
             mom_instance.setNamedPolicy('03_baz', '(/ 10 5)')
             self.assertEquals("(+ 1 1)\n(/ 10 5)", mom_instance.getPolicy())
+            mom_instance.resetPolicies()
+            self.assertEquals('(+ 1 1)', policies['01_foo'])
+            self.assertEquals('(- 2 1)', policies['02_bar'])
+            self.assertTrue('03_baz' not in policies.iterkeys())
         finally:
             shutil.rmtree(policy_dir)

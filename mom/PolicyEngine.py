@@ -70,6 +70,10 @@ class PolicyEngine(threading.Thread):
                 read_policy(fname, name.split('.policy')[0])
             return True
 
+    def rpc_reset_policy(self):
+        self.policy.clear_policy()
+        return self.load_policy()
+
     def rpc_get_policy(self):
         return self.policy.get_string()
 

@@ -19,9 +19,11 @@ from LogUtils import *
 
 EXPORTED_ATTRIBUTE = "__mom_exported__"
 
+
 def exported(f):
     setattr(f, EXPORTED_ATTRIBUTE, True)
     return f
+
 
 class MOMFuncs(object):
     def __init__(self, config, threads):
@@ -33,6 +35,11 @@ class MOMFuncs(object):
     def ping(self):
         self.logger.info("ping()")
         return True
+
+    @exported
+    def resetPolicies(self):
+        self.logger.info('resetPolicyies()')
+        return self.threads['policy_engine'].rpc_reset_policy()
 
     @exported
     def setPolicy(self, policy):
@@ -69,7 +76,7 @@ class MOMFuncs(object):
         guest_entities = self.threads['guest_manager'].interrogate().values()
         for entity in guest_entities:
             guest_stats[entity.properties['name']] = entity.statistics[-1]
-        ret = { 'host': host_stats, 'guests': guest_stats }
+        ret = {'host': host_stats, 'guests': guest_stats}
         return ret
 
     @exported
