@@ -16,7 +16,12 @@ BuildRequires:  python-nose
 
 # MOM makes use of libvirt by way of the python bindings to monitor and
 # interact with virtual machines.
-Requires:       libvirt, libvirt-python
+%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
+Requires:       libvirt-daemon-driver-qemu
+%else
+Requires:       libvirt
+%endif
+Requires:       libvirt-python
 
 Requires(post): chkconfig
 Requires(postun): initscripts
