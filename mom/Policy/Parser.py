@@ -301,7 +301,8 @@ class Evaluator(GenericEvaluator):
                     '<=': 'lte', '>=': 'gte',
                     '<<': 'shl', '>>': 'shr',
                     '==': 'eq', '!=': 'neq',
-                    'and': 'and', 'or': 'or', 'not': 'not'}
+                    'and': 'and', 'or': 'or', 'not': 'not',
+                    'min': 'min', 'max': 'max' }
 
     def __init__(self):
         GenericEvaluator.__init__(self)
@@ -438,6 +439,12 @@ class Evaluator(GenericEvaluator):
 
     def c_not(self, x):
         return not x
+
+    def c_min(self, *args):
+        return min(args)
+
+    def c_max(self, *args):
+        return max(args)
 
 def get_code(e, string):
     try:

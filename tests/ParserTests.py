@@ -137,6 +137,15 @@ class TestEval(unittest.TestCase):
         """
         self.verify(pol, [ 'foo', 2, 3, 2 ])
 
+    def test_minmax(self):
+        pol = """
+        (min 1 2 3 0)
+        (defvar a 8)
+        (defvar c (min 8 7 6 5))
+        (max 0 c a 3)
+        """
+        self.verify(pol, [ 0, 8, 5, 8 ])
+
     def test_if(self):
         pol = """
         (defvar a 1)
