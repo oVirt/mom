@@ -19,6 +19,7 @@ import re
 import logging
 from subprocess import *
 from mom.HypervisorInterfaces.HypervisorInterface import *
+from xml.etree import ElementTree
 
 class libvirtInterface(HypervisorInterface):
     """
@@ -208,13 +209,26 @@ class libvirtInterface(HypervisorInterface):
     def getStatsFields(self):
         return set(self.mem_stats.values())
 
+    def _getGuaranteedMemory(self, domain):
+        """
+        Get the DOM XML for domain and return the minimum guaranteed
+        memory (KiB) defined there. If the element is missing, return 0
+        """
+        xml_domain = ElementTree.fromstring(domain.XMLDesc(0))
+        elements = xml_domain.findall("/domain/memtune/min_guarantee")
+        if elements:
+            return elements[0].text
+        else:
+            return 0
+
     def getVmBalloonInfo(self, uuid):
         domain = self._getDomainFromUUID(uuid)
         info = self._domainGetInfo(domain)
         if info is None:
             self.logger.error('Failed to get domain info')
             return None
-        ret =  {'balloon_max': info[1], 'balloon_cur': info[2]}
+        ret =  {'balloon_max': info[1], 'balloon_cur': info[2],
+                'min_guarantee': self._getGuaranteedMemory(domain) }
         return ret
 
     def setVmBalloonTarget(self, uuid, target):

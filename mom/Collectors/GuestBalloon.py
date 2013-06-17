@@ -20,7 +20,7 @@ class GuestBalloon(Collector):
     This Collector uses hypervisor interface to collect guest balloon info
     """
     def getFields(self=None):
-        return set(['balloon_cur', 'balloon_max'])
+        return set(['balloon_cur', 'balloon_max', 'min_guarantee'])
 
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']
