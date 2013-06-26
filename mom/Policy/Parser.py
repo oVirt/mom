@@ -179,7 +179,15 @@ class GenericEvaluator(object):
         pass
 
     def get_operators(self):
-        return self.operator_map.keys()
+        """
+        Return the list of defined operators. It must return more specific
+        operators first or parsing errors will appear.
+
+        eg. << must appear before <
+        """
+        return sorted(self.operator_map.keys(),
+                      cmp = lambda x,y: cmp(len(x), len(y)),
+                      reverse = True)
 
     def parse_doc(self, doc):
         scanner = Scanner(['...'])
@@ -473,4 +481,3 @@ if __name__ == '__main__':
             print result
     else:
         repl(e)
-
