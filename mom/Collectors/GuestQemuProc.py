@@ -66,6 +66,3 @@ class GuestQemuProc(Collector):
 
     def getFields(self=None):
         return set(['host_minor_faults', 'host_major_faults', 'rss'])
-
-def instance(properties):
-    return GuestQemuProc(properties)

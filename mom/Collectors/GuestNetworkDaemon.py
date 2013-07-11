@@ -161,9 +161,6 @@ class GuestNetworkDaemon(Collector):
         return set(['mem_available', 'mem_unused', 'major_fault', 'minor_fault',
                     'swap_in', 'swap_out'])
 
-def instance(properties):
-    return GuestNetworkDaemon(properties)
-
 #
 # Begin Server-side code that runs on the guest
 #

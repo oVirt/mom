@@ -151,6 +151,3 @@ class GuestQemuAgent(Collector):
     def getFields(self=None):
         return set(['mem_available', 'mem_unused', 'mem_free',
                     'major_fault', 'minor_fault', 'swap_in', 'swap_out'])
-
-def instance(properties):
-    return GuestQemuAgent(properties)

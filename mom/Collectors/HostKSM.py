@@ -103,6 +103,3 @@ class HostKSM(Collector):
         f = lambda x: 'ksm_' + x
         return set(map(f, HostKSM.sysfs_keys)) | set(['ksm_shareable', \
                    'ksmd_cpu_usage'])
-
-def instance(properties):
-    return HostKSM(properties)

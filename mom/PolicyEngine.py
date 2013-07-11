@@ -99,7 +99,7 @@ class PolicyEngine(threading.Thread):
             except ImportError:
                 self.logger.warn("Unable to import controller: %s", name)
                 continue
-            self.controllers.append(module.instance(self.properties))
+            self.controllers.append(getattr(module, name)(self.properties))
 
     def do_controls(self):
         """

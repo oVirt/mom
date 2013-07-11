@@ -75,6 +75,3 @@ class HostMemory(Collector):
     def getFields(self=None):
         return set(['mem_available', 'mem_unuused', 'mem_free', 'swap_in', \
                    'swap_out', 'anon_pages'])
-
-def instance(properties):
-    return HostMemory(properties)

@@ -51,6 +51,3 @@ class KSM:
                 args.append("%s:%s" % (k,v))
             self.logger.info(msg, ' '.join(args))
         self.hypervisor_iface.ksmTune(outputs)
-
-def instance(properties):
-    return KSM(properties)

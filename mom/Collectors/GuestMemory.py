@@ -53,6 +53,3 @@ class GuestMemory(Collector):
         else:
             self.memstats_available = True
             return stat
-
-def instance(properties):
-    return GuestMemory(properties)

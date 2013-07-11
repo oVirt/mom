@@ -49,15 +49,6 @@ class Collector:
         """
         return set()
 
-    def instance(properties):
-        """
-        Override this method when creating new collectors.
-        This function is called by Monitor objects to dynamically instantiate a
-        set of Collector plugins.
-        Return: An instance of this collector initialized with 'properties'
-        """
-        return Collector(properties)
-
 def get_collectors(config_str, properties, global_config):
     """
     Initialize a set of new Collector instances for a Monitor.
@@ -84,7 +75,7 @@ def get_collectors(config_str, properties, global_config):
         # Create an instance
         try:
             module = __import__('mom.Collectors.' + name, None, None, name)
-            collectors.append(module.instance(properties))
+            collectors.append(getattr(module, name)(properties))
         except ImportError:
             logger.warn("Unable to import collector: %s", name)
             return None

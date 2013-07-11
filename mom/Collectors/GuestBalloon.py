@@ -44,6 +44,3 @@ class GuestBalloon(Collector):
         else:
             self.balloon_info_available = True
         return stat
-
-def instance(properties):
-    return GuestBalloon(properties)

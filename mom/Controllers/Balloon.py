@@ -40,6 +40,3 @@ class Balloon:
     def process(self, host, guests):
         for guest in guests:
             self.process_guest(guest)
-
-def instance(properties):
-    return Balloon(properties)
