@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -48,7 +48,7 @@ class Entity:
         """
         if self.monitor is not None:
             self.monitor.update_variables(self.variables)
-            
+
     def _finalize(self):
         """
         Once all data has been added to the Entity, perform any extra processing
@@ -78,7 +78,7 @@ class Entity:
         print "    statistics = { %s }" % stat_str
         print "}"
 
-    ### Rule-accesible Methods 
+    ### Rule-accesible Methods
     def Prop(self, name):
         """
         Get the value of a single property
@@ -121,13 +121,13 @@ class Entity:
             return self.variables[name]
         else:
             return None
-            
+
     def Control(self, name, val):
         """
         Set a control variable in this instance.
         """
         self.controls[name] = val
-        
+
     def GetControl(self, name):
         """
         Get the value of a control variable in this instance if it exists.

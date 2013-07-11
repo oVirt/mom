@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -30,14 +30,14 @@ class HostKSM(Collector):
         ksm_pages_to_scan - The number of pages to scan in each work interval
         ksm_pages_volatile - The number of pages that are changing too fast to be shared
         ksm_full_scans - The number of times all mergeable memory areas have been scanned
-        ksm_shareable - Estimated amount of host memory that is eligible for sharing 
+        ksm_shareable - Estimated amount of host memory that is eligible for sharing
         ksmd_cpu_usage - The cpu usage of kernel thread ksmd during the monitor interval
     """
-    
+
     sysfs_keys = [ 'full_scans', 'pages_sharing', 'pages_unshared', 'run',
                    'pages_shared', 'pages_to_scan', 'pages_volatile',
                    'sleep_millisecs' ]
-    
+
     def __init__(self, properties):
         self.open_files()
         self.interval = properties['interval']
@@ -98,7 +98,7 @@ class HostKSM(Collector):
         data['ksm_shareable'] = self.get_shareable_mem()
         data['ksmd_cpu_usage'] = self.get_ksmd_cpu_usage()
         return data
-        
+
     def getFields(self=None):
         f = lambda x: 'ksm_' + x
         return set(map(f, HostKSM.sysfs_keys)) | set(['ksm_shareable', \

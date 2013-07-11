@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2011 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -29,5 +29,5 @@ def log_set_verbosity(logger, verbosity):
         level = logging.CRITICAL
     else:
         level = logging.DEBUG
-    logger.setLevel(level)   
-    return level 
+    logger.setLevel(level)
+    return level

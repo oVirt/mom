@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2011 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -26,7 +26,7 @@ class ProtocolError(Exception):
     def __init__(self, errno, msg):
         self.errno = errno
         self.msg = msg
-        
+
     def __str__(self):
         return "ProtocolError (%s): %s" % (self.errno, self.msg)
 
@@ -34,11 +34,11 @@ class QemuAgentRet:
     """
     Describes the return value from guest agent API calls.
     A call can either return an error or data.
-    
+
     If an error occurs, the error dict will contain two keys:
         class: The type of error as reported by qemu
         data: A dictionary containing additional details about the error
-        
+
     If the command succeeded, the data dict will contain the actual
     return value.  Only one of 'error' and 'data' will be set.
     """
@@ -59,7 +59,7 @@ class QemuGuestAgentClient:
     should be initialized with the path to the local unix socket over
     which a connection to the agent will be attempted.  The list of
     currently-supported functions is:
-    
+
     ping:        Ping the guest agent
     file_open:   Open a file for reading or writing
     file_close:  Close a previously opened file
@@ -82,7 +82,7 @@ class QemuGuestAgentClient:
         responses left in the channel from previous sessions.  This
         method makes use of the 'guest-sync' API to synchronize the
         channel.
-        
+
         Be careful to choose a unique sequential number so that we are
         confident that the agent response is a result of this call.
         """
@@ -90,7 +90,7 @@ class QemuGuestAgentClient:
         request = { 'execute': 'guest-sync', 'arguments': { 'id': seq } }
         req_str = json.dumps(request)
         self._sock_send(sock, req_str)
-        
+
         # Read data from the channel until we get a matching response
         while True:
             response = self._sock_recv_until(sock, "\n")
@@ -145,12 +145,12 @@ class QemuGuestAgentClient:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(e.errno, e.message)
-                
+
             if ret == 0:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(-1, "Unable to send on socket")
-            sent = sent + ret          
+            sent = sent + ret
 
     def _sock_recv(self, sock, nr):
         """
@@ -177,7 +177,7 @@ class QemuGuestAgentClient:
             if remainder <= 0:
                 break
         return msg
-        
+
     def _sock_recv_until(self, sock, token):
         """
         Receive data from the socket one byte at a time until the token is read
@@ -212,7 +212,7 @@ class QemuGuestAgentClient:
             sock.close()
         except socket.error:
             pass
-        
+
     def _call(self, command, args={}):
         """
         Make the actual agent RPC call.  First marshall the arguments, then
@@ -221,7 +221,7 @@ class QemuGuestAgentClient:
         """
         request = { 'execute': command, 'arguments': args }
         json_str = json.dumps(request)
-        
+
         sock = self._make_connection()
         self._sock_send(sock, json_str)
         response = self._sock_recv_until(sock, "\n")
@@ -239,7 +239,7 @@ class _QemuGuestAgentAPI():
 
     def file_open(self, path, mode="r"):
         args = { 'path': path, 'mode': mode }
-        return self.client._call('guest-file-open', args) 
+        return self.client._call('guest-file-open', args)
 
     def file_close(self, handle):
         args = { 'handle': handle }

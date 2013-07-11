@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Memory Overcommitment Manager
 # Copyright (C) 2011 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -27,7 +27,7 @@ def ping(mom):
 
 def getPolicy(mom):
     print mom.getPolicy()
-    
+
 def setPolicy(mom, fname):
     f = open(fname, 'r')
     policy = f.read()
@@ -50,7 +50,7 @@ def _print_stats(stats):
 
 def getStatistics(mom):
     stats = mom.getStatistics()
-    
+
     print "Host:\n====="
     _print_stats(stats['host'])
     for (key, val) in stats['guests'].items():

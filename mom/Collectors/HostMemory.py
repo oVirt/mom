@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -38,13 +38,13 @@ class HostMemory(Collector):
     def __del__(self):
         if self.meminfo is not None:
             self.meminfo.close()
-        if self.vmstat is not None:    
+        if self.vmstat is not None:
             self.vmstat.close()
 
     def collect(self):
         self.meminfo.seek(0)
         self.vmstat.seek(0)
-        
+
         contents = self.meminfo.read()
         avail = parse_int("^MemTotal: (.*) kB", contents)
         anon = parse_int("^AnonPages: (.*) kB", contents)
@@ -71,7 +71,7 @@ class HostMemory(Collector):
                  'mem_free': free, 'swap_in': swap_in, 'swap_out': swap_out, \
                  'anon_pages': anon }
         return data
-        
+
     def getFields(self=None):
         return set(['mem_available', 'mem_unuused', 'mem_free', 'swap_in', \
                    'swap_out', 'anon_pages'])

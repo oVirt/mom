@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -47,7 +47,7 @@ class GuestMonitor(Monitor, threading.Thread):
             self.logger.error("Guest Monitor initialization failed")
             return
         self.start()
-                            
+
     def run(self):
         self.logger.info("%s starting", self.getName())
         interval = self.config.getint('main', 'guest-monitor-interval')

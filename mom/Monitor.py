@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -39,29 +39,29 @@ class Monitor:
         self.fields = None
         self.collectors = []
         self.logger = logging.getLogger('mom.Monitor')
-        
+
         plot_dir = config.get('__int__', 'plot-subdir')
         if plot_dir != '':
             self.plotter = Plotter(plot_dir, name)
         else:
             self.plotter = None
-        
-        self.ready = None 
+
+        self.ready = None
         self._terminate = False
-        
+
     def collect(self):
         """
         Collect a set of statistics by invoking all defined collectors and
         merging the data into one dictionary and pushing it onto the deque of
         historical statistics.  Maintain a history length as specified in the
         config file.
-        
+
         Note: Priority is given to collectors based on the order that they are
         listed in the config file (ie. if two collectors produce the same
         statistic only the value produced by the first collector will be saved).
         Return: The dictionary of collected statistics
         """
-        
+
         # The first time we are called, populate the list of expected fields
         if self.fields is None:
             self.fields = set()
@@ -70,7 +70,7 @@ class Monitor:
             self.logger.debug("Using fields: %s", repr(self.fields))
             if self.plotter is not None:
                 self.plotter.setFields(self.fields)
-        
+
         data = {}
         for c in self.collectors:
             try:
@@ -94,10 +94,10 @@ class Monitor:
             self.statistics.popleft()
         self.data_sem.release()
         self._set_ready()
-        
+
         if self.plotter is not None:
             self.plotter.plot(data)
-        
+
         return data
 
     def interrogate(self):
@@ -127,7 +127,7 @@ class Monitor:
         for (var, val) in variables.items():
             self.variables[var] = val
         self.data_sem.release()
-        
+
     def terminate(self):
         """
         Instruct the Monitor to shut down
@@ -139,7 +139,7 @@ class Monitor:
         Check if all configured Collectors are working properly.
         """
         return bool(self.ready)
-        
+
     def _set_ready(self):
         if self.ready is not True:
             self.logger.info('%s is ready', self.name)

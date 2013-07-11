@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -44,7 +44,7 @@ class RPCServer(threading.Thread):
         if self.server is None:
             return True
         return self.isAlive()
-    
+
     def create_server(self):
         try:
             port = self.config.getint('main', 'rpc-port')
@@ -57,7 +57,7 @@ class RPCServer(threading.Thread):
                             requestHandler=RequestHandler, logRequests=0)
         self.server.register_introspection_functions()
         self.server.register_instance(self.momFuncs)
-    
+
     def shutdown(self):
         if self.server is not None:
             self.server.shutdown()

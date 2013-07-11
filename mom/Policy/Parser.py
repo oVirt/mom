@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Anthony Liguori and Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -32,7 +32,7 @@ class Token(object):
 
     def __repr__(self):
         return '[%s %s]' % (self.kind, self.value)
-        
+
 class NumericToken(Token):
     def __init__(self, type, value):
         self.type = type
@@ -60,11 +60,11 @@ class Scanner(GenericScanner):
         self.rv = []
         GenericScanner.tokenize(self, input)
         return self.rv
-    
+
     def t_whitespace(self, s):
         r' \s+ '
         pass
-    
+
     def t_pound_comment(self, s):
         r' \#.*?\n '
         pass
@@ -83,12 +83,12 @@ class Scanner(GenericScanner):
 
     def t_float(self, s):
         r' -?(0|([1-9][0-9]*))*(\.[0-9]+)([Ee][+-]?[0-9]+)? '
-        self.rv.append(NumericToken('float', s)) 
+        self.rv.append(NumericToken('float', s))
 
     def t_integer(self, s):
         r' -?(0(?![0-9Xx])|[1-9][0-9]*)(?![0-9eE]) '
         self.rv.append(NumericToken('integer', s))
-        
+
     def t_integer_with_exponent(self, s):
         r' -?(0(?![0-9Xx])|[1-9][0-9]*)[Ee][+-]?[0-9]+ '
         # Python only recognizes scientific notation on float types
@@ -309,7 +309,7 @@ class Evaluator(GenericEvaluator):
 
     def eval_symbol(self, name):
         return self.stack.get(name)
-        
+
     def eval_number(self, token):
         if token.type == 'float':
             return float(token.value)
@@ -364,7 +364,7 @@ class Evaluator(GenericEvaluator):
 
     def c_with(self, iterable, iterator, code):
         'symbol symbol code'
-        
+
         # Iteration is restricted to the list of Guest entities
         if iterable != 'Guests':
             raise PolicyError("Unexpected iterable '%s' in with statement" %
@@ -421,13 +421,13 @@ class Evaluator(GenericEvaluator):
 
     def c_shr(self, x, y):
         return x >> y
-        
+
     def c_and(self, x, y):
         return x and y
-        
+
     def c_or(self, x, y):
         return x or y
-        
+
     def c_not(self, x):
         return not x
 

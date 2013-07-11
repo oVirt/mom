@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -33,7 +33,7 @@ class Plotter:
     def __del__(self):
         if self.file is not None:
             self.file.close()
-            
+
     def setFields(self, fields):
         if self.file is None:
             return
@@ -41,7 +41,7 @@ class Plotter:
         self.keys.sort()
         header = '# time\t ' + '\t '.join(map(str, self.keys)) + '\n'
         self.file.write(header)
-        
+
     def plot(self, data):
         if self.file is None:
             return

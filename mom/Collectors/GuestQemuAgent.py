@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2011 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -33,10 +33,10 @@ class GuestQemuAgent(Collector):
         swap_in       - The amount of memory swapped in since the last collection (pages)
         swap_out      - The amount of memory swapped out since the last collection (pages)
     """
-    
+
     def __init__(self, properties):
         self.name = properties['name']
-        
+
         try:
             socket_path = properties['config']['socket_path']
         except KeyError:
@@ -44,7 +44,7 @@ class GuestQemuAgent(Collector):
         self.sockets = [ "%s/%s.agent" % (socket_path, self.name) ]
         self.agent = None
         self.logger = logging.getLogger('mom.Collectors.GuestQemuAgent')
-        
+
         self.swap_in_prev = None
         self.swap_in_cur = None
         self.swap_out_prev = None
@@ -68,7 +68,7 @@ class GuestQemuAgent(Collector):
         if ret.error:
             # Convert error data into a string of the form:
             #    "foo=bar, whiz=bang"
-            details = reduce(lambda x, y: x + ", %s" % y, 
+            details = reduce(lambda x, y: x + ", %s" % y,
                              map(lambda x: "%s=%s" % x,
                                  ret.error['data'].items()))
             err_str = "%s (details: %s)" % (ret.error['class'], details)
@@ -88,7 +88,7 @@ class GuestQemuAgent(Collector):
             return True
 
         for path in self.sockets:
-            try:                
+            try:
                 agent = QemuGuestAgentClient(path)
                 ret = agent.api.ping()
                 if not ret.error:
@@ -120,7 +120,7 @@ class GuestQemuAgent(Collector):
             raise CollectionError('Unable to connect to agent')
         meminfo = self.getfile("/proc/meminfo")
         vmstat = self.getfile("/proc/vmstat")
-        
+
         avail = parse_int("^MemTotal: (.*) kB", meminfo)
         anon = parse_int("^AnonPages: (.*) kB", meminfo)
         unused = parse_int("^MemFree: (.*) kB", meminfo)
@@ -147,10 +147,10 @@ class GuestQemuAgent(Collector):
                  'mem_free': free, 'swap_in': swap_in, 'swap_out': swap_out, \
                  'major_fault': majflt, 'minor_fault': minflt, }
         return data
-        
+
     def getFields(self=None):
         return set(['mem_available', 'mem_unused', 'mem_free',
                     'major_fault', 'minor_fault', 'swap_in', 'swap_out'])
-        
+
 def instance(properties):
     return GuestQemuAgent(properties)

@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -28,7 +28,7 @@ class KSM:
         self.hypervisor_iface = properties['hypervisor_iface']
         self.logger = logging.getLogger('mom.Controllers.KSM')
         self.cur = { 'run': '0', 'pages_to_scan': '0', 'sleep_millisecs': '0' }
-        
+
     def write_value(self, fname, value):
         try:
             with open(fname, 'w') as f:
@@ -49,7 +49,7 @@ class KSM:
             args = []
             for (k, v) in self.cur.items():
                 args.append("%s:%s" % (k,v))
-            self.logger.info(msg, ' '.join(args))                
+            self.logger.info(msg, ' '.join(args))
         self.hypervisor_iface.ksmTune(outputs)
 
 def instance(properties):

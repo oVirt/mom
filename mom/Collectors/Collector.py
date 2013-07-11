@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -31,7 +31,7 @@ class Collector:
         Override this method when creating new collectors.
         """
         pass
-        
+
     def collect():
         """
         The principle interface for every Collector.  This method is called by a
@@ -40,7 +40,7 @@ class Collector:
         Return: A dictionary of statistics.
         """
         return {}
-        
+
     def getFields(self=None):
         """
         Used to query the names of statistics that this Collector will return
@@ -48,7 +48,7 @@ class Collector:
         Return: A set containing the names of all statistics returned by collect()
         """
         return set()
-        
+
     def instance(properties):
         """
         Override this method when creating new collectors.
@@ -65,17 +65,17 @@ def get_collectors(config_str, properties, global_config):
     """
     logger = logging.getLogger('mom.Collector')
     collectors = []
-    
+
     # Make sure we don't clobber an existing entry in the properties dict
     if 'config' in properties:
         logger.error("Internal Error: 'config' not allowed in Monitor properties")
         return None
-    
+
     for name in config_str.split(','):
         name = name.lstrip()
         if name == '':
             continue
-        
+
         # Check for Collector-specific configuration in the global config
         section = "Collector: %s" % name
         if global_config.has_section(section):

@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -46,7 +46,7 @@ def sock_receive(conn, logger=None):
     while not done:
         chunk = conn.recv(4096)
         if logger:
-            logger.debug("sock_receive: received next chunk: %s" % repr(chunk))        
+            logger.debug("sock_receive: received next chunk: %s" % repr(chunk))
         if chunk == '':
             done = True
         msg = msg + chunk
@@ -75,7 +75,7 @@ class GuestNetworkDaemon(Collector):
         swap_in       - The amount of memory swapped in since the last collection (pages)
         swap_out      - The amount of memory swapped out since the last collection (pages)
     """
-    
+
     def __init__(self, properties):
         self.logger = logging.getLogger('mom.Collectors.GuestNetworkDaemon')
         self.name = properties['name']
@@ -88,7 +88,7 @@ class GuestNetworkDaemon(Collector):
         """
         There is no simple, standardized way to determine a guest's IP address.
         We side-step the problem and make use of a helper program if specified.
-        
+
         XXX: This is a security hole!  We are running a user-specified command!
         """
         name = properties['name']
@@ -119,7 +119,7 @@ class GuestNetworkDaemon(Collector):
             self.socket.connect((self.ip, self.port))
         except socket.error, msg:
             sock_close(self.socket)
-            self.socket = None             
+            self.socket = None
             raise CollectionError('Network connection to %s failed: %s' %
                                   (self.name, msg))
 
@@ -149,18 +149,18 @@ class GuestNetworkDaemon(Collector):
         for item in data.split(","):
             parts = item.split(":")
             result[parts[0]] = int(parts[1])
-        
+
         # Construct the return dict
         ret = {}
         for key in self.getFields():
             if key in result:
                 ret[key] = result[key]
         return ret
-        
+
     def getFields(self=None):
         return set(['mem_available', 'mem_unused', 'major_fault', 'minor_fault',
                     'swap_in', 'swap_out'])
-        
+
 def instance(properties):
     return GuestNetworkDaemon(properties)
 
@@ -191,7 +191,7 @@ class _Server:
 
     def __del__(self):
         sock_close(self.socket)
-        if self.vmstat is not None:    
+        if self.vmstat is not None:
             self.vmstat.close()
 
     def send_props(self, conn):

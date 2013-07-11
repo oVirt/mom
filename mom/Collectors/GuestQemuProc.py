@@ -1,6 +1,6 @@
 # Memory Overcommitment Manager
 # Copyright (C) 2010 Adam Litke, IBM Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
@@ -63,7 +63,7 @@ class GuestQemuProc(Collector):
         self.prev_major_faults = cur_major_faults
 
         return { 'host_minor_faults': minor_faults, 'host_major_faults': major_faults, 'rss': rss }
-        
+
     def getFields(self=None):
         return set(['host_minor_faults', 'host_major_faults', 'rss'])
 
