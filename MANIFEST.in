@@ -1,5 +1,6 @@
 recursive-include doc * *.rules
 recursive-include contrib *
+recursive-include tests *.py
 include momd
 include mom-guestd
 include mom.spec
