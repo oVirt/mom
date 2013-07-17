@@ -228,7 +228,7 @@ class libvirtInterface(HypervisorInterface):
             self.logger.error('Failed to get domain info')
             return None
         ret =  {'balloon_max': info[1], 'balloon_cur': info[2],
-                'min_guarantee': self._getGuaranteedMemory(domain) }
+                'balloon_min': self._getGuaranteedMemory(domain) }
         return ret
 
     def setVmBalloonTarget(self, uuid, target):
