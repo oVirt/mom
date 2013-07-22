@@ -67,11 +67,11 @@ class HostMemory(Collector):
         swap_in = self.swap_in_cur - self.swap_in_prev
         swap_out = self.swap_out_cur - self.swap_out_prev
 
-        data = { 'mem_available': avail, 'mem_unuused': unused, \
+        data = { 'mem_available': avail, 'mem_unused': unused, \
                  'mem_free': free, 'swap_in': swap_in, 'swap_out': swap_out, \
                  'anon_pages': anon }
         return data
 
     def getFields(self=None):
-        return set(['mem_available', 'mem_unuused', 'mem_free', 'swap_in', \
+        return set(['mem_available', 'mem_unused', 'mem_free', 'swap_in', \
                    'swap_out', 'anon_pages'])
