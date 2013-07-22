@@ -140,6 +140,19 @@ class vdsmInterface(HypervisorInterface):
             self._check_status(response)
             balloon_info = response['statsList'][0]['balloonInfo']
             if balloon_info:
+                # Make sure the values are numbers, VDSM is using str
+                # to avoid xml-rpc issues
+                # We are modifying the dict keys inside the loop so
+                # iterate over copy of the list with keys, also use
+                # list() to make this compatible with Python 3
+                for key in list(balloon_info.keys()):
+                    # Remove keys that are not important to MoM to make sure
+                    # the HypervisorInterface stays consistent between
+                    # libvirt and vdsm platforms.
+                    if key not in ("balloon_max", "balloon_min", "balloon_cur"):
+                        del balloon_info[key]
+                        continue
+                    balloon_info[key] = int(balloon_info[key])
                 return balloon_info
         except vdsmException, e:
             e.handle_exception()

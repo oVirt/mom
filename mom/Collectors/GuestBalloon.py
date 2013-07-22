@@ -43,4 +43,5 @@ class GuestBalloon(Collector):
             self.stats_error('getVmBalloonInfo() is not ready')
         else:
             self.balloon_info_available = True
+
         return stat
