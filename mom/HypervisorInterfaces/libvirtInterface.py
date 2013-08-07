@@ -215,7 +215,7 @@ class libvirtInterface(HypervisorInterface):
         memory (KiB) defined there. If the element is missing, return 0
         """
         xml_domain = ElementTree.fromstring(domain.XMLDesc(0))
-        elements = xml_domain.findall("/domain/memtune/min_guarantee")
+        elements = xml_domain.findall("./memtune/min_guarantee")
         if elements:
             return elements[0].text
         else:
