@@ -36,12 +36,14 @@ class GuestQemuAgent(Collector):
 
     def __init__(self, properties):
         self.name = properties['name']
+        self.guest_uuid = properties['uuid']
+        self.hypervisor_iface = properties['hypervisor_iface']
 
         try:
             socket_path = properties['config']['socket_path']
         except KeyError:
             socket_path = '/var/lib/libvirt/qemu'
-        self.sockets = [ "%s/%s.agent" % (socket_path, self.name) ]
+        self.sockets = [ None, "%s/%s.agent" % (socket_path, self.name) ]
         self.agent = None
         self.logger = logging.getLogger('mom.Collectors.GuestQemuAgent')
 
@@ -98,7 +100,8 @@ class GuestQemuAgent(Collector):
 
         for path in self.sockets:
             try:
-                agent = QemuGuestAgentClient(path)
+                agent = QemuGuestAgentClient(
+                    self.guest_uuid, self.hypervisor_iface, path)
                 ret = agent.api.ping()
                 if not ret.error:
                     self.agent = agent

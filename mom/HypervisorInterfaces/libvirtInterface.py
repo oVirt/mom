@@ -249,5 +249,12 @@ class libvirtInterface(HypervisorInterface):
         for (key, val) in tuningParams.items():
             write_value('/sys/kernel/mm/ksm/%s' % key, val)
 
+    def qemuAgentCommand(self, uuid, command, timeout=10):
+        import libvirt_qemu
+        dom = self._getDomainFromUUID(uuid)
+        if dom is None:
+            return None
+        return libvirt_qemu.qemuAgentCommand(dom, command, timeout, 0)
+
 def instance(config):
     return libvirtInterface(config)

@@ -53,19 +53,63 @@ class QemuAgentRet:
 
 class QemuGuestAgentClient:
     """
-    QemuGuestAgentClient: Communicate with the Qemu guest agent using a
-    standalone unix socket.  This class manages the connection state and
-    exposes a set of callable APIs via the 'api' member.  The class
-    should be initialized with the path to the local unix socket over
-    which a connection to the agent will be attempted.  The list of
-    currently-supported functions is:
+    QemuGuestAgentClient: Communicate with the Qemu guest agent. This class
+    manages the connection state and exposes a set of callable APIs via the
+    'api' member. If the class is initialized with the path to the local unix
+    socket, it uses _QemuGuestAgentSocketClient class to communicate with the
+    agent. Otherwise, it tries to use _QemuGuestAgentLibvirtClient class to
+    communicate via hypervisor_iface's qemuAgentCommand method.
+    The list of currently-supported functions is:
 
     ping:        Ping the guest agent
     file_open:   Open a file for reading or writing
     file_close:  Close a previously opened file
     file_read:   Read some data from an open file
     file_write:  Write to an open file
+    """
+    def __init__(self, uuid, hypervisor_iface, where, verbose=False):
+        if where is None:
+            self.client = _QemuGuestAgentLibvirtClient(
+                uuid, hypervisor_iface, verbose)
+        else:
+            self.client = _QemuGuestAgentSocketClient(where, verbose)
+        self.api = self.client.api
 
+class _QemuGuestAgentLibvirtClient:
+    """
+    Communicate with the Qemu guest agent using hypervisor_iface's
+    qemuAgentCommand method. If the method is unavailable, it raises KeyError.
+    """
+    def __init__(self, uuid, hypervisor_iface, verbose=False):
+        """
+        Initialize the client for a particular guest
+        """
+        try:
+            getattr(hypervisor_iface, 'qemuAgentCommand')
+        except KeyError:
+            raise Exception, "hypervisor does not support qemuAgentCommand"
+        self.hypervisor_iface = hypervisor_iface
+        self.uuid = uuid
+        self.api = _QemuGuestAgentAPI(self)
+        self.verbose = verbose
+
+    def _call(self, command, args={}):
+        """
+        Make the actual agent RPC call.  First marshall the arguments, then
+        send the request. Finally, receive the response and return a structured
+        Python class: QemuAgentRet.
+        """
+        request = { 'execute': command, 'arguments': args }
+        json_str = json.dumps(request)
+
+        response = self.hypervisor_iface.qemuAgentCommand(self.uuid, json_str)
+        return QemuAgentRet(response)
+
+class _QemuGuestAgentSocketClient:
+    """
+    Communicate with the Qemu guest agent using a standalone unix socket.
+    The class should be initialized with the path to the local unix socket
+    over which a connection to the agent will be attempted.
     """
     def __init__(self, where, verbose=False):
         """
