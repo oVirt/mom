@@ -68,9 +68,18 @@ class GuestQemuAgent(Collector):
         if ret.error:
             # Convert error data into a string of the form:
             #    "foo=bar, whiz=bang"
-            details = reduce(lambda x, y: x + ", %s" % y,
-                             map(lambda x: "%s=%s" % x,
-                                 ret.error['data'].items()))
+            try:
+                details = reduce(lambda x, y: x + ", %s" % y,
+                                 map(lambda x: "%s=%s" % x,
+                                     ret.error['data'].items()))
+            except KeyError:
+                details = ""
+
+            try:
+                desc = ret.error['desc']
+            except KeyError:
+                desc = ""
+            details = " ".join((desc, details)).strip()
             err_str = "%s (details: %s)" % (ret.error['class'], details)
             raise CollectionError("Agent command failed: %s" % err_str)
 
