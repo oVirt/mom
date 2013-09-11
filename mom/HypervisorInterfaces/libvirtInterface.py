@@ -31,6 +31,7 @@ class libvirtInterface(HypervisorInterface):
     def __init__(self, config):
         self.conn = None
         self.uri = config.get('main', 'libvirt-hypervisor-uri')
+        self.interval = config.getint('main', 'guest-monitor-interval')
         self.logger = logging.getLogger('mom.libvirtInterface')
         libvirt.registerErrorHandler(self._error_handler, None)
         self._connect()
@@ -132,6 +133,14 @@ class libvirtInterface(HypervisorInterface):
             return None
         return int(matches[0])
 
+    def _domainSetMemoryStatsPeriod(self, domain, period):
+        try:
+            domain.setMemoryStatsPeriod(period)
+        except libvirt.libvirtError, e:
+            self._handleException(e)
+        except AttributeError, e:
+            pass # Older versions of libvirt don't have the method
+
     def _domainGetMemoryStats(self, domain):
         try:
             stats = domain.memoryStats()
@@ -178,6 +187,10 @@ class libvirtInterface(HypervisorInterface):
         if None in data.values():
             return None
         return data
+
+    def startVmMemoryStats(self, uuid):
+        domain = self._getDomainFromUUID(uuid)
+        self._domainSetMemoryStatsPeriod(domain, self.interval)
 
     def getVmMemoryStats(self, uuid):
         domain = self._getDomainFromUUID(uuid)

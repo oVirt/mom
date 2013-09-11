@@ -32,6 +32,7 @@ class GuestMemory(Collector):
         self.hypervisor_iface = properties['hypervisor_iface']
         self.uuid = properties['uuid']
         self.logger = logging.getLogger('mom.Collectors.GuestMemory')
+        self.hypervisor_iface.startVmMemoryStats(self.uuid)
         self.memstats_available = True
 
     def stats_error(self, msg):

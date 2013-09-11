@@ -35,6 +35,12 @@ class HypervisorInterface:
         """
         pass
 
+    def startVmMemoryStats(self, uuid):
+        """
+        This method activates the memory statistics of a given guest.
+        """
+        pass
+
     def getVmMemoryStats(self, uuid):
         """
         This method returns the memory statistics of a given guest. The stat
