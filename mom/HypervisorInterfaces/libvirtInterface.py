@@ -188,8 +188,7 @@ class libvirtInterface(HypervisorInterface):
             raise HypervisorInterfaceError('libvirt memoryStats() '
                                            'is not active')
         for key in set(self.mem_stats.keys()) & set(info.keys()):
-            ret[key] = info[key]
-
+            ret[self.mem_stats[key]] = info[key]
         return ret
 
     def _setStatsFields(self):
