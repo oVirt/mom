@@ -52,6 +52,8 @@ class HostMemory(Collector):
         buffers = parse_int("^Buffers: (.*) kB", contents)
         cached = parse_int("^Cached: (.*) kB", contents)
         free = unused + buffers + cached
+        swap_total = parse_int("^SwapTotal: (.*) kB", contents)
+        swap_free = parse_int("^SwapFree: (.*) kB", contents)
 
         # /proc/vmstat reports cumulative statistics so we must subtract the
         # previous values to get the difference since the last collection.
@@ -67,11 +69,13 @@ class HostMemory(Collector):
         swap_in = self.swap_in_cur - self.swap_in_prev
         swap_out = self.swap_out_cur - self.swap_out_prev
 
+
         data = { 'mem_available': avail, 'mem_unused': unused, \
                  'mem_free': free, 'swap_in': swap_in, 'swap_out': swap_out, \
-                 'anon_pages': anon }
+                 'anon_pages': anon, 'swap_total': swap_total, \
+                 'swap_usage': swap_total - swap_free }
         return data
 
     def getFields(self=None):
         return set(['mem_available', 'mem_unused', 'mem_free', 'swap_in', \
-                   'swap_out', 'anon_pages'])
+                   'swap_out', 'anon_pages', 'swap_total', 'swap_usage'])

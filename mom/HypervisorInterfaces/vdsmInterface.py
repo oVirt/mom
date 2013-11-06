@@ -107,6 +107,11 @@ class vdsmInterface(HypervisorInterface):
             ret['minor_fault'] = int(stats['pageflt']) - int(stats['majflt'])
             ret['swap_in'] = int(stats['swap_in'])
             ret['swap_out'] = int(stats['swap_out'])
+
+            # get swap size and usage information if available
+            ret['swap_total'] = int(stats.get('swap_total', 0))
+            ret['swap_usage'] = int(stats.get('swap_usage', 0))
+
             self.logger.debug('Memory stats: %s', ret)
             return ret
         except vdsmException, e:
@@ -131,7 +136,8 @@ class vdsmInterface(HypervisorInterface):
 
     def getStatsFields(self=None):
         return set(['mem_available', 'mem_unused', 'mem_free',
-                    'major_fault', 'minor_fault', 'swap_in', 'swap_out'])
+                    'major_fault', 'minor_fault', 'swap_in', 'swap_out',
+                    'swap_total', 'swap_usage'])
 
     def getVmBalloonInfo(self, uuid):
         try:

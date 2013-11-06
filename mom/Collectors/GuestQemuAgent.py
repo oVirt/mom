@@ -138,6 +138,8 @@ class GuestQemuAgent(Collector):
         unused = parse_int("^MemFree: (.*) kB", meminfo)
         buffers = parse_int("^Buffers: (.*) kB", meminfo)
         cached = parse_int("^Cached: (.*) kB", meminfo)
+        swap_total = parse_int("^SwapTotal: (.*) kB", meminfo)
+        swap_free = parse_int("^SwapFree: (.*) kB", meminfo)
         free = unused + buffers + cached
 
         # /proc/vmstat reports cumulative statistics so we must subtract the
@@ -157,9 +159,12 @@ class GuestQemuAgent(Collector):
 
         data = { 'mem_available': avail, 'mem_unused': unused, \
                  'mem_free': free, 'swap_in': swap_in, 'swap_out': swap_out, \
-                 'major_fault': majflt, 'minor_fault': minflt, }
+                 'major_fault': majflt, 'minor_fault': minflt, \
+                 'swap_total': swap_total, \
+                 'swap_usage': swap_total - swap_free }
         return data
 
     def getFields(self=None):
         return set(['mem_available', 'mem_unused', 'mem_free',
-                    'major_fault', 'minor_fault', 'swap_in', 'swap_out'])
+                    'major_fault', 'minor_fault', 'swap_in', 'swap_out',
+                    'swap_total', 'swap_usage'])

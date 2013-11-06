@@ -25,6 +25,9 @@ class GuestMemory(Collector):
     def getFields(self=None):
         return self.hypervisor_iface.getStatsFields()
 
+    def getOptionalFields(self=None):
+        return set(["swap_total", "swap_usage"])
+
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']
         self.uuid = properties['uuid']
