@@ -271,5 +271,17 @@ class TestEval(unittest.TestCase):
         """
         self.assertRaises(Parser.PolicyError, Parser.eval, self.e, pol)
 
+    def test_not_null(self):
+        pol = """
+        (null 0 1 2 "")
+        """
+        self.verify(pol, [False])
+
+    def test_null(self):
+        pol = """
+        (null nil)
+        """
+        self.verify(pol, [True])
+
 if __name__ == '__main__':
     unittest.main()

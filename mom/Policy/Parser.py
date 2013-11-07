@@ -230,7 +230,10 @@ class GenericEvaluator(object):
             elif code.kind == 'string':
                 return code.value[1:-1]
             elif code.kind == 'symbol':
-                return self.eval_symbol(code.value)
+                if code.value == "nil":
+                    return None
+                else:
+                    return self.eval_symbol(code.value)
             else:
                 raise PolicyError('Unexpected token type "%s"' % code.kind)
 
@@ -302,7 +305,7 @@ class Evaluator(GenericEvaluator):
                     '<<': 'shl', '>>': 'shr',
                     '==': 'eq', '!=': 'neq',
                     'and': 'and', 'or': 'or', 'not': 'not',
-                    'min': 'min', 'max': 'max' }
+                    'min': 'min', 'max': 'max', "valid": "valid" }
 
     def __init__(self):
         GenericEvaluator.__init__(self)
@@ -445,6 +448,13 @@ class Evaluator(GenericEvaluator):
 
     def c_max(self, *args):
         return max(args)
+
+    def c_null(self, *args):
+        try:
+            return all(v is None or len(v) == 0 for v in args)
+        except TypeError:
+            # some value is not null and not iterable
+            return False
 
 def get_code(e, string):
     try:

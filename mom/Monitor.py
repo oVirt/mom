@@ -37,6 +37,7 @@ class Monitor:
         self.variables = {}
         self.name = name
         self.fields = None
+        self.optional_fields = None
         self.collectors = []
         self.logger = logging.getLogger('mom.Monitor')
 
@@ -68,14 +69,27 @@ class Monitor:
             for c in self.collectors:
                 self.fields |= c.getFields()
             self.logger.debug("Using fields: %s", repr(self.fields))
-            if self.plotter is not None:
-                self.plotter.setFields(self.fields)
+
+        # The first time we are called, populate the list of optional fields
+        if self.optional_fields is None:
+            self.optional_fields = set()
+            for c in self.collectors:
+                self.optional_fields |= c.getFields()
+            self.logger.debug("Using optional fields: %s", repr(self.fields))
+
+        # Remove mandatory fields from the optional list
+        # This can happen when more than one collector is able to provide
+        # the value
+        self.optional_fields = self.optional_fields.difference(self.fields)
+
+        if self.plotter is not None:
+            self.plotter.setFields(self.fields.union(self.optional_fields))
 
         data = {}
         for c in self.collectors:
             try:
                 for (key, val) in c.collect().items():
-                    if key not in data:
+                    if key not in data or data[key] is None:
                         data[key] = val
             except Collector.CollectionError, e:
                 self._disp_collection_error("Collection error: %s" % e.msg)
@@ -83,10 +97,15 @@ class Monitor:
                 self._set_not_ready("Fatal Collector error: %s" % e.msg)
                 self.terminate()
                 return None
-        if set(data) != self.fields:
+
+        if not set(data).issuperset(self.fields):
             self._set_not_ready("Incomplete data: missing %s" % \
                                 (self.fields - set(data)))
             return None
+
+        # put None to all unset (optional) fields
+        for k in self.optional_fields:
+            data.setdefault(k, None)
 
         self.data_sem.acquire()
         self.statistics.append(data)
