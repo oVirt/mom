@@ -134,8 +134,9 @@ class TestEval(unittest.TestCase):
         (defvar a 2)
         (let ((a 1) (b 2)) (foo a))
         a                               # Value of 'a' unaffected by let
+        (let ((a 1) (b 2)) a b)         # multiple expressions in let
         """
-        self.verify(pol, [ 'foo', 2, 3, 2 ])
+        self.verify(pol, [ 'foo', 2, 3, 2, 2 ])
 
     def test_minmax(self):
         pol = """
@@ -172,10 +173,10 @@ class TestEval(unittest.TestCase):
         (set a 5)
         (let ((a 4)) a)                 # let creates a local 'a'
         a
-        (if (== a 5) (defvar a 4) 0)    # if does not create a new scope
+        (if (== a 5) (defvar a 4) 0)    # if creates a local 'a'
         a
         """
-        self.verify(pol, [ 10, 'foo', 2, 2, 'foo', 4, 2, 5, 4, 5, 4, 4 ])
+        self.verify(pol, [ 10, 'foo', 2, 2, 'foo', 4, 2, 5, 4, 5, 5, 5 ])
 
     def test_multi_statements(self):
         pol = """
@@ -186,22 +187,45 @@ class TestEval(unittest.TestCase):
             c
         })
         (f 4 5)
-
         (defvar q 11)
         (let ((q 2) (r 3)) {            # Use them for let statements
             q r
             (- r q)
         })
-
         (if (== q 11) {                 # Use them in if statements
             "q maintains proper scope"
-            (set q 12)
-        } {
+            (set q 12)                  # setq sets the value in closest scope
+        } {                             # that knows about q
             "oops, q has the wrong value"
         })
         (- q 10)
         """
         self.verify(pol, [ 4, 'f', 10, 11, 1, 12, 2 ])
+
+    def test_multi_statements_lisp(self):
+        pol = """
+        (def f (a b) (let ()           # Use them for function bodies
+            (defvar c (+ a b))
+            (set c (+ 1 c))
+            c
+        ))
+        (f 4 5)
+
+        (defvar q 11)
+        (let ((q 2) (r 3))             # Use them for do statements
+            (+ q r)
+            (- r q)
+        )
+        q
+        (if (== q 11) (let ()          # Use them in if statements
+            "q maintains proper scope"
+            (set q 12)
+        ) (
+            "oops, q has the wrong value"
+        ))
+        (- q 10)
+        """
+        self.verify(pol, [ 'f', 10, 11, 1, 11, 12, 2 ])
 
     def test_entities(self):
         class TestEntity(object):
@@ -282,6 +306,25 @@ class TestEval(unittest.TestCase):
         (null nil)
         """
         self.verify(pol, [True])
+
+    def test_multiple_defvar(self):
+        pol = """
+        (defvar balloonEnabled 1)
+        (defvar balloonEnabled 0)  # second defvar in the same scope does not
+        balloonEnabled             # touch the value
+        (defvar balloonEnabled 2)
+        balloonEnabled
+        """
+        self.verify(pol, [1, 1, 1, 1, 1])
+
+    def test_setq(self):
+        pol = """
+        (defvar balloonEnabled 1)
+        balloonEnabled
+        (setq balloonEnabled 2)
+        balloonEnabled
+        """
+        self.verify(pol, [1, 1, 2, 2])
 
 if __name__ == '__main__':
     unittest.main()

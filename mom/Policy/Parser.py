@@ -210,17 +210,32 @@ class GenericEvaluator(object):
             args = map(self.eval, args)
         else:
             types = self.parse_doc(doc)
-            if len(types) != len(args):
+
+            # check if we can check arity - it is not possible when variable
+            # number of arguments is expected
+            if len(types) != len(args) and (types[-1].value != '...'
+                                            or types[-1].kind != 'operator'):
                 raise PolicyError('arity mismatch in doc parsing')
-            for i in range(len(types)):
-                if types[i].value == 'code':
+
+            i = 0
+            while types and i < len(args):
+                # if we are repeating (...) element types, leave type intact
+                if types[0].value != '...' or types[0].kind != 'operator':
+                    type = types.pop(0)
+
+                if type.value == 'code':
+                    i += 1
                     continue
-                elif types[i].value == 'symbol':
+                elif type.value == 'symbol':
                     if not isinstance(args[i], Token) or args[i].kind != 'symbol':
                         raise PolicyError('malformed expression')
                     args[i] = args[i].value
                 else:
                     args[i] = self.eval(args[i])
+
+                # next argument
+                i += 1
+
         return fn(*args)
 
     def eval(self, code):
@@ -287,8 +302,8 @@ class VariableStack(object):
 
     def set(self, name, value, alloc=False):
         if alloc:
-            self.stack[0][name] = value
-            return value
+            self.stack[0].setdefault(name, value)
+            return self.stack[0][name]
 
         for scope in self.stack:
             if scope.has_key(name):
@@ -305,7 +320,7 @@ class Evaluator(GenericEvaluator):
                     '<<': 'shl', '>>': 'shr',
                     '==': 'eq', '!=': 'neq',
                     'and': 'and', 'or': 'or', 'not': 'not',
-                    'min': 'min', 'max': 'max', "valid": "valid" }
+                    'min': 'min', 'max': 'max', "null": "null"}
 
     def __init__(self):
         GenericEvaluator.__init__(self)
@@ -349,16 +364,22 @@ class Evaluator(GenericEvaluator):
         self.funcs[name] = (params, code)
         return name
 
+    # defun is an alias to def, maintain def for backwards compatibility
+    c_defun = c_def
+
     def c_set(self, name, value):
         'symbol value'
         return self.stack.set(name, value)
+
+    # setq is an alias to set here, note that in lisp set evaluates it's frist argument as well
+    c_setq = c_set
 
     def c_defvar(self, name, value):
         'symbol value'
         return self.stack.set(name, value, True)
 
-    def c_let(self, syms, code):
-        'code code'
+    def c_let(self, syms, *code):
+        'code code ...'
         if type(syms) != list:
             raise PolicyError('Expecting list as arg 1 in let')
 
@@ -370,7 +391,8 @@ class Evaluator(GenericEvaluator):
             if name.kind != 'symbol':
                 raise PolicyError('Expecting list of (symbol value) in let')
             self.stack.set(name.value, self.eval(value), True)
-        result = self.eval(code)
+        for expr in code:
+            result = self.eval(expr)
         self.stack.leave_scope()
         return result
 
