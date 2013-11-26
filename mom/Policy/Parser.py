@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+import logging
 
 import re
 from spark import GenericScanner, GenericParser
@@ -171,6 +172,12 @@ class ExternalFunctions(object):
     @staticmethod
     def abs(x):
         return __builtins__['abs'](x)
+
+    @staticmethod
+    def debug(*values):
+        'value ...'
+        logging.getLogger("mom.Evaluator").debug("debug: %s", values)
+        return values[-1]
 
 class GenericEvaluator(object):
     operator_map = {}
@@ -371,7 +378,7 @@ class Evaluator(GenericEvaluator):
         'symbol value'
         return self.stack.set(name, value)
 
-    # setq is an alias to set here, note that in lisp set evaluates it's frist argument as well
+    # setq is an alias to set here, note that in lisp set evaluates it's first argument as well
     c_setq = c_set
 
     def c_defvar(self, name, value):

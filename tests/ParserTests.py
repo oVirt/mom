@@ -323,8 +323,16 @@ class TestEval(unittest.TestCase):
         balloonEnabled
         (setq balloonEnabled 2)
         balloonEnabled
+        (set balloonEnabled 3)
+        balloonEnabled
         """
-        self.verify(pol, [1, 1, 2, 2])
+        self.verify(pol, [1, 1, 2, 2, 3, 3])
+
+    def test_debug(self):
+        pol = """
+        (debug "test" 1 nil "lala")
+        """
+        self.verify(pol, ["lala"])
 
 if __name__ == '__main__':
     unittest.main()
