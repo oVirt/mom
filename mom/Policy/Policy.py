@@ -26,7 +26,6 @@ class Policy:
     def __init__(self):
         self.logger = logging.getLogger('mom.Policy')
         self.policy_sem = threading.Semaphore()
-        self.evaluator = Evaluator()
         self.clear_policy()
 
     def get_strings(self, name=None):
@@ -62,7 +61,7 @@ class Policy:
             else:
                 self.policy_strings[name] = policyStr
             try:
-                self.code = get_code(self.evaluator, self._cat_policies())
+                self.code = get_code(Evaluator(), self._cat_policies())
             except PolicyError, e:
                 self.logger.warn("Unable to load policy: %s" % e)
                 if oldStr is None:
@@ -81,13 +80,15 @@ class Policy:
 
     def evaluate(self, host, guest_list):
         results = []
-        self.evaluator.stack.set('Host', host, alloc=True)
-        self.evaluator.stack.set('Guests', guest_list, alloc=True)
+        # each run needs separate evaluator so the stack is clean
+        evaluator = Evaluator()
+        evaluator.stack.set('Host', host, alloc=True)
+        evaluator.stack.set('Guests', guest_list, alloc=True)
 
         with self.policy_sem:
             try:
                 for expr in self.code:
-                    results.append(self.evaluator.eval(expr))
+                    results.append(evaluator.eval(expr))
                 self.logger.debug("Results: %s" % results)
             except PolicyError as e:
                 self.logger.error("Policy error: %s" % e)
