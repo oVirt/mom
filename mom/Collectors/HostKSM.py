@@ -80,7 +80,10 @@ class HostKSM(Collector):
         Estimate how much memory has been reported to KSM for potential sharing.
         We assume that qemu is reporting guest physical memory areas to KSM.
         """
-        p1 = Popen(["pgrep", "qemu"], stdout=PIPE).communicate()[0]
+        try:
+            p1 = Popen(["pgrep", "qemu"], stdout=PIPE).communicate()[0]
+        except OSError:
+            raise CollectionError("HostKSM: Unable to execute pgrep")
         pids = p1.split()
         if len(pids) == 0:
             return 0
