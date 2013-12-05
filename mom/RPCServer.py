@@ -63,10 +63,13 @@ class RPCServer(threading.Thread):
             self.server.shutdown()
 
     def run(self):
-        self.create_server()
-        if self.server is not None:
-            self.logger.info("RPC Server starting")
-            self.server.serve_forever()
-            self.logger.info("RPC Server ending")
-        else:
-            self.logger.info("RPC Server is disabled")
+        try:
+            self.create_server()
+            if self.server is not None:
+                self.logger.info("RPC Server starting")
+                self.server.serve_forever()
+                self.logger.info("RPC Server ending")
+            else:
+                self.logger.info("RPC Server is disabled")
+        except Exception as e:
+            self.logger.error("RPC Server crashed", exc_info=True)

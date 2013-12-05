@@ -122,11 +122,15 @@ class PolicyEngine(threading.Thread):
             c.process(host, guest_list)
 
     def run(self):
-        self.logger.info("Policy Engine starting")
-        self.get_controllers()
-        interval = self.config.getint('main', 'policy-engine-interval')
-        while self.config.getint('__int__', 'running') == 1:
-            time.sleep(interval)
-            self.do_controls()
-        self.logger.info("Policy Engine ending")
+        try:
+            self.logger.info("Policy Engine starting")
+            self.get_controllers()
+            interval = self.config.getint('main', 'policy-engine-interval')
+            while self.config.getint('__int__', 'running') == 1:
+                time.sleep(interval)
+                self.do_controls()
+        except Exception as e:
+            self.logger.error("Policy Engine crashed", exc_info=True)
+        else:
+            self.logger.info("Policy Engine ending")
 

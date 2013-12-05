@@ -107,16 +107,20 @@ class GuestManager(threading.Thread):
         return ret
 
     def run(self):
-        self.logger.info("Guest Manager starting");
-        interval = self.config.getint('main', 'guest-manager-interval')
-        while self.config.getint('__int__', 'running') == 1:
-            domain_list = self.hypervisor_iface.getVmList()
-            if domain_list is not None:
-                self.spawn_guest_monitors(domain_list)
-                self.check_threads(domain_list)
-            time.sleep(interval)
-        self.wait_for_guest_monitors()
-        self.logger.info("Guest Manager ending")
+        try:
+            self.logger.info("Guest Manager starting");
+            interval = self.config.getint('main', 'guest-manager-interval')
+            while self.config.getint('__int__', 'running') == 1:
+                domain_list = self.hypervisor_iface.getVmList()
+                if domain_list is not None:
+                    self.spawn_guest_monitors(domain_list)
+                    self.check_threads(domain_list)
+                time.sleep(interval)
+            self.wait_for_guest_monitors()
+        except Exception as e:
+            self.logger.error("Guest Manager crashed", exc_info=True)
+        else:
+            self.logger.info("Guest Manager ending")
 
     def rpc_get_active_guests(self):
         ret = []
