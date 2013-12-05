@@ -88,7 +88,12 @@ class Monitor:
         data = {}
         for c in self.collectors:
             try:
-                for (key, val) in c.collect().items():
+                collected = c.collect()
+                if collected is None:
+                    self.logger.debug("Collector %s did not "
+                                      "return any data", str(c))
+                    continue
+                for (key, val) in collected.items():
                     if key not in data or data[key] is None:
                         data[key] = val
             except Collector.CollectionError, e:
