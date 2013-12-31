@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Royce Lv, IBM Corporation
+# Copyright 2014 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -11,15 +11,24 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 US
-SUFFIXES: .in
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-# Reference:
-# http://www.gnu.org/software/automake/manual/html_node/Scripts.html
-PATHSUBST = sed \
-	-e "s,[@]PACKAGE[@],$(package),g"
+include $(top_srcdir)/build/python.inc
 
-CONFIGSUBST = $(top_builddir)/config.status --file=-
+MAINTAINERCLEANFILES = \
+	$(srcdir)/Makefile.in \
+	$(NULL)
 
-%: %.in
-	@echo "  SED $@"; $(PATHSUBST) $< |$(CONFIGSUBST) >$@
+momdir = $(pkgpythondir)/debug
+mom_PYTHON = \
+	StackDumper.py \
+	__init__.py \
+	$(NULL)
+
+clean-local: \
+	python-clean \
+	$(NULL)
+
+all-local: \
+	python-syntax-check \
+	$(NULL)

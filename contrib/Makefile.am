@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Royce Lv, IBM Corporation
+# Copyright 2014 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -13,33 +13,28 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-SUBDIRS = contrib doc mom tests
-
-AUTOMAKE_OPTIONS = foreign 1.9
-ACLOCAL_AMFLAGS = -I m4
+include $(top_srcdir)/build/python.inc
 
 MAINTAINERCLEANFILES = \
-	config.log config.status \
 	$(srcdir)/Makefile.in \
-	$(srcdir)/configure \
-	$(srcdir)/install-sh $(srcdir)/missing \
-	$(srcdir)/depcomp $(srcdir)/py-compile \
-	$(srcdir)/config.guess $(srcdir)/config.sub \
-	$(srcdir)/config.rpath \
-	$(srcdir)/ABOUT-NLS \
-	$(srcdir)/aclocal.m4 \
 	$(NULL)
 
-EXTRA_DIST = \
-	mom.spec \
-	mom.spec.in \
+dist_noinst_SCRIPTS = \
+	momd.init \
 	$(NULL)
 
-dist_sbin_SCRIPTS = \
-	momd \
+dist_noinst_PYTHON = \
+	mom-rpcclient.py \
 	$(NULL)
 
-dist_doc_DATA = \
-	COPYING \
-	README \
+dist_noinst_DATA = \
+	momd.service \
+	$(NULL)
+
+clean-local: \
+	python-clean \
+	$(NULL)
+
+all-local: \
+	python-syntax-check \
 	$(NULL)

@@ -7,7 +7,7 @@
 # system resources
 
 ### BEGIN INIT INFO
-# Provides: mom
+# Provides: momd
 # Required-Start: libvirtd
 # Required-Stop: libvirtd
 # Should-Start: 
@@ -25,7 +25,7 @@ exec="/usr/sbin/momd"
 prog="momd"
 config="/etc/momd.conf"
 
-lockfile=/var/lock/subsys/$prog
+lockfile=/var/lock/subsys/momd
 pidfile=/var/run/momd.pid
 
 start() {
