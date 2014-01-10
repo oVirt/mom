@@ -58,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 install -Dp contrib/momd.init $RPM_BUILD_ROOT/%{_initrddir}/momd
 
-cp -p $RPM_BUILD_ROOT/%{_pkgdocdir}/examples/mom-balloon+ksm.conf \
+cp -p $RPM_BUILD_ROOT/%{_docdir}/%{name}/examples/mom-balloon+ksm.conf \
    $RPM_BUILD_ROOT/%{_sysconfdir}/momd.conf
 cp -p COPYING README $RPM_BUILD_ROOT/%{_pkgdocdir}
 
