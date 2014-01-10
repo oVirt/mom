@@ -22,7 +22,7 @@ Requires:       libvirt-daemon-driver-qemu
 Requires:       libvirt
 %endif
 Requires:       libvirt-python
-Requires:       procps-ng
+Requires:       procps
 
 Requires(post): chkconfig
 Requires(postun): initscripts
