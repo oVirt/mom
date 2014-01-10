@@ -1,5 +1,4 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 Name:           mom
 Version:        @PACKAGE_VERSION@
@@ -8,13 +7,11 @@ Summary:        Dynamically manage system resources on virtualization hosts
 
 Group:          Applications/System
 License:        GPLv2
-URL:            http://www.ovirt.org
+URL:            http://wiki.github.com/aglitke/mom
 Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
-BuildRequires:  autoconf
-BuildRequires:  automake
 BuildRequires:  python-nose
 
 # MOM makes use of libvirt by way of the python bindings to monitor and
@@ -58,9 +55,13 @@ rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 install -Dp contrib/momd.init $RPM_BUILD_ROOT/%{_initrddir}/momd
 
-cp -p $RPM_BUILD_ROOT/%{_pkgdocdir}/examples/mom-balloon+ksm.conf \
+cp $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}/examples/mom-balloon+ksm.conf \
    $RPM_BUILD_ROOT/%{_sysconfdir}/momd.conf
-cp -p COPYING README $RPM_BUILD_ROOT/%{_pkgdocdir}
+
+# Correct the installed location of documentation files
+mv $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name} \
+   $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}
+cp COPYING README $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}
 
 %check
 nosetests tests/*.py
@@ -93,47 +94,12 @@ fi
 %{python_sitelib}/*
 %config(noreplace) %{_sysconfdir}/momd.conf
 
-# The use of '_pkgdocdir' conflicts with '%%doc' in some distro versions.
-# Therefore, '%%doc' MUST NOT
+# The use of '_defaultdocdir' conflicts with 'doc'. Therefore, 'doc' MUST NOT
 # be used to include additional documentation files so long as this is in use.
-%{_pkgdocdir}/
+%{_defaultdocdir}/%{name}-%{version}/
 
 
 %changelog
-* Fri Jan 10 2014 Adam Litke <alitke@redhat.com> - 0.3.2-8
-- Sync Fedora spec file with package spec file
-
-* Wed Dec 11 2013 Ville Skyttä <ville.skytta@iki.fi> - 0.3.2-7
-- Install docs to %%{_pkgdocdir} where available (#993977).
-
-* Thu Nov 21 2013 Adam Litke <alitke@redhat.com> 0.3.2-6
-- Bump version and rebuild
-
-* Thu Aug 22 2013 Adam Litke <agl@us.ibm.com> 0.3.2-5
-- Added patch to fix error in reporting CPU usage
-
-* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.3.2-4
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
-
-* Tue Jul 30 2013 Adam Litke <agl@us.ibm.com> - 0.3.2-3
-- Fix a typo in the HostMemory Collector
-- Convert strings to int when using the vdsm API
-
-* Thu Jul 18 2013 Adam Litke <agl@us.ibm.com> - 0.3.2-2
-- Pushed an additional patch for oVirt policy
-
-* Tue Jul 16 2013 Adam Litke <agl@us.ibm.com> - 0.3.2-1
-- Upgrade to version 0.3.2
-- Policy updates to support oVirt
-
-* Mon Jul 8 2013 Adam Litke <agl@us.ibm.com> - 0.3.1-1
-- Upgrade to version 0.3.1
-- MOM now uses an autotools build process
-- Multiple policy support
-
-* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.3.0-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
-
 * Fri Oct 05 2012 Adam Litke <agl@us.ibm.com> - 0.3.0-1
 - Upgrade to version 0.3.0
 - Upstream fixes CVE-2012-4480
@@ -141,7 +107,7 @@ fi
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.2.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
-* Wed Jan 12 2011 Adam Litke <agl@us.ibm.com> - 0.2.2-1
+* Thu Jan 12 2011 Adam Litke <agl@us.ibm.com> - 0.2.2-1
 - Upgrade to version 0.2.2
 - Packaging related changes merged upstream so patches dropped
 
