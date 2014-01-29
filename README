@@ -20,11 +20,25 @@ cgroups.
 QUICK INSTALLATION
 ------------------
 
-If MOM is not yet packaged for your Linux distribution it can be installed
-easily using the standard python distutils method:
+If MOM is not yet packaged for your Linux distribution it can beinstalled easily
+using the following sequence:
 
-    python setup.py build
-    python setup.py install --prefix=/usr/local
+    ./autogen.sh
+    ./configure
+    make
+    make install
+
+To build an RPM using the included spec file you should first edit configure.ac
+to set RPM version information.  You may want to set VERSION_SUFFIX to a string
+that will differentiate your builds from upstream builds.  The '0.0' at the
+beginning of PACKAGE_RPM_RELEASE should be changed to '1' and should be
+incremented for each subsequent build of the same mom release.  Once you have
+made the appropriate changes, execute the following commands to create an RPM:
+
+    rm *.tar.gz
+    ./configure
+    make dist
+    rpm -ta mom-*.tar.gz
 
 
 USAGE
