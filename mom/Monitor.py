@@ -74,8 +74,8 @@ class Monitor:
         if self.optional_fields is None:
             self.optional_fields = set()
             for c in self.collectors:
-                self.optional_fields |= c.getFields()
-            self.logger.debug("Using optional fields: %s", repr(self.fields))
+                self.optional_fields |= c.getOptionalFields()
+            self.logger.debug("Using optional fields: %s", repr(self.optional_fields))
 
         # Remove mandatory fields from the optional list
         # This can happen when more than one collector is able to provide
