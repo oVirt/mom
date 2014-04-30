@@ -22,6 +22,7 @@ MAINTAINERCLEANFILES = \
 momdir = $(pkgpythondir)/Controllers
 mom_PYTHON = \
 	Balloon.py \
+	CpuTune.py \
 	KSM.py \
 	__init__.py \
 	$(NULL)

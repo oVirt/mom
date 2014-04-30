@@ -20,6 +20,9 @@ import logging
 from subprocess import *
 from mom.HypervisorInterfaces.HypervisorInterface import *
 from xml.etree import ElementTree
+from xml.dom.minidom import parseString as _domParseStr
+
+_METADATA_VM_TUNE_URI = 'http://ovirt.org/vm/tune/1.0'
 
 class libvirtInterface(HypervisorInterface):
     """
@@ -244,12 +247,60 @@ class libvirtInterface(HypervisorInterface):
                 'balloon_min': self._getGuaranteedMemory(domain) }
         return ret
 
+    def getVmCpuTuneInfo(self, uuid):
+        ret = {}
+        domain = self._getDomainFromUUID(uuid)
+
+        # Get the user selection for vcpuLimit from the metadata
+        metadataCpuLimit = None
+        try:
+            metadataCpuLimit = domain.metadata(
+                libvirt.VIR_DOMAIN_METADATA_ELEMENT, _METADATA_VM_TUNE_URI, 0)
+        except libvirt.libvirtError as e:
+            if e.get_error_code() != libvirt.VIR_ERR_NO_DOMAIN_METADATA:
+                self.logger.error("Failed to retrieve QoS metadata")
+
+        if metadataCpuLimit:
+            metadataCpuLimitXML = _domParseStr(metadataCpuLimit)
+            nodeList = \
+                metadataCpuLimitXML.getElementsByTagName('vcpulimit')
+            ret['vcpu_user_limit'] = nodeList[0].childNodes[0].data
+        else:
+            ret['vcpu_user_limit'] = 100
+
+        # Retrieve the current cpu tuning params
+        ret.update(domain.schedulerParameters())
+
+        if ret['vcpu_quota'] == None:
+            ret['vcpu_quota'] = 0
+
+        if ret['vcpu_period'] == None:
+            ret['vcpu_period'] = 0
+
+        # Get the number of vcpus
+        vcpuCount = domain.vcpusFlags(libvirt.VIR_DOMAIN_VCPU_CURRENT)
+        if vcpuCount != -1:
+            ret['vcpu_count'] =  vcpuCount
+        else:
+            self.logger.error('Failed to get VM cpu count')
+            return None
+
+        return ret
+
     def setVmBalloonTarget(self, uuid, target):
         dom = self._getDomainFromUUID(uuid)
         if dom is not None:
             if self._domainSetBalloonTarget(dom, target):
                 name = self._domainGetName(dom)
                 self.logger.warn("Error while ballooning guest:%i", name)
+
+    def setVmCpuTune(self, uuid, quota, period):
+        dom = self._getDomainFromUUID(uuid)
+        try:
+            dom.setSchedulerParameters({ 'vcpu_quota': quota, 'vcpu_period': period})
+        except libvirt.libvirtError, e:
+            self.logger.error("libvirtInterface: Exception while " \
+                    "setSchedulerParameters: %s", e.message);
 
     def ksmTune(self, tuningParams):
         def write_value(fname, value):

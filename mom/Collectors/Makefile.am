@@ -23,11 +23,13 @@ momdir = $(pkgpythondir)/Collectors
 mom_PYTHON = \
 	Collector.py \
 	GuestBalloon.py \
+	GuestCpuTune.py \
 	GuestMemory.py \
 	GuestNetworkDaemon.py \
 	GuestQemuAgent.py \
 	GuestQemuProc.py \
 	HostKSM.py \
+	HostCpu.py \
 	HostMemory.py \
 	QemuGuestAgentClient.py \
 	__init__.py \
