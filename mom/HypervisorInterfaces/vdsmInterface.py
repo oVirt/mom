@@ -163,6 +163,52 @@ class vdsmInterface(HypervisorInterface):
         except vdsmException, e:
             e.handle_exception()
 
+    def getVmCpuTuneInfo(self, uuid):
+        try:
+            ret = {}
+            vm = API.VM(uuid)
+            response = vm.getStats()
+            self._check_status(response)
+
+            # Get user selection for vCPU limit
+            user_cpu_tune_info = response['statsList'][0]['userCpuTuneInfo']
+            ret.update(user_cpu_tune_info)
+
+            # Get current vcpu tuning info
+            cpu_tune_info = response['statsList'][0]['cpuTuneInfo']
+            ret.update(cpu_tune_info)
+
+            #Get num of vCPUs
+            vcpuCount = response['statsList'][0]['cpu_count']
+            if vcpuCount == None:
+                return None
+            else:
+                ret['vcpu_count'] = vcpuCount
+
+            # Make sure the values are numbers, VDSM is using str
+            # to avoid xml-rpc issues
+            # We are modifying the dict keys inside the loop so
+            # iterate over copy of the list with keys, also use
+            # list() to make this compatible with Python 3
+            for key in list(ret.keys()):
+                ret[key] = int(ret[key])
+            return ret
+        except vdsmException, e:
+            e.handle_exception()
+
+    def setVmCpuTune(self, uuid, quota, period):
+        vm = API.VM(uuid)
+        try:
+            response = vm.setCpuTuneQuota(quota)
+            self._check_status(response)
+        except vdsmException, e:
+            e.handle_exception()
+        try:
+            response = vm.setCpuTunePeriod(period)
+            self._check_status(response)
+        except vdsmException, e:
+            e.handle_exception()
+
     def ksmTune(self, tuningParams):
         # When MOM is lauched by vdsm, it's running without root privileges.
         # So we need resort to supervdsm to set the KSM parameters.
