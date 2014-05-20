@@ -138,14 +138,3 @@ def parse_int(regex, src):
         return int(m.group(1))
     else:
         return None
-
-def count_occurrences(regex, src):
-    """
-    Parse a body of text according to the provided regular expression and return
-    the count of matches as an integer.
-    """
-    m = re.findall(regex, src, re.M)
-    if m:
-        return len(m)
-    else:
-        return None
