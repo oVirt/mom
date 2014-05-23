@@ -257,7 +257,7 @@ class libvirtInterface(HypervisorInterface):
             ret['vcpu_user_limit'] = 100
 
         # Retrieve the current cpu tuning params
-        ret.update(domain.getSchedulerParameters({ 'vcpu_quota', 'vcpu_period'}))
+        ret.update(domain.getSchedulerParameters(('vcpu_quota', 'vcpu_period')))
 
         if ret['vcpu_quota'] == None:
             ret['vcpu_quota'] = -1
