@@ -80,7 +80,7 @@ def get_collectors(config_str, properties, global_config):
         # Check for Collector-specific configuration in the global config
         section = "Collector: %s" % name
         if global_config.has_section(section):
-            properties['config'] = dict(global_config.items(section))
+            properties['config'] = dict(global_config.items(section, raw=True))
 
         # Create an instance
         try:

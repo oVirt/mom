@@ -38,14 +38,28 @@ class GuestQemuAgent(Collector):
         self.name = properties['name']
         self.guest_uuid = properties['uuid']
         self.hypervisor_iface = properties['hypervisor_iface']
+        self.logger = logging.getLogger('mom.Collectors.GuestQemuAgent')
 
         try:
             socket_path = properties['config']['socket_path']
         except KeyError:
             socket_path = '/var/lib/libvirt/qemu'
-        self.sockets = [ None, "%s/%s.agent" % (socket_path, self.name) ]
+
+        try:
+            socket_name_template = properties['config']['socket_name_template']
+        except KeyError:
+            socket_name_template = '%(name)s.agent'
+
+        try:
+            socket_name = socket_name_template % {'name' : self.name}
+        except KeyError, e:
+            socket_name = self.name + '.agent'
+            self.logger.warn("Error substituting socket name " \
+                              "template. Invalid key: %s" % e)
+            self.logger.warn("Using socket name %s." % socket_name)
+
+        self.sockets = [ None, "%s/%s" % (socket_path, socket_name) ]
         self.agent = None
-        self.logger = logging.getLogger('mom.Collectors.GuestQemuAgent')
 
         self.swap_in_prev = None
         self.swap_in_cur = None
