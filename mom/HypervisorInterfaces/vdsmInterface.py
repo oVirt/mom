@@ -181,7 +181,7 @@ class vdsmInterface(HypervisorInterface):
             ret['vcpu_period'] = vcpuPeriod
 
             #Get num of vCPUs
-            vcpuCount = response['statsList'][0]['vcpuCount']
+            vcpuCount = response['statsList'][0].get('vcpuCount', None)
             if vcpuCount == None:
                 return None
             else:
