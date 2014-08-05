@@ -31,6 +31,7 @@ mom_PYTHON = \
 	HostKSM.py \
 	HostCpu.py \
 	HostMemory.py \
+	HostTime.py \
 	QemuGuestAgentClient.py \
 	__init__.py \
 	$(NULL)
