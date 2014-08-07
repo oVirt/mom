@@ -32,7 +32,7 @@ class Collector:
         """
         pass
 
-    def collect():
+    def collect(self):
         """
         The principle interface for every Collector.  This method is called by a
         monitor to initiate data collection.
