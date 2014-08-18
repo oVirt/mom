@@ -47,7 +47,6 @@ class GuestMonitor(Monitor, threading.Thread):
         if self.collectors is None:
             self.logger.error("Guest Monitor initialization failed")
             return
-        self.start()
 
     def run(self):
         try:

@@ -30,6 +30,7 @@ class MOM:
             if not hypervisor_iface:
                 self.shutdown()
             guest_manager = GuestManager(self.config, hypervisor_iface)
+            guest_manager.start()
             policy_engine = PolicyEngine(self.config, hypervisor_iface,
                                          host_monitor, guest_manager)
 

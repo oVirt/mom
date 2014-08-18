@@ -35,7 +35,6 @@ class GuestManager(threading.Thread):
         self.logger = logging.getLogger('mom.GuestManager')
         self.guests = {}
         self.guests_sem = threading.Semaphore()
-        self.start()
 
     def spawn_guest_monitors(self, domain_list):
         """
@@ -53,6 +52,7 @@ class GuestManager(threading.Thread):
                     "can't start", id)
                 continue
             guest = GuestMonitor(self.config, info, self.hypervisor_iface)
+            guest.start()
             if guest.isAlive():
                 self.guests_sem.acquire()
                 if id not in self.guests:
