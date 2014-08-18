@@ -65,7 +65,4 @@ class GuestMonitor(Monitor, threading.Thread):
         Provide structured access to the guest name without calling hypervisor
         interface.
         """
-        try:
-            return self.properties['name']
-        except KeyError:
-            return None
+        return self.properties.get('name')
