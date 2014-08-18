@@ -186,9 +186,9 @@ class Monitor(object):
         self.ready = False
         self._disp_collection_error(message)
 
-    def _should_run(self):
+    def should_run(self):
         """
-        Private helper to determine if the Monitor should continue to run.
+        Helper to determine if the Monitor should continue to run.
         """
         if self.config.getint('__int__', 'running') == 1 and not self._terminate:
             return True

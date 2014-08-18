@@ -23,19 +23,16 @@ from mom.Monitor import Monitor
 from mom.Collectors import Collector
 
 
-class GuestMonitor(Monitor, threading.Thread):
+class GuestMonitor(Monitor):
     """
     A GuestMonitor thread collects and reports statistics about 1 running guest
     """
     def __init__(self, config, info, hypervisor_iface):
-        threading.Thread.__init__(self, name="guest:%s" % id)
         self.config = config
         self.logger = logging.getLogger('mom.GuestMonitor')
         self.interval = self.config.getint('main', 'guest-monitor-interval')
 
-        self.setName("GuestMonitor-%s" % info['name'])
-        Monitor.__init__(self, config, self.getName())
-        self.setDaemon(True)
+        Monitor.__init__(self, config, info['name'])
         self.data_sem.acquire()
         self.properties.update(info)
         self.properties['hypervisor_iface'] = hypervisor_iface
@@ -46,18 +43,6 @@ class GuestMonitor(Monitor, threading.Thread):
                             self.properties, self.config)
         if self.collectors is None:
             self.logger.error("Guest Monitor initialization failed")
-            return
-
-    def run(self):
-        try:
-            self.logger.info("%s starting", self.getName())
-            while self._should_run():
-                self.collect()
-                time.sleep(self.interval)
-        except Exception as e:
-            self.logger.error("%s crashed", self.getName(), exc_info=True)
-        else:
-            self.logger.info("%s ending", self.getName())
 
     def getGuestName(self):
         """
@@ -65,3 +50,25 @@ class GuestMonitor(Monitor, threading.Thread):
         interface.
         """
         return self.properties.get('name')
+
+
+class GuestMonitorThread(threading.Thread):
+    def __init__(self, info, monitor):
+        threading.Thread.__init__(self, name="guest:%s" % id)
+
+        self.setName("GuestMonitor-%s" % info['name'])
+        self.setDaemon(True)
+        self.logger = logging.getLogger('mom.GuestMonitor.Thread')
+
+        self._mon = monitor
+
+    def run(self):
+        try:
+            self.logger.info("%s starting", self.getName())
+            while self._mon.should_run():
+                self._mon.collect()
+                time.sleep(self._mon.interval)
+        except Exception:
+            self.logger.exception("%s crashed", self.getName())
+        else:
+            self.logger.info("%s ending", self.getName())

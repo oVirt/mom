@@ -46,7 +46,7 @@ class HostMonitor(Monitor, threading.Thread):
     def run(self):
         self.logger.info("Host Monitor starting")
         try:
-            while self._should_run():
+            while self.should_run():
                 data = self.collect()
                 time.sleep(self.interval)
         except Exception as e:

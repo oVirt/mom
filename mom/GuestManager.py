@@ -14,12 +14,18 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+from collections import namedtuple
 import threading
 import time
 import sys
 import re
 import logging
 from mom.GuestMonitor import GuestMonitor
+from mom.GuestMonitor import GuestMonitorThread
+
+
+GuestData = namedtuple('GuestData', ['monitor', 'thread'])
+
 
 class GuestManager(threading.Thread):
     """
@@ -52,13 +58,11 @@ class GuestManager(threading.Thread):
                     "can't start", id)
                 continue
             guest = GuestMonitor(self.config, info, self.hypervisor_iface)
-            guest.start()
-            if guest.isAlive():
+            thread = GuestMonitorThread(info, guest)
+            thread.start()
+            if thread.is_alive():
                 self.guests_sem.acquire()
-                if id not in self.guests:
-                    self.guests[id] = guest
-                else:
-                    del guest
+                self._register_guest(id, GuestData(guest, thread))
                 self.guests_sem.release()
 
     def wait_for_guest_monitors(self):
@@ -67,13 +71,14 @@ class GuestManager(threading.Thread):
         """
         while True:
             self.guests_sem.acquire()
-            if len(self.guests) > 0:
-                (id, thread) = self.guests.popitem()
+            if self.guests:
+                id, guest = self.guests.popitem()
             else:
                 id = None
             self.guests_sem.release()
             if id is not None:
-                thread.join(0)
+                if guest.thread is not None:
+                    guest.thread.join(0)
             else:
                 break
 
@@ -82,14 +87,16 @@ class GuestManager(threading.Thread):
         Check for stale and/or deceased threads and remove them.
         """
         self.guests_sem.acquire()
-        for (id, thread) in self.guests.items():
+        for id, guest in self.guests.items():
+            if guest.thread is None:
+                # no thread to babysit
+                continue
             # Check if the thread has died
-            if not thread.isAlive():
+            if not guest.thread.is_alive():
                 del self.guests[id]
             # Check if the domain has ended according to hypervisor interface
             elif id not in domain_list:
-                thread.terminate()
-                del self.guests[id]
+                self._unregister_guest(id)
         self.guests_sem.release()
 
     def interrogate(self):
@@ -99,8 +106,8 @@ class GuestManager(threading.Thread):
         """
         ret = {}
         self.guests_sem.acquire()
-        for (id, monitor) in self.guests.items():
-            entity = monitor.interrogate()
+        for id, guest in self.guests.items():
+            entity = guest.monitor.interrogate()
             if entity is not None:
                 ret[id] = entity
         self.guests_sem.release()
@@ -125,10 +132,23 @@ class GuestManager(threading.Thread):
     def rpc_get_active_guests(self):
         ret = []
         self.guests_sem.acquire()
-        for (id, monitor) in self.guests.items():
-            if monitor.isReady():
-                name = monitor.getGuestName()
+        for id, guest in self.guests.items():
+            if guest.monitor.isReady():
+                name = guest.monitor.getGuestName()
                 if name is not None:
                     ret.append(name)
         self.guests_sem.release()
         return ret
+
+    def _register_guest(self, uuid, guest):
+        if uuid not in self.guests:
+            self.logger.debug('added monitor for guest %s', uuid)
+            self.guests[uuid] = guest
+        else:
+            del guest
+
+    def _unregister_guest(self, uuid):
+        if uuid in self.guests:
+            guest = self.guests.pop(uuid)
+            self.logger.debug('removed monitor for guest %s', uuid)
+            guest.monitor.terminate()
