@@ -31,6 +31,7 @@ class GuestMonitor(Monitor, threading.Thread):
         threading.Thread.__init__(self, name="guest:%s" % id)
         self.config = config
         self.logger = logging.getLogger('mom.GuestMonitor')
+        self.interval = self.config.getint('main', 'guest-monitor-interval')
 
         self.setName("GuestMonitor-%s" % info['name'])
         Monitor.__init__(self, config, self.getName())
@@ -51,10 +52,9 @@ class GuestMonitor(Monitor, threading.Thread):
     def run(self):
         try:
             self.logger.info("%s starting", self.getName())
-            interval = self.config.getint('main', 'guest-monitor-interval')
             while self._should_run():
                 self.collect()
-                time.sleep(interval)
+                time.sleep(self.interval)
         except Exception as e:
             self.logger.error("%s crashed", self.getName(), exc_info=True)
         else:
