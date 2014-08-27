@@ -102,6 +102,8 @@ class Monitor:
                 self._set_not_ready("Fatal Collector error: %s" % e.msg)
                 self.terminate()
                 return None
+            except Exception:
+                self.logger.exception("Unexpected collection error")
 
         if not set(data).issuperset(self.fields):
             self._set_not_ready("Incomplete data: missing %s" % \
