@@ -263,7 +263,7 @@ class libvirtInterface(HypervisorInterface):
         if metadataCpuLimit:
             metadataCpuLimitXML = _domParseStr(metadataCpuLimit)
             nodeList = \
-                metadataCpuLimitXML.getElementsByTagName('vcpulimit')
+                metadataCpuLimitXML.getElementsByTagName('vcpuLimit')
             ret['vcpu_user_limit'] = nodeList[0].childNodes[0].data
         else:
             ret['vcpu_user_limit'] = 100
