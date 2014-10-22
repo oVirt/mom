@@ -41,13 +41,21 @@ class HostKSM(Collector):
     def __init__(self, properties):
         self.open_files()
         self.interval = properties['interval']
-        self.pid = int(Popen(['pidof', 'ksmd'], stdout=PIPE).communicate()[0])
+        self.pid = self._get_ksmd_pid()
         self.last_jiff = self.get_ksmd_jiffies()
 
     def __del__(self):
         for datum in self.sysfs_keys:
             if datum in self.files and self.files[datum] is not None:
                 self.files[datum].close()
+
+    def _get_ksmd_pid(self):
+        proc = Popen(['pidof', 'ksmd'], stdout=PIPE)
+        out = proc.communicate()[0]
+        if proc.returncode == 0:
+            return int(out)
+        else:
+            return None
 
     def open_files(self):
         self.files = {}
@@ -59,8 +67,11 @@ class HostKSM(Collector):
                 raise FatalError("HostKSM: open %s failed: %s" % (name, msg))
 
     def get_ksmd_jiffies(self):
-        return sum(map(int, file('/proc/%s/stat' % self.pid) \
-                   .read().split()[13:15]))
+        if self.pid is None:
+            return 0
+        else:
+            return sum(map(int, file('/proc/%s/stat' % self.pid) \
+                       .read().split()[13:15]))
 
     def get_ksmd_cpu_usage(self):
         """
