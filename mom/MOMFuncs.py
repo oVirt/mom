@@ -71,6 +71,7 @@ class MOMFuncs(object):
 
     @exported
     def getStatistics(self):
+        self.logger.info("getStatistics()")
         host_stats = self.threads['host_monitor'].interrogate().statistics[-1]
         guest_stats = {}
         guest_entities = self.threads['guest_manager'].interrogate().values()
