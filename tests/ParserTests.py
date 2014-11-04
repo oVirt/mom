@@ -334,5 +334,57 @@ class TestEval(unittest.TestCase):
         """
         self.verify(pol, ["lala"])
 
+    def test_valid(self):
+        self.e.stack.set('empty', [], True)
+
+        pol = """
+        (valid "test" 1 nil "lala")
+        (valid "test" 1 "lala")
+        (valid)
+        (valid nil)
+        (valid 0 "" empty)
+        """
+        self.verify(pol, [False, True, True, False, True])
+
+    def test_nil_attribute(self):
+        class Guest(object):
+            def __init__(self, num):
+                self._num = num
+
+            @property
+            def num(self):
+                return self._num
+
+        guest = Guest(None)
+        self.e.stack.set('guest', guest, True)
+        pol = """
+        guest.num
+        (== guest.num nil)
+        (== guest.num 0)
+        """
+        self.verify(pol, [None, True, False])
+
+    def test_valid_nil_attribute(self):
+        class Guest(object):
+            def __init__(self, num):
+                self._num = num
+
+            @property
+            def num(self):
+                return self._num
+
+        guest = Guest(None)
+        guest2 = Guest(0)
+
+        self.e.stack.set('guest', guest, True)
+        self.e.stack.set('guest2', guest2, True)
+
+        pol = """
+        guest.num
+        (valid guest.num)
+        (valid guest2.num)
+        """
+        self.verify(pol, [None, False, True])
+
 if __name__ == '__main__':
     unittest.main()

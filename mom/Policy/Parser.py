@@ -327,7 +327,8 @@ class Evaluator(GenericEvaluator):
                     '<<': 'shl', '>>': 'shr',
                     '==': 'eq', '!=': 'neq',
                     'and': 'and', 'or': 'or', 'not': 'not',
-                    'min': 'min', 'max': 'max', "null": "null"}
+                    'min': 'min', 'max': 'max', "null": "null",
+                    "valid": "valid"}
 
     def __init__(self):
         GenericEvaluator.__init__(self)
@@ -483,6 +484,12 @@ class Evaluator(GenericEvaluator):
             return all(v is None or len(v) == 0 for v in args)
         except TypeError:
             # some value is not null and not iterable
+            return False
+
+    def c_valid(self, *args):
+        try:
+            return not any(v is None for v in args)
+        except TypeError:
             return False
 
 def get_code(e, string):
