@@ -99,7 +99,7 @@ fi
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.2.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
-* Mon Jan 12 2011 Adam Litke <agl@us.ibm.com> - 0.2.2-1
+* Wed Jan 12 2011 Adam Litke <agl@us.ibm.com> - 0.2.2-1
 - Upgrade to version 0.2.2
 - Packaging related changes merged upstream so patches dropped
 
