@@ -45,6 +45,11 @@ class Collector:
         """
         Used to query the names of mandatory statistics fields that this
         Collector will return.
+        A failure to collect mandatory fields must break the current cycle
+        as the policy expects all fields to return.
+        Collector authors should be aware that new collectors must guarantee
+        the fields to be reported otherwise they must use optional fields.
+        @see #getOptionalFields
         Override this method when creating new collectors.
         Return: A set containing the names of all statistics returned by collect()
         """
