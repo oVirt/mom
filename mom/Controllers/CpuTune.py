@@ -26,16 +26,22 @@ class CpuTune:
         self.hypervisor_iface = properties['hypervisor_iface']
         self.logger = logging.getLogger('mom.Controllers.Cputune')
 
+    def get_changed_val(self, val, prev_val):
+        return val if val != prev_val and val is not None else prev_val
+
     def process_guest(self, guest):
         quota = guest.GetControl('vcpu_quota')
         period = guest.GetControl('vcpu_period')
-        if quota is not None and period is not None:
+        prev_quota = guest.vcpu_quota
+        prev_period = guest.vcpu_period
+        quota = self.get_changed_val(quota, prev_quota)
+        period = self.get_changed_val(period, prev_period)
+        # is something changed, tune the cpu parameters
+        if quota != prev_quota or period != prev_period:
             quota = int(quota)
             period = int(period)
             uuid = guest.Prop('uuid')
             name = guest.Prop('name')
-            prev_quota = guest.vcpu_quota
-            prev_period = guest.vcpu_period
             self.logger.info("CpuTune guest:%s from quota:%s period:%s to quota:%s period:%s", \
                     name, prev_quota, prev_period, quota, period)
             self.hypervisor_iface.setVmCpuTune(uuid, quota, period)
