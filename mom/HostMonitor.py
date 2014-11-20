@@ -20,7 +20,6 @@ import time
 import logging
 from mom.Monitor import Monitor
 from mom.Collectors import Collector
-from mom.Plotter import Plotter
 
 class HostMonitor(Monitor, threading.Thread):
     """
