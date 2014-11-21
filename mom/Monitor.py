@@ -22,7 +22,7 @@ from mom.Collectors import Collector
 from mom.Entity import Entity
 from mom.Plotter import Plotter
 
-class Monitor:
+class Monitor(object):
     """
     The Monitor class represents an entity, about which, data is collected and
     reported.  Each monitor has a dictionary of properties which are relatively
@@ -49,6 +49,10 @@ class Monitor:
 
         self.ready = None
         self._terminate = False
+
+    @property
+    def valid_fields(self):
+        return self.fields.union(self.optional_fields)
 
     def collect(self):
         """

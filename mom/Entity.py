@@ -57,7 +57,10 @@ class Entity:
         # from within rules scripts.
         if len(self.statistics) > 0:
             for stat in self.statistics[-1].keys():
-                setattr(self, stat, self.statistics[-1][stat])
+                if stat in self.monitor.valid_fields:
+                    setattr(self, stat, self.statistics[-1][stat])
+                else:
+                    self.monitor.logger.debug("Field '%s' not known. Ignoring." % stat)
 
     def _disp(self, name=''):
         """
@@ -85,13 +88,16 @@ class Entity:
         """
         return self.properties[name]
 
-    def Stat(self, name):
+    def Stat(self, name, default=None):
         """
         Get the most-recently recorded value of a statistic
         Returns None if no statistics are available
         """
+        if name not in self.monitor.valid_fields:
+            raise KeyError("Field '%s' is not declared in any collector." % name)
+
         if len(self.statistics) > 0:
-            return self.statistics[-1][name]
+            return self.statistics[-1].get(name, default)
         else:
             return None
 
@@ -99,12 +105,21 @@ class Entity:
         """
         Calculate the average value of a statistic using all recent values.
         """
+        if name not in self.monitor.valid_fields:
+            raise KeyError("Field '%s' is not declared in any collector." % name)
+
         if (len(self.statistics) == 0):
             raise EntityError("Statistic '%s' not available" % name)
+
         total = 0
-        for row in self.statistics:
+        nonEmptyStats = [x for x in self.statistics \
+                         if x.get(name, None) is not None]
+        for row in nonEmptyStats:
             total = total + row[name]
-        return float(total / len(self.statistics))
+        if (len(nonEmptyStats) == 0):
+            return float(0)
+        else:
+            return float(total / len(nonEmptyStats))
 
     def SetVar(self, name, val):
         """

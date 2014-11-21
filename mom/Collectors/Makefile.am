@@ -25,6 +25,7 @@ mom_PYTHON = \
 	GuestBalloon.py \
 	GuestCpuTune.py \
 	GuestMemory.py \
+	GuestMemoryOptional.py \
 	GuestNetworkDaemon.py \
 	GuestQemuAgent.py \
 	GuestQemuProc.py \
