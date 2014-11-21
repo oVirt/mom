@@ -24,20 +24,24 @@ class MOM:
         # Start threads
         self.logger.info("MOM starting")
         self.config.set('__int__', 'running', '1')
-        host_monitor = HostMonitor(self.config)
-        hypervisor_iface = self.get_hypervisor_interface()
-        if not hypervisor_iface:
-            self.shutdown()
-        guest_manager = GuestManager(self.config, hypervisor_iface)
-        policy_engine = PolicyEngine(self.config, hypervisor_iface, host_monitor, \
-                                     guest_manager)
+        try:
+            host_monitor = HostMonitor(self.config)
+            hypervisor_iface = self.get_hypervisor_interface()
+            if not hypervisor_iface:
+                self.shutdown()
+            guest_manager = GuestManager(self.config, hypervisor_iface)
+            policy_engine = PolicyEngine(self.config, hypervisor_iface,
+                                         host_monitor, guest_manager)
 
-        threads = { 'host_monitor': host_monitor,
-                         'guest_manager': guest_manager,
-                         'policy_engine': policy_engine }
-        momFuncs = MOMFuncs(self.config, threads)
-        self._setupAPI(momFuncs)
-        rpc_server = RPCServer(self.config, momFuncs)
+            threads = {'host_monitor': host_monitor,
+                       'guest_manager': guest_manager,
+                       'policy_engine': policy_engine}
+            momFuncs = MOMFuncs(self.config, threads)
+            self._setupAPI(momFuncs)
+            rpc_server = RPCServer(self.config, momFuncs)
+        except Exception as e:
+            self.log.error("Failed to initialize MOM threads", exc_info=True)
+            return
 
         interval = self.config.getint('main', 'main-loop-interval')
         while self.config.getint('__int__', 'running') == 1:

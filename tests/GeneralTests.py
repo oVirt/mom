@@ -30,7 +30,7 @@ def start_mom(config=None):
     if not config:
         config = ConfigParser.SafeConfigParser()
         config.add_section('logging')
-        config.set('logging', 'verbosity', 'critical')
+        config.set('logging', 'verbosity', 'error')
 
     mom_instance = mom.MOM("", config)
     t = threading.Thread(target=mom_instance.run)
