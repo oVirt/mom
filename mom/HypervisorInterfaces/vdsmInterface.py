@@ -220,8 +220,11 @@ class vdsmInterface(HypervisorInterface):
 
 class vdsmException(Exception):
 
-    def __init__(self, msg, logger):
-        self.msg = msg
+    def __init__(self, response, logger):
+        try:
+            self.msg = response['status'].get('message', response)
+        except (AttributeError, KeyError):
+            self.msg = response
         self.logger = logger
 
     def handle_exception(self):
