@@ -1,5 +1,6 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+%{!?with_check: %global with_check 0}
 
 %global		package_version @PACKAGE_VERSION@
 %global		package_name @PACKAGE_NAME@
@@ -13,7 +14,7 @@ Group:		Applications/System
 License:	GPLv2
 URL:		http://www.ovirt.org
 Source:		 %{package_name}-%{package_version}.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release} 
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}
 BuildArch:	noarch
 BuildRequires:	python-devel
 BuildRequires:	python-nose
@@ -63,7 +64,9 @@ install -d -m 0755 "%{buildroot}/%{_sysconfdir}"
 install -m 0644 doc/mom-balloon+ksm.conf "%{buildroot}/%{_sysconfdir}/momd.conf"
 
 %check
+%if 0%{with_check}
 make check %{?_smp_mflags}
+%endif
 
 %post
 /sbin/chkconfig --add momd
