@@ -42,7 +42,48 @@ class GuestManager(threading.Thread):
         self.guests = {}
         self.guests_sem = threading.Semaphore()
 
-    def spawn_guest_monitors(self, domain_list):
+    def interrogate(self):
+        """
+        Interrogate all active GuestMonitors
+        Return: A dictionary of Entities, indexed by guest id
+        """
+        ret = {}
+        self.guests_sem.acquire()
+        for id, guest in self.guests.items():
+            entity = guest.monitor.interrogate()
+            if entity is not None:
+                ret[id] = entity
+        self.guests_sem.release()
+        return ret
+
+    def rpc_get_active_guests(self):
+        ret = []
+        self.guests_sem.acquire()
+        for id, guest in self.guests.items():
+            if guest.monitor.isReady():
+                name = guest.monitor.getGuestName()
+                if name is not None:
+                    ret.append(name)
+        self.guests_sem.release()
+        return ret
+
+    def run(self):
+        try:
+            self.logger.info("Guest Manager starting");
+            interval = self.config.getint('main', 'guest-manager-interval')
+            while self.config.getint('__int__', 'running') == 1:
+                domain_list = self.hypervisor_iface.getVmList()
+                if domain_list is not None:
+                    self._spawn_guest_monitors(domain_list)
+                    self._check_guest_monitors(domain_list)
+                time.sleep(interval)
+            self._wait_for_guest_monitors()
+        except Exception as e:
+            self.logger.error("Guest Manager crashed", exc_info=True)
+        else:
+            self.logger.info("Guest Manager ending")
+
+    def _spawn_guest_monitors(self, domain_list):
         """
         Get the list of running domains and spawn GuestMonitors for any guests
         we are not already tracking.  The GuestMonitor constructor might block
@@ -65,7 +106,7 @@ class GuestManager(threading.Thread):
                 self._register_guest(id, GuestData(guest, thread))
                 self.guests_sem.release()
 
-    def wait_for_guest_monitors(self):
+    def _wait_for_guest_monitors(self):
         """
         Wait for GuestMonitors to exit
         """
@@ -82,9 +123,9 @@ class GuestManager(threading.Thread):
             else:
                 break
 
-    def check_threads(self, domain_list):
+    def _check_guest_monitors(self, domain_list):
         """
-        Check for stale and/or deceased threads and remove them.
+        Check for stale and/or deceased guest monitors and remove them.
         """
         self.guests_sem.acquire()
         for id, guest in self.guests.items():
@@ -98,47 +139,6 @@ class GuestManager(threading.Thread):
             elif id not in domain_list:
                 self._unregister_guest(id)
         self.guests_sem.release()
-
-    def interrogate(self):
-        """
-        Interrogate all active GuestMonitors
-        Return: A dictionary of Entities, indexed by guest id
-        """
-        ret = {}
-        self.guests_sem.acquire()
-        for id, guest in self.guests.items():
-            entity = guest.monitor.interrogate()
-            if entity is not None:
-                ret[id] = entity
-        self.guests_sem.release()
-        return ret
-
-    def run(self):
-        try:
-            self.logger.info("Guest Manager starting");
-            interval = self.config.getint('main', 'guest-manager-interval')
-            while self.config.getint('__int__', 'running') == 1:
-                domain_list = self.hypervisor_iface.getVmList()
-                if domain_list is not None:
-                    self.spawn_guest_monitors(domain_list)
-                    self.check_threads(domain_list)
-                time.sleep(interval)
-            self.wait_for_guest_monitors()
-        except Exception as e:
-            self.logger.error("Guest Manager crashed", exc_info=True)
-        else:
-            self.logger.info("Guest Manager ending")
-
-    def rpc_get_active_guests(self):
-        ret = []
-        self.guests_sem.acquire()
-        for id, guest in self.guests.items():
-            if guest.monitor.isReady():
-                name = guest.monitor.getGuestName()
-                if name is not None:
-                    ret.append(name)
-        self.guests_sem.release()
-        return ret
 
     def _register_guest(self, uuid, guest):
         if uuid not in self.guests:
