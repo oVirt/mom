@@ -40,7 +40,7 @@ class MOM:
             self._setupAPI(momFuncs)
             rpc_server = RPCServer(self.config, momFuncs)
         except Exception as e:
-            self.log.error("Failed to initialize MOM threads", exc_info=True)
+            self.logger.exception("Failed to initialize MOM threads")
             return
 
         interval = self.config.getint('main', 'main-loop-interval')
