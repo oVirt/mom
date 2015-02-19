@@ -27,6 +27,14 @@ from mom.GuestMonitor import GuestMonitorThread
 GuestData = namedtuple('GuestData', ['monitor', 'thread'])
 
 
+def is_running(guest):
+    # in this the guest manager must manage the guest
+    # monitors, so they are always 'running'
+    if guest.thread is None:
+        return True
+    return guest.thread.is_alive()
+
+
 class GuestManager(threading.Thread):
     """
     The GuestManager thread maintains a list of currently active guests on the
@@ -41,6 +49,8 @@ class GuestManager(threading.Thread):
         self.logger = logging.getLogger('mom.GuestManager')
         self.guests = {}
         self.guests_sem = threading.Semaphore()
+        self._threaded = config.getboolean('main',
+                                           'guest-manager-multi-thread')
 
     def interrogate(self):
         """
@@ -69,15 +79,22 @@ class GuestManager(threading.Thread):
 
     def run(self):
         try:
-            self.logger.info("Guest Manager starting");
+            self.logger.info("Guest Manager starting: %s",
+                "multi-thread" if self._threaded else "single-thread");
             interval = self.config.getint('main', 'guest-manager-interval')
             while self.config.getint('__int__', 'running') == 1:
                 domain_list = self.hypervisor_iface.getVmList()
                 if domain_list is not None:
                     self._spawn_guest_monitors(domain_list)
                     self._check_guest_monitors(domain_list)
+
+                if not self._threaded:
+                    self._collect_from_guest_monitors()
+
                 time.sleep(interval)
-            self._wait_for_guest_monitors()
+
+            if self._threaded:
+                self._wait_for_guest_monitors()
         except Exception as e:
             self.logger.error("Guest Manager crashed", exc_info=True)
         else:
@@ -98,13 +115,21 @@ class GuestManager(threading.Thread):
                 self.logger.error("Failed to get guest:%s information -- monitor "\
                     "can't start", id)
                 continue
-            guest = GuestMonitor(self.config, info, self.hypervisor_iface)
+
+            guest = self._create_monitor(info)
+
+            if is_running(guest):
+                with self.guests_sem:
+                    self._register_guest(id, guest)
+
+    def _create_monitor(self, info):
+        guest = GuestMonitor(self.config, info, self.hypervisor_iface)
+        if self._threaded:
             thread = GuestMonitorThread(info, guest)
             thread.start()
-            if thread.is_alive():
-                self.guests_sem.acquire()
-                self._register_guest(id, GuestData(guest, thread))
-                self.guests_sem.release()
+        else:
+            thread = None
+        return GuestData(guest, thread)
 
     def _wait_for_guest_monitors(self):
         """
@@ -131,14 +156,22 @@ class GuestManager(threading.Thread):
         for id, guest in self.guests.items():
             if guest.thread is None:
                 # no thread to babysit
-                continue
+                # but maybe a Monitor to shutdown
+                if id not in domain_list:
+                    self._unregister_guest(id)
             # Check if the thread has died
-            if not guest.thread.is_alive():
+            elif not guest.thread.is_alive():
                 del self.guests[id]
             # Check if the domain has ended according to hypervisor interface
             elif id not in domain_list:
                 self._unregister_guest(id)
         self.guests_sem.release()
+
+    def _collect_from_guest_monitors(self):
+        with self.guests_sem:
+            for uuid, guest in self.guests.items():
+                if guest.monitor.should_run():
+                    guest.monitor.collect()
 
     def _register_guest(self, uuid, guest):
         if uuid not in self.guests:

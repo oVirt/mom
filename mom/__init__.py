@@ -93,6 +93,7 @@ class MOM:
         self.config.set('main', 'rpc-port', '-1')
         self.config.set('main', 'policy', '')
         self.config.set('main', 'policy-dir', '')
+        self.config.set('main', 'guest-manager-multi-thread', 'true')
         self.config.add_section('logging')
         self.config.set('logging', 'log', 'stdio')
         self.config.set('logging', 'verbosity', 'info')
