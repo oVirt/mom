@@ -20,14 +20,18 @@ class KSM:
     """
     Simple controller to tune KSM paramaters.  Output triggers are:
         - ksm_run - Change the state of the KSM kernel daemon:
-                        0 - Stop, 1 - Run
+                        0 - Stop, 1 - Run, 2 - unmerge shared pages
         - ksm_pages_to_scan - Set the number of pages to be scanned per work unit
         - ksm_sleep_millisecs - Set the time to sleep between scans
+        - ksm_merge_across_nodes - Toggle (0/1), default 1,
+                        merge across all nodes = 1, merge inside each NUMA node = 0
     """
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']
         self.logger = logging.getLogger('mom.Controllers.KSM')
-        self.cur = { 'run': '0', 'pages_to_scan': '0', 'sleep_millisecs': '0' }
+        self.cur = {'run': '0', 'pages_to_scan': '0', 'sleep_millisecs': '0', \
+                    'merge_across_nodes': '8'}
+        self.logger.debug("KSM policy initialized")
 
     def write_value(self, fname, value):
         try:

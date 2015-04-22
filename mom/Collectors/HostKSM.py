@@ -32,11 +32,13 @@ class HostKSM(Collector):
         ksm_full_scans - The number of times all mergeable memory areas have been scanned
         ksm_shareable - Estimated amount of host memory that is eligible for sharing
         ksmd_cpu_usage - The cpu usage of kernel thread ksmd during the monitor interval
+        ksm_share_across_nodes - Toggle, policy_string, Share memory pages across all
+                                 NUMA nodes = 1, default = 1
     """
 
     sysfs_keys = [ 'full_scans', 'pages_sharing', 'pages_unshared', 'run',
                    'pages_shared', 'pages_to_scan', 'pages_volatile',
-                   'sleep_millisecs' ]
+                   'sleep_millisecs', 'merge_across_nodes']
 
     def __init__(self, properties):
         self.open_files()
