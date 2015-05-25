@@ -190,7 +190,5 @@ class Monitor(object):
         """
         Helper to determine if the Monitor should continue to run.
         """
-        if self.config.getint('__int__', 'running') == 1 and not self._terminate:
-            return True
-        else:
-            return False
+        return (self.config.getint('__int__', 'running') == 1 and
+                not self._terminate)
