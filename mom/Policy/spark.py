@@ -67,6 +67,7 @@ class GenericScanner:
 
 	def tokenize(self, s):
 		pos = 0
+		line = 1
 		n = len(s)
 		while pos < n:
 			m = self.re.match(s, pos)
@@ -76,7 +77,9 @@ class GenericScanner:
 			groups = m.groups()
 			for i in range(len(groups)):
 				if groups[i] and self.index2func.has_key(i):
-					self.index2func[i](groups[i])
+					add_lines = self.index2func[i](groups[i], line)
+					if add_lines:
+						line += add_lines
 			pos = m.end()
 
 	def t_default(self, s):

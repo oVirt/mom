@@ -21,8 +21,9 @@ from spark import GenericScanner, GenericParser
 class PolicyError(Exception): pass
 
 class Token(object):
-    def __init__(self, kind, value=None):
+    def __init__(self, kind, value=None, line=None):
         self.kind = kind
+        self.line = line
         if value == None:
             self.value = kind
         else:
@@ -35,9 +36,9 @@ class Token(object):
         return '[%s %s]' % (self.kind, self.value)
 
 class NumericToken(Token):
-    def __init__(self, type, value):
+    def __init__(self, type, value, line=None):
         self.type = type
-        Token.__init__(self, 'number', value)
+        Token.__init__(self, 'number', value, line)
 
 class Scanner(GenericScanner):
     def __init__(self, operators=''):
@@ -62,53 +63,53 @@ class Scanner(GenericScanner):
         GenericScanner.tokenize(self, input)
         return self.rv
 
-    def t_whitespace(self, s):
+    def t_whitespace(self, s, line):
         r' \s+ '
-        pass
+        return s.count("\n")
 
-    def t_pound_comment(self, s):
+    def t_pound_comment(self, s, line):
         r' \#.*?\n '
         pass
 
-    def t_symbol(self, s):
+    def t_symbol(self, s, line):
         r' [A-Za-z_][A-Za-z0-9_\-\.]* '
-        self.rv.append(Token('symbol', s))
+        self.rv.append(Token('symbol', s, line))
 
-    def t_string(self, s):
+    def t_string(self, s, line):
         r' "([^"\\]|\\.)*" '
-        self.rv.append(Token('string', s))
+        self.rv.append(Token('string', s, line))
 
-    def t_single_quote_string(self, s):
+    def t_single_quote_string(self, s, line):
         r" '([^'\\]|\\.)*' "
-        self.rv.append(Token('string', s))
+        self.rv.append(Token('string', s, line))
 
-    def t_float(self, s):
+    def t_float(self, s, line):
         r' -?(0|([1-9][0-9]*))*(\.[0-9]+)([Ee][+-]?[0-9]+)? '
-        self.rv.append(NumericToken('float', s))
+        self.rv.append(NumericToken('float', s, line))
 
-    def t_integer(self, s):
+    def t_integer(self, s, line):
         r' -?(0(?![0-9Xx])|[1-9][0-9]*)(?![0-9eE]) '
-        self.rv.append(NumericToken('integer', s))
+        self.rv.append(NumericToken('integer', s, line))
 
-    def t_integer_with_exponent(self, s):
+    def t_integer_with_exponent(self, s, line):
         r' -?(0(?![0-9Xx])|[1-9][0-9]*)[Ee][+-]?[0-9]+ '
         # Python only recognizes scientific notation on float types
-        self.rv.append(NumericToken('float', s))
+        self.rv.append(NumericToken('float', s, line))
 
-    def t_hex(self, s):
+    def t_hex(self, s, line):
         r' 0[Xx][0-9A-Fa-f]+ '
-        self.rv.append(NumericToken('hex', s))
+        self.rv.append(NumericToken('hex', s, line))
 
-    def t_octal(self, s):
+    def t_octal(self, s, line):
         r' 0[0-9]+ '
-        self.rv.append(NumericToken('octal', s))
+        self.rv.append(NumericToken('octal', s, line))
 
-    def t_builtin_op(self, s):
+    def t_builtin_op(self, s, line):
         r' [\(\){}\[\]] '
-        self.rv.append(Token(s))
+        self.rv.append(Token(s, line=line))
 
-    def t_user_op(self, s):
-        self.rv.append(Token('operator', s))
+    def t_user_op(self, s, line):
+        self.rv.append(Token('operator', s, line))
 
 class Parser(GenericParser):
     def __init__(self, start='value'):
@@ -211,7 +212,7 @@ class GenericEvaluator(object):
     # is a list of zero or more tuples of symbol value
     # (symbol number ...)
     # is a list containing a symbol and zero or more numbers
-    def _dispatch(self, fn, args):
+    def _dispatch(self, fn, args, line):
         doc = fn.__doc__
         if doc == None:
             args = map(self.eval, args)
@@ -219,23 +220,32 @@ class GenericEvaluator(object):
             types = self.parse_doc(doc)
 
             # check if we can check arity - it is not possible when variable
-            # number of arguments is expected
+            # number of arguments is expected so instead check for the
+            # minimal number of required arguments
             if len(types) != len(args) and (types[-1].value != '...'
                                             or types[-1].kind != 'operator'):
-                raise PolicyError('arity mismatch in doc parsing')
+                raise PolicyError("arity mismatch in doc parsing of '%s'"
+                                  " on line %d" % (fn.__name__, line))
+            elif types[-1].value == '...' and len(types) > len(args) + 1:
+                raise PolicyError("not enough arguments for '%s'"
+                                  " on line %d" % (fn.__name__, line))
 
             i = 0
             while types and i < len(args):
                 # if we are repeating (...) element types, leave type intact
                 if types[0].value != '...' or types[0].kind != 'operator':
                     type = types.pop(0)
+                # also get the type when it is the first ... or operator
+                elif i == 0:
+                    type = types[0]
 
                 if type.value == 'code':
                     i += 1
                     continue
                 elif type.value == 'symbol':
                     if not isinstance(args[i], Token) or args[i].kind != 'symbol':
-                        raise PolicyError('malformed expression')
+                        raise PolicyError('malformed expression'
+                                          ' on line %d' % line)
                     args[i] = args[i].value
                 else:
                     args[i] = self.eval(args[i])
@@ -255,9 +265,10 @@ class GenericEvaluator(object):
                 if code.value == "nil":
                     return None
                 else:
-                    return self.eval_symbol(code.value)
+                    return self.eval_symbol(code.value, code.line)
             else:
-                raise PolicyError('Unexpected token type "%s"' % code.kind)
+                raise PolicyError('Unexpected token type "%s" on line %d' %
+                                  (code.kind, code.line))
 
         node = code[0]
         if not isinstance(node, Token):
@@ -269,18 +280,20 @@ class GenericEvaluator(object):
         elif node.kind == 'operator':
             name = self.operator_map[node.value]
         else:
-            raise PolicyError('Unexpected token type in arg 1 "%s"' % node.kind)
+            raise PolicyError('Unexpected token type in arg 1 "%s"'
+                              ' on line %d' % (node.kind, node.line))
 
-        func = self.stack.get(name, allow_undefined=True)
+        func = self.stack.get(name, line=node.line, allow_undefined=True)
         if func is not None:
             args = map(self.eval, code[1:])
             return func(*args)
         elif hasattr(self, 'c_%s' % name):
-            return self._dispatch(getattr(self, 'c_%s' % name), code[1:])
+            return self._dispatch(getattr(self, 'c_%s' % name), code[1:], line=node.line)
         elif hasattr(self, "default"):
-            return self.default(name, code[1:])
+            return self.default(name, code[1:], line=node.line)
         else:
-            raise PolicyError('Unknown function "%s" with no default handler' % name)
+            raise PolicyError('Unknown function "%s" with no default handler'
+                              ' on line %d' % (name, node.line))
 
 class VariableStack(object):
     def __init__(self):
@@ -292,7 +305,7 @@ class VariableStack(object):
     def leave_scope(self):
         self.stack = self.stack[1:]
 
-    def get(self, name, allow_undefined=False):
+    def get(self, name, allow_undefined=False, line=None):
         # Split the name on '.' to handle object references
         parts = name.split('.')
         obj = parts[0]
@@ -305,7 +318,7 @@ class VariableStack(object):
                     return scope[obj]
         if allow_undefined:
             return None
-        raise PolicyError("undefined symbol %s" % name)
+        raise PolicyError("undefined symbol %s on line %d" % (name, line))
 
     def set(self, name, value, alloc=False):
         if alloc:
@@ -342,8 +355,8 @@ class Evaluator(GenericEvaluator):
             if not re.match("__", i):
                 self.stack.set(i, getattr(ExternalFunctions, i), True)
 
-    def eval_symbol(self, name):
-        return self.stack.get(name)
+    def eval_symbol(self, name, line):
+        return self.stack.get(name, line=line)
 
     def eval_number(self, token):
         if token.type == 'float':
@@ -351,15 +364,17 @@ class Evaluator(GenericEvaluator):
         elif token.type in ('integer', 'hex', 'octal'):
             return int(token.value, 0)
         else:
-            raise PolicyError("Unsupported numeric type for token: %s" % token)
+            raise PolicyError("Unsupported numeric type for token"
+                              " '%s' on line %d" % (token, token.line))
 
-    def default(self, name, args):
+    def default(self, name, args, line):
         if name == 'eval':
             return map(self.eval, args)[-1]
 
         params, code = self.funcs[name]
         if len(params) != len(args):
-            raise PolicyError('Function "%s" invoked with incorrect arity' % name)
+            raise PolicyError('Function "%s" invoked with incorrect arity'
+                              ' on line %d' % (name, line))
 
         scope = []
         for i in range(len(params)):

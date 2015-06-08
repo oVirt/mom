@@ -398,5 +398,48 @@ class TestEval(unittest.TestCase):
         """
         self.verify(pol, [None, False, True])
 
+    def test_not_enough_arguments(self):
+        pol = """
+        (and)
+        """
+        with self.assertRaises(Parser.PolicyError) as result:
+            self.verify(pol, [None])
+
+        self.assertEqual(result.exception.args[0],
+                         "not enough arguments for 'c_and' on line 2")
+
+    def test_bad_arity(self):
+        pol = """
+        (not)
+        """
+        with self.assertRaises(Parser.PolicyError) as result:
+            self.verify(pol, [None])
+
+        self.assertEqual(result.exception.args[0],
+                         "arity mismatch in doc parsing of 'c_not' on line 2")
+
+    def test_bad_syntax_number(self):
+        pol = """
+        156
+        125f56
+        """
+        with self.assertRaises(Parser.PolicyError) as result:
+            self.verify(pol, [156, None])
+
+        self.assertEqual(result.exception.args[0],
+                         "undefined symbol f56 on line 3")
+
+    def test_bad_arity_def(self):
+        pol = """
+        (def test (x y) {
+        })
+        (test 1)
+        """
+        with self.assertRaises(Parser.PolicyError) as result:
+            self.verify(pol, [None])
+
+        self.assertEqual(result.exception.args[0],
+                         "Function \"test\" invoked with incorrect arity on line 4")
+
 if __name__ == '__main__':
     unittest.main()
