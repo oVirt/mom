@@ -429,63 +429,81 @@ class Evaluator(GenericEvaluator):
             return self.eval(no)
 
     def c_add(self, x, y):
+        'value value'
         return x + y
 
     def c_sub(self, x, y):
+        'value value'
         return x - y
 
     def c_mul(self, x, y):
+        'value value'
         return x * y
 
     def c_div(self, x, y):
+        'value value'
         return x / y
 
     def c_lt(self, x, y):
+        'value value'
         return x < y
 
     def c_gt(self, x, y):
+        'value value'
         return x > y
 
     def c_lte(self, x, y):
+        'value value'
         return x <= y
 
     def c_gte(self, x, y):
+        'value value'
         return x >= y
 
     def c_eq(self, x, y):
+        'value value'
         return x == y
 
     def c_neq(self, x, y):
+        'value value'
         return x != y
 
     def c_shl(self, x, y):
+        'value value'
         return x << y
 
     def c_shr(self, x, y):
+        'value value'
         return x >> y
 
     def c_and(self, *args):
+        'value ...'
         for arg in args:
             if not arg:
                 return arg
         return args[-1]
 
     def c_or(self, *args):
+        'value ...'
         for arg in args:
             if arg:
                 return arg
         return args[-1]
 
     def c_not(self, x):
+        'value'
         return not x
 
     def c_min(self, *args):
+        'value ...'
         return min(args)
 
     def c_max(self, *args):
+        'value ...'
         return max(args)
 
     def c_null(self, *args):
+        '...'
         try:
             return all(v is None or len(v) == 0 for v in args)
         except TypeError:
@@ -493,6 +511,7 @@ class Evaluator(GenericEvaluator):
             return False
 
     def c_valid(self, *args):
+        '...'
         try:
             return not any(v is None for v in args)
         except TypeError:
