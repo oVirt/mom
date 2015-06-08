@@ -464,11 +464,17 @@ class Evaluator(GenericEvaluator):
     def c_shr(self, x, y):
         return x >> y
 
-    def c_and(self, x, y):
-        return x and y
+    def c_and(self, *args):
+        for arg in args:
+            if not arg:
+                return arg
+        return args[-1]
 
-    def c_or(self, x, y):
-        return x or y
+    def c_or(self, *args):
+        for arg in args:
+            if arg:
+                return arg
+        return args[-1]
 
     def c_not(self, x):
         return not x
