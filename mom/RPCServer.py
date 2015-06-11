@@ -15,11 +15,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import threading
-import ConfigParser
-import time
-import logging
+import os.path
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
+from unixrpc import UnixXmlRpcServer
 
 from LogUtils import *
 
@@ -47,14 +46,22 @@ class RPCServer(threading.Thread):
 
     def create_server(self):
         try:
+            unix_port = None
             port = self.config.getint('main', 'rpc-port')
         except ValueError:
-            self.logger.error("Unable to parse 'rpc-port' configuration setting")
+            port = None
+            unix_port = self.config.get('main', 'rpc-port')
+            self.logger.info("Using unix socket "+unix_port)
+
+        if unix_port is None and (port is None or port < 0):
             return None
-        if port is None or port < 0:
-            return None
-        self.server = SimpleXMLRPCServer(("localhost", port),
+
+        if unix_port:
+            self.server = UnixXmlRpcServer(unix_port)
+        else:
+            self.server = SimpleXMLRPCServer(("localhost", port),
                             requestHandler=RequestHandler, logRequests=0)
+
         self.server.register_introspection_functions()
         self.server.register_instance(self.momFuncs)
 

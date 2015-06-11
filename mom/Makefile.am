@@ -33,6 +33,7 @@ mom_PYTHON = \
 	Plotter.py \
 	PolicyEngine.py \
 	RPCServer.py \
+	unixrpc.py \
 	__init__.py \
 	$(NULL)
 
