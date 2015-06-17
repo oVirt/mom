@@ -254,7 +254,7 @@ class XmlRpcVdsmInterface(HypervisorInterface):
             e.handle_exception()
 
     def handle_connection_error(self, e):
-        self.logger.error("Cannot connect to VDSM!", e)
+        self.logger.error("Cannot connect to VDSM! {0}".format(e))
 
 
 class vdsmException(Exception):
