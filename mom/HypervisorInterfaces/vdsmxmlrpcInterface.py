@@ -19,6 +19,7 @@ import traceback
 import time
 import functools
 import socket
+import threading
 
 from vdsm import vdscli
 from mom.HypervisorInterfaces.HypervisorInterface import HypervisorInterface, \
@@ -30,6 +31,7 @@ CACHE_EXPIRATION = 5
 # Cache return values with expiration
 def memoize(expiration):
     def decorator(obj):
+        lock = threading.Lock()
         cache = obj._cache = {}
         timestamps = obj._timestamps = {}
 
@@ -40,10 +42,12 @@ def memoize(expiration):
 
             # use absolute value of the time difference to avoid issues
             # with time changing to the past
-            if key not in cache or abs(now - timestamps[key]) > expiration:
-                cache[key] = obj(*args, **kwargs)
-                timestamps[key] = now
-            return cache[key]
+
+            with lock:
+                if key not in cache or abs(now - timestamps[key]) > expiration:
+                    cache[key] = obj(*args, **kwargs)
+                    timestamps[key] = now
+                return cache[key]
         return memoizer
     return decorator
 
