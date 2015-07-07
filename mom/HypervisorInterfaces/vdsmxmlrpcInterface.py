@@ -145,7 +145,7 @@ class XmlRpcVdsmInterface(HypervisorInterface):
 
     def setVmBalloonTarget(self, uuid, target):
         try:
-            response = self.vdsm_api.vmSetBalloonTarget(uuid, target)
+            response = self.vdsm_api.setBalloonTarget(uuid, target)
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
