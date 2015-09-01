@@ -120,7 +120,7 @@ class XmlRpcVdsmInterface(HypervisorInterface):
 
         usage = int(vm['memUsage'])
         if usage == 0:
-            msg = "The ovirt-guest-agent is not active"
+            msg = "VM %s - The ovirt-guest-agent is not active" % uuid
             raise HypervisorInterfaceError(msg)
         stats = vm['memoryStats']
         if not stats:

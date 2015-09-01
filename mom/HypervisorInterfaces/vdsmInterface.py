@@ -92,7 +92,7 @@ class vdsmInterface(HypervisorInterface):
             self._check_status(response)
             usage = int(response['statsList'][0]['memUsage'])
             if usage == 0:
-                msg = "The ovirt-guest-agent is not active"
+                msg = "VM %s - The ovirt-guest-agent is not active" % uuid
                 raise HypervisorInterfaceError(msg)
             stats = response['statsList'][0]['memoryStats']
             if not stats:
