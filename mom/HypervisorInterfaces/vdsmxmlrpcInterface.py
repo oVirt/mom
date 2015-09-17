@@ -177,7 +177,7 @@ class XmlRpcVdsmInterface(HypervisorInterface):
         except KeyError as e:
             raise HypervisorInterfaceError("VM %s does not exist" % uuid)
 
-        balloon_info = vm['balloonInfo']
+        balloon_info = vm.get('balloonInfo', {})
         if balloon_info:
             # Make sure the values are numbers, VDSM is using str
             # to avoid xml-rpc issues
