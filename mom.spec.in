@@ -90,6 +90,11 @@ fi
 %{_sbindir}/momd
 %{python_sitelib}/mom/
 
+%if 0%{?fedora} && 0%{?fedora} >= 23
+%dir %{_pkgdocdir}/examples
+%{_pkgdocdir}/examples/*
+%endif
+
 %changelog
 * Sun Jan 19 2014 Kiril Nesenko <knesenko@redhat.com> - 0.3.2
 - Change versioning style
