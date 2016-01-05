@@ -18,6 +18,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}
 BuildArch:	noarch
 BuildRequires:	python-devel
 BuildRequires:	python-nose
+BuildRequires:  python-mock
 
 # MOM makes use of libvirt by way of the python bindings to monitor and
 # interact with virtual machines.

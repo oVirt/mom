@@ -8,7 +8,7 @@ from mom.LogUtils import *
 from mom.HostMonitor import HostMonitor
 from mom.GuestManager import GuestManager
 from mom.PolicyEngine import PolicyEngine
-from mom.RPCServer import RPCServer
+from mom.RPCServer import RPCServer, enable_i8
 from mom.MOMFuncs import MOMFuncs, EXPORTED_ATTRIBUTE
 
 class MOM:

@@ -24,7 +24,8 @@ import os.path
 import shutil
 import ConfigParser
 import mom
-
+import mock
+import xmlrpclib
 
 def start_mom(config=None):
     if not config:
@@ -120,3 +121,44 @@ class ConfigTests(TestCaseBase):
             self.assertTrue('03_baz' not in policies.iterkeys())
         finally:
             shutil.rmtree(policy_dir)
+
+
+class RpcTests(TestCaseBase):
+    def testBigNumbersInStats(self):
+        host_monitor = mock.Mock()
+        host_monitor.interrogate.return_value.statistics = [{
+            "ksm_run": 1,
+            "ksm_pages": 100,
+            "huge_number": 2**31 + 2**10
+        }]
+
+        vm1 = mock.Mock()
+        vm1.properties = {"name": "vm1"}
+        vm1.statistics = [{
+            "free_mem": 25 * 2**30 # 25 TiB (in KiB)
+        }]
+
+        vm2 = mock.Mock()
+        vm2.properties = {"name": "vm2"}
+        vm2.statistics = [{
+            "free_mem": 30 * 2**20 # 30 GiB (in KiB)
+        }]
+
+        guest_manager = mock.Mock()
+        guest_manager.interrogate.return_value.values.return_value = [
+            vm1, vm2
+        ]
+
+        threads = {
+            "host_monitor": host_monitor,
+            "guest_manager": guest_manager
+        }
+
+        funcs = mom.MOMFuncs(None, threads)
+        data = funcs.getStatistics()
+
+        mom.enable_i8()
+        packet = xmlrpclib.dumps((data,))
+        (reply,), func = xmlrpclib.loads(packet)
+
+        self.assertEqual(data, reply)
