@@ -24,6 +24,7 @@ mom_PYTHON = \
 	Collector.py \
 	GuestBalloon.py \
 	GuestCpuTune.py \
+	GuestIoTune.py \
 	GuestMemory.py \
 	GuestMemoryOptional.py \
 	GuestNetworkDaemon.py \

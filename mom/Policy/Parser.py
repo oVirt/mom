@@ -422,10 +422,6 @@ class Evaluator(GenericEvaluator):
     def c_with(self, iterable, iterator, code):
         'symbol symbol code'
 
-        # Iteration is restricted to the list of Guest entities
-        if iterable != 'Guests':
-            raise PolicyError("Unexpected iterable '%s' in with statement" %
-                                iterable)
         list = self.stack.get(iterable)
         result = []
         for item in list:

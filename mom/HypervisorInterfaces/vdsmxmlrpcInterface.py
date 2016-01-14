@@ -244,6 +244,41 @@ class XmlRpcVdsmInterface(HypervisorInterface):
         except vdsmException, e:
             e.handle_exception()
 
+    def getVmIoTunePolicy(self, vmId):
+        try:
+            result = self.vdsm_api.getIoTunePolicy(vmId)
+            self._check_status(result)
+        except socket.error as e:
+            self.handle_connection_error(e)
+            return None
+        except vdsmException, e:
+            e.handle_exception()
+            return None
+
+        return result.get('ioTunePolicy', [])
+
+    def getVmIoTune(self, vmId):
+        try:
+            result = self.vdsm_api.getIoTune(vmId)
+            self._check_status(result)
+        except socket.error as e:
+            self.handle_connection_error(e)
+            return None
+        except vdsmException, e:
+            e.handle_exception()
+            return None
+
+        return result.get('ioTune', [])
+
+    def setVmIoTune(self, vmId, tunables):
+        try:
+            response = self.vdsm_api.setIoTune(vmId, tunables)
+            self._check_status(response)
+        except socket.error as e:
+            self.handle_connection_error(e)
+        except vdsmException, e:
+            e.handle_exception()
+
     def ksmTune(self, tuningParams):
         try:
             response = self.vdsm_api.setKsmTune(tuningParams)
