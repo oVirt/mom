@@ -8,7 +8,7 @@ PIDFile=/var/run/momd.pid
 User=root
 Group=root
 ExecStart=/usr/sbin/momd -c /etc/momd.conf -d --pid-file /var/run/momd.pid
-Timeout=60
+TimeoutSec=60
 Restart=on-abort
 
 [Install]
