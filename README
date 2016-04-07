@@ -38,7 +38,7 @@ made the appropriate changes, execute the following commands to create an RPM:
     rm *.tar.gz
     ./configure
     make dist
-    rpm -ta mom-*.tar.gz
+    rpmbuild -ta mom-*.tar.gz
 
 
 USAGE
