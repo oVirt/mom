@@ -28,7 +28,8 @@ class IoTune:
 
         uuid = guest.Prop('uuid')
         name = guest.Prop('name')
-        self.hypervisor_iface.setVmIoTune(uuid, changedList)
+        if changedList:
+            self.hypervisor_iface.setVmIoTune(uuid, changedList)
 
     def process(self, host, guests):
         for guest in guests:

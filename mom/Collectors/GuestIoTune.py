@@ -64,12 +64,14 @@ class GuestIoTune(Collector):
 
     def collect(self):
         policyList = self.hypervisor_iface.getVmIoTunePolicy(self.uuid)
-        if policyList is None:
+        if not policyList:
             self.stats_error('getVmIoTunePolicy() is not ready')
             return None
 
+        # Ignore IoTune if all values from vdsm are 0 (the sum is 0)
         stateList = self.hypervisor_iface.getVmIoTune(self.uuid)
-        if stateList is None:
+        if (not stateList or
+            all(sum(v['ioTune'].values()) == 0 for v in stateList)):
             self.stats_error('getVmIoTune() is not ready')
             return None
 
