@@ -23,6 +23,7 @@ momdir = $(pkgpythondir)/Collectors
 mom_PYTHON = \
 	Collector.py \
 	GuestBalloon.py \
+	GuestBalloonOptional.py \
 	GuestCpuTune.py \
 	GuestIoTune.py \
 	GuestMemory.py \
