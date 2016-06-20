@@ -26,6 +26,7 @@ mom_PYTHON = \
 	GuestBalloonOptional.py \
 	GuestCpuTune.py \
 	GuestIoTune.py \
+	GuestIoTuneOptional.py \
 	GuestMemory.py \
 	GuestMemoryOptional.py \
 	GuestNetworkDaemon.py \

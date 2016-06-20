@@ -15,6 +15,9 @@ class IoTune:
         ioTune = guest.io_tune
         ioTune_prev = guest.io_tune_current
 
+        if not ioTune or not ioTune_prev:
+            return
+
         changedList = []
         for i in xrange(len(ioTune)):
             tune = ioTune[i].ioTune()
