@@ -25,6 +25,7 @@ mom_PYTHON = \
 	__init__.py \
 	libvirtInterface.py \
 	vdsmInterface.py \
+	vdsmjsonrpcInterface.py \
 	vdsmxmlrpcInterface.py \
 	$(NULL)
 

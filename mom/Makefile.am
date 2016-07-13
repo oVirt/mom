@@ -34,6 +34,7 @@ mom_PYTHON = \
 	PolicyEngine.py \
 	RPCServer.py \
 	unixrpc.py \
+	optional.py \
 	__init__.py \
 	$(NULL)
 
