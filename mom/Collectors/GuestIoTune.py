@@ -68,10 +68,9 @@ class GuestIoTune(Collector):
             self.stats_error('getVmIoTunePolicy() is not ready')
             return None
 
-        # Ignore IoTune if all values from vdsm are 0 (the sum is 0)
+        # Ignore IoTune when the current status list is empty
         stateList = self.hypervisor_iface.getVmIoTune(self.uuid)
-        if (not stateList or
-            all(sum(v['ioTune'].values()) == 0 for v in stateList)):
+        if not stateList:
             self.stats_error('getVmIoTune() is not ready')
             return None
 
