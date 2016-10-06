@@ -26,7 +26,9 @@ mom_PYTHON = \
 	libvirtInterface.py \
 	vdsmInterface.py \
 	vdsmjsonrpcInterface.py \
+	vdsmjsonrpcbulkInterface.py \
 	vdsmxmlrpcInterface.py \
+	vdsmxmlrpcbulkInterface.py \
 	$(NULL)
 
 clean-local: \
