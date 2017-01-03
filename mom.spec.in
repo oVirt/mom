@@ -81,16 +81,10 @@ make check %{?_smp_mflags}
 
 %files
 %config(noreplace) %{_sysconfdir}/momd.conf
-%doc COPYING
-%doc README
 %{_unitdir}/momd.service
 %{_sbindir}/momd
 %{python_sitelib}/mom/
-
-%if 0%{?fedora} && 0%{?fedora} >= 23
-%dir %{_pkgdocdir}/examples
-%{_pkgdocdir}/examples/*
-%endif
+%{_pkgdocdir}/*
 
 %changelog
 * Sun Jan 19 2014 Kiril Nesenko <knesenko@redhat.com> - 0.3.2
