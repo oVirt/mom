@@ -188,7 +188,7 @@ class _QemuGuestAgentSocketClient:
             except socket.error, e:
                 self._sock_close(self.sock)
                 self.sock = None
-                raise ProtocolError(e.errno, e.message)
+                raise ProtocolError(e.errno, e.strerror)
 
             if ret == 0:
                 self._sock_close(self.sock)
@@ -208,7 +208,7 @@ class _QemuGuestAgentSocketClient:
             except socket.error, e:
                 self._sock_close(self.sock)
                 self.sock = None
-                raise ProtocolError(e.errno, e.message)
+                raise ProtocolError(e.errno, e.strerror)
             except socket.timeout:
                 self._sock_close(self.sock)
                 self.sock = None
@@ -239,7 +239,7 @@ class _QemuGuestAgentSocketClient:
             except socket.error, e:
                 self._sock_close(self.sock)
                 self.sock = None
-                raise ProtocolError(e.errno, e.message)
+                raise ProtocolError(e.errno, e.strerror)
             if ch == '':
                 print "Connection closed"
                 return None

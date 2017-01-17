@@ -15,8 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 class EntityError(Exception):
-    def __init__(self, message):
-        self.message = message
+    pass
 
 class Entity:
     """

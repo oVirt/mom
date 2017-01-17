@@ -54,7 +54,7 @@ class libvirtInterface(HypervisorInterface):
             self.conn = libvirt.open(self.uri)
         except libvirt.libvirtError, e:
             self.logger.error("libvirtInterface: error setting up " \
-                    "connection: %s", e.message)
+                    "connection: %s", e)
 
     def _reconnect(self):
         try:
@@ -65,7 +65,7 @@ class libvirtInterface(HypervisorInterface):
             self._connect()
         except libvirt.libvirtError, e:
             self.logger.error("libvirtInterface: Exception while " \
-                    "reconnecting: %s", e.message);
+                    "reconnecting: %s", e);
 
 
     def _getDomainFromID(self, dom_id):
@@ -300,7 +300,7 @@ class libvirtInterface(HypervisorInterface):
             dom.setSchedulerParameters({ 'vcpu_quota': quota, 'vcpu_period': period})
         except libvirt.libvirtError, e:
             self.logger.error("libvirtInterface: Exception while " \
-                    "setSchedulerParameters: %s", e.message);
+                    "setSchedulerParameters: %s", e);
 
     def ksmTune(self, tuningParams):
         def write_value(fname, value):
