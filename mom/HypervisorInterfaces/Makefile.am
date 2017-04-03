@@ -24,6 +24,7 @@ mom_PYTHON = \
 	HypervisorInterface.py \
 	__init__.py \
 	libvirtInterface.py \
+	vdsmCommon.py \
 	vdsmInterface.py \
 	vdsmjsonrpcInterface.py \
 	vdsmjsonrpcbulkInterface.py \

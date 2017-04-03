@@ -22,7 +22,7 @@ from vdsm import jsonrpcvdscli
 from mom.HypervisorInterfaces.HypervisorInterface import HypervisorInterface, \
     HypervisorInterfaceError
 
-from .vdsmxmlrpcInterface import memoize, vdsmException
+from .vdsmCommon import memoize, vdsmException
 
 from mom.optional import Optional
 

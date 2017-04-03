@@ -15,42 +15,16 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import logging
-import traceback
-import time
-import functools
 import socket
-import threading
 
 from vdsm import vdscli
 from mom.HypervisorInterfaces.HypervisorInterface import HypervisorInterface, \
     HypervisorInterfaceError
 
+from .vdsmCommon import memoize, vdsmException
+
 # Time validity of the cache in seconds
 CACHE_EXPIRATION = 5
-
-# Cache return values with expiration
-def memoize(expiration):
-    def decorator(obj):
-        lock = threading.Lock()
-        cache = obj._cache = {}
-        timestamps = obj._timestamps = {}
-
-        @functools.wraps(obj)
-        def memoizer(*args, **kwargs):
-            key = str(args) + str(kwargs)
-            now = time.time()
-
-            # use absolute value of the time difference to avoid issues
-            # with time changing to the past
-
-            with lock:
-                if key not in cache or abs(now - timestamps[key]) > expiration:
-                    cache[key] = obj(*args, **kwargs)
-                    timestamps[key] = now
-                return cache[key]
-        return memoizer
-    return decorator
-
 
 class XmlRpcVdsmInterface(HypervisorInterface):
     """
@@ -290,21 +264,6 @@ class XmlRpcVdsmInterface(HypervisorInterface):
 
     def handle_connection_error(self, e):
         self.logger.error("Cannot connect to VDSM! {0}".format(e))
-
-
-class vdsmException(Exception):
-
-    def __init__(self, response, logger):
-        try:
-            self.msg = response['status'].get('message', response)
-        except (AttributeError, KeyError):
-            self.msg = response
-        self.logger = logger
-
-    def handle_exception(self):
-        "Handle exception in a nice way. Just report the message and try again later."
-        self.logger.error(self.msg)
-        self.logger.debug(traceback.format_exc())
 
 def instance(config):
     return XmlRpcVdsmInterface()
