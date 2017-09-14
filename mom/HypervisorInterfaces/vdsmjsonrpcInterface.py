@@ -130,7 +130,9 @@ class JsonRpcVdsmInterface(HypervisorInterface):
 
         data = {}
         data['uuid'] = uuid
-        data['pid'] = vm['pid']
+        if 'pid' in vm:
+            data['pid'] = vm['pid']
+
         data['name'] = vm['vmName']
         if None in data.values():
             return None
