@@ -29,7 +29,7 @@ class JsonRpcVdsmClientInterface(VdsmRpcBase):
     def __init__(self):
         super(JsonRpcVdsmClientInterface, self).__init__()
         self._vdsm_api = client.connect(host="localhost")
-        self.checked_call(self._vdsm_api.Host.ping)
+        self.checked_call(self._vdsm_api.Host.ping2)
 
     @memoize(expiration=CACHE_EXPIRATION)
     def getAllVmStats(self):
