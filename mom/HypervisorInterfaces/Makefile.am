@@ -28,6 +28,7 @@ mom_PYTHON = \
 	vdsmInterface.py \
 	vdsmjsonrpcInterface.py \
 	vdsmjsonrpcbulkInterface.py \
+	vdsmRpcBase.py \
 	vdsmxmlrpcInterface.py \
 	vdsmxmlrpcbulkInterface.py \
 	$(NULL)
