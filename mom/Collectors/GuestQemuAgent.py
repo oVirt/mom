@@ -43,7 +43,21 @@ class GuestQemuAgent(Collector):
         try:
             socket_path = properties['config']['socket_path']
         except KeyError:
-            socket_path = '/var/lib/libvirt/qemu'
+            try:
+                 socket_path_template = properties['config']['socket_path_template']
+            except KeyError:
+                 socket_path = '/var/lib/libvirt/qemu'
+
+        try:
+            socket_path
+        except NameError:
+            try:
+                 socket_path = socket_path_template % {'name' : self.name,'domid' : properties['domid']}
+            except KeyError, e:
+                 socket_path = socket_path_template
+                 self.logger.warn("Error substituting socket path " \
+                                 "template. Invalid key: %s" % e)
+                 self.logger.warn("Using socket path %s." % socket_path)
 
         try:
             socket_name_template = properties['config']['socket_name_template']

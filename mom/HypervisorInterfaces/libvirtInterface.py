@@ -187,6 +187,7 @@ class libvirtInterface(HypervisorInterface):
         data['uuid'] = self._domainGetUUID(guest_domain)
         data['name'] = self._domainGetName(guest_domain)
         data['pid'] = self._domainGetPid(data['uuid'])
+        data['domid'] = id
         if None in data.values():
             return None
         return data
