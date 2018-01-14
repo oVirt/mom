@@ -86,6 +86,10 @@ def get_option_overrides(options):
     config.add_section('logging')
     if options.plot_dir is not None:
         config.set('main', 'plot-dir', options.plot_dir)
+    if options.graphite_host is not None:
+        config.set('main', 'graphite-host', options.graphite_host)
+    if options.graphite_port is not None:
+        config.set('main', 'graphite-port', options.graphite_port)
     if options.log is not None:
         config.set('logging', 'log', options.log)
     if options.verbosity is not None:
@@ -109,6 +113,10 @@ def main():
                        help='Load policies from DIR', metavar='DIR')
     cmdline.add_option('-p', '--plot-dir', dest='plot_dir',
                        help='Save data plot files in DIR', metavar='DIR')
+    cmdline.add_option('--graphite-host', dest='graphite_host',
+                       help='Save data to Graphite (host)', metavar='TARGET')
+    cmdline.add_option('--graphite-port', dest='graphite_port',
+                       help='Save data to Graphite (port)', metavar='TARGET')
     cmdline.add_option('-l', '--log', dest='log', metavar='TARGET',
                        help='Set the log to TARGET (stdout, or <file>')
     cmdline.add_option('-v', '--verbose', dest='verbosity', metavar='LEVEL',

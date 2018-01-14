@@ -47,6 +47,13 @@ class Monitor(object):
         else:
             self.plotter = None
 
+        graphite_host = config.get('main','graphite-host')
+        graphite_port = config.get('main','graphite-port')
+        if graphite_host != '':
+            self.graphite = Graphite(graphite_host, int(graphite_port), name)
+        else:
+            self.graphite = None
+
         self.ready = None
         self._terminate = False
 
@@ -127,6 +134,9 @@ class Monitor(object):
 
         if self.plotter is not None:
             self.plotter.plot(data)
+
+        if self.graphite is not None:
+            self.graphite.sendToGraphite(data)
 
         return data
 

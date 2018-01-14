@@ -90,6 +90,8 @@ class MOM:
         self.config.set('main', 'libvirt-hypervisor-uri', '')
         self.config.set('main', 'controllers', 'Balloon')
         self.config.set('main', 'plot-dir', '')
+        self.config.set('main', 'graphite-host', '')
+        self.config.set('main', 'graphite-port', '2003')
         self.config.set('main', 'rpc-port', '-1')
         self.config.set('main', 'policy', '')
         self.config.set('main', 'policy-dir', '')
