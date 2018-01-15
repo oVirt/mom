@@ -21,6 +21,7 @@ from collections import deque
 from mom.Collectors import Collector
 from mom.Entity import Entity
 from mom.Plotter import Plotter
+from mom.Graphite import Graphite
 
 class Monitor(object):
     """
