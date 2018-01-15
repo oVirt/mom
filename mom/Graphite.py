@@ -39,5 +39,5 @@ class Graphite:
 
         for key,value in data.items():
            timestamp = int(time.time())
-           gr_path = socket.getfqdn() + ".mom." + self.vmname + "." + key
+           gr_path = "direct." + socket.getfqdn() + ".mom." + self.vmname + "." + key
            self.sock.send("%s %d %d\n" % (gr_path, int(value), timestamp))
