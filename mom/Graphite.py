@@ -20,14 +20,24 @@ import socket
 import logging
 
 class Graphite:
-    def __init__(self, graphite_host, graphite_port, name):
-        self.sock = socket.socket()
-        try:
+    def __init__(self, graphite_host, graphite_port, graphite_protocol, name):
+    
+      self.graphite_host = graphite_host
+      self.graphite_port = graphite_port
+      self.graphite_protocol = graphite_protocol
+      self.vmname = name
+
+      if graphite_protocol == "TCP":
+         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+         try:
             self.sock.connect((graphite_host, graphite_port))
-            self.vmname = name
-        except Exception as e:
+         except Exception as e:
             logger = logging.getLogger('mom.Graphite')
             logger.warn("something's wrong with %s:%d. Exception is %s" % (graphite_host, graphite_port, e))
+
+      elif graphite_protocol == "UDP":
+         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 
     def __del__(self):
         if self.sock is not None:
@@ -38,6 +48,12 @@ class Graphite:
             return
 
         for key,value in data.items():
-           timestamp = int(time.time())
-           gr_path = "direct." + socket.getfqdn() + ".mom." + self.vmname + "." + key
-           self.sock.send("%s %d %d\n" % (gr_path, int(value), timestamp))
+           if self.graphite_protocol == "TCP":
+              timestamp = int(time.time())
+              gr_path = "direct." + socket.getfqdn() + ".mom." + self.vmname + "." + key
+              self.sock.send("%s %d %d\n" % (gr_path, int(value), timestamp))
+           elif self.graphite_protocol == "UDP":
+              timestamp = int(time.time())
+              gr_path = "direct." + socket.getfqdn() + ".mom." + self.vmname + "." + key
+              self.sock.sendto( gr_path + " " + str(value) + " " + str(timestamp) + "\n" , (self.graphite_host, self.graphite_port) )
+

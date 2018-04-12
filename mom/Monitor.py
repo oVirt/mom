@@ -50,8 +50,10 @@ class Monitor(object):
 
         graphite_host = config.get('main','graphite-host')
         graphite_port = config.get('main','graphite-port')
+        graphite_protocol = config.get('main','graphite-protocol')
+
         if graphite_host != '':
-            self.graphite = Graphite(graphite_host, int(graphite_port), name)
+            self.graphite = Graphite(graphite_host, int(graphite_port), graphite_protocol, name)
         else:
             self.graphite = None
 

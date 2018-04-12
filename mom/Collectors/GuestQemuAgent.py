@@ -27,7 +27,10 @@ class GuestQemuAgent(Collector):
     A guest memory stats Collector implemented as a standalone qemu-ga client.
         mem_available - The total amount of available memory (kB)
         mem_unused    - The amount of memory that is not being used for any purpose (kB)
+        mem_used      - The amount of memory that is used in guest (KB)
         mem_free      - The amount of free memory including some caches (kB)
+        mem_cached    - The amount of memory located in page cache (KB)
+        mem_buffers   - The amount of memory located in buffers (KB)
         major_fault   - Total number of major page faults
         minor_fault   - Total number of minor page faults
         swap_in       - The amount of memory swapped in since the last collection (pages)
@@ -147,7 +150,7 @@ class GuestQemuAgent(Collector):
         while True:
             ret = self.agent_cmd('file_read', fh, 1024)
             data += ret['buf']
-            if len(ret) < 1024:
+            if len(ret['buf']) < 1024:
                 break
             if len(data) > maxSize:
                 raise CollectionError("Remote file '%s' is too large" % \
@@ -169,6 +172,7 @@ class GuestQemuAgent(Collector):
         swap_total = parse_int("^SwapTotal: (.*) kB", meminfo)
         swap_free = parse_int("^SwapFree: (.*) kB", meminfo)
         free = unused + buffers + cached
+        used = avail - free
 
         # /proc/vmstat reports cumulative statistics so we must subtract the
         # previous values to get the difference since the last collection.
@@ -182,17 +186,26 @@ class GuestQemuAgent(Collector):
             self.swap_in_prev = self.swap_in_cur
         if self.swap_out_prev is None:
             self.swap_out_prev = self.swap_out_cur
-        swap_in = self.swap_in_cur - self.swap_in_prev
-        swap_out = self.swap_out_cur - self.swap_out_prev
 
-        data = { 'mem_available': avail, 'mem_unused': unused, \
-                 'mem_free': free, 'swap_in': swap_in, 'swap_out': swap_out, \
+        if self.swap_in_cur is None:
+            swap_in = 0
+        else:
+            swap_in = self.swap_in_cur - self.swap_in_prev
+
+        if self.swap_out_cur is None:
+            swap_out = 0
+        else:
+            swap_out = self.swap_out_cur - self.swap_out_prev
+
+        data = { 'mem_available': avail, 'mem_unused': unused, 'mem_used': used,\
+                 'mem_free': free, 'mem_cached': cached, 'mem_buffers': buffers,\
+                 'swap_in': swap_in, 'swap_out': swap_out, \
                  'major_fault': majflt, 'minor_fault': minflt, \
                  'swap_total': swap_total, \
                  'swap_usage': swap_total - swap_free }
         return data
 
     def getFields(self=None):
-        return set(['mem_available', 'mem_unused', 'mem_free',
-                    'major_fault', 'minor_fault', 'swap_in', 'swap_out',
-                    'swap_total', 'swap_usage'])
+        return set(['mem_available', 'mem_unused', 'mem_used', 'mem_free',
+                    'mem_cached', 'mem_buffers', 'major_fault', 'minor_fault', 
+                    'swap_in', 'swap_out', 'swap_total', 'swap_usage'])

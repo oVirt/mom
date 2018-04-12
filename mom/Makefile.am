@@ -31,6 +31,7 @@ mom_PYTHON = \
 	MOMFuncs.py \
 	Monitor.py \
 	Plotter.py \
+        Graphite.py \
 	PolicyEngine.py \
 	RPCServer.py \
 	unixrpc.py \
