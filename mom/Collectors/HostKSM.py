@@ -21,7 +21,7 @@ from mom.Collectors.Collector import *
 class HostKSM(Collector):
     """
     This Collctor returns statistics about the Kernel Samepage Merging daemon
-    by reading files in /sys/kernel/vm/ksm/.  The fields provided are:
+    by reading files in /sys/kernel/mm/ksm/.  The fields provided are:
         ksm_run - Status of the KSM daemon: 0 - Stopped, 1 - Running
         ksm_sleep_millisecs - The amount of idle time between scans (ms)
         ksm_pages_shared - The number of pages being shared
