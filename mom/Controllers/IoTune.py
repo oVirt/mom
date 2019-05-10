@@ -19,7 +19,7 @@ class IoTune:
             return
 
         changedList = []
-        for i in xrange(len(ioTune)):
+        for i in range(len(ioTune)):
             tune = ioTune[i].ioTune()
             tune_prev = ioTune_prev[i]
 

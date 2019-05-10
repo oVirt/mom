@@ -22,14 +22,15 @@ import tempfile
 import os
 import os.path
 import shutil
-import ConfigParser
 import mom
 import mock
-import xmlrpclib
+from six.moves import configparser
+from six.moves import xmlrpc_client
+
 
 def start_mom(config=None):
     if not config:
-        config = ConfigParser.SafeConfigParser()
+        config = configparser.SafeConfigParser()
         config.add_section('logging')
         config.set('logging', 'verbosity', 'error')
 
@@ -76,7 +77,7 @@ class GeneralTests(TestCaseBase):
         self.assertEquals('0', self.mom_instance.getPolicy())
 
     def testMultiplePolicies(self):
-        self.assertEquals(0, len(self.mom_instance.getNamedPolicies().keys()))
+        self.assertEquals(0, len(list(self.mom_instance.getNamedPolicies().keys())))
 
         self.mom_instance.setNamedPolicy("10_test", "(+ 1 1)")
         self.mom_instance.setNamedPolicy("20_test", "(- 1 1)")
@@ -95,12 +96,12 @@ class ConfigTests(TestCaseBase):
             '02_bar': '(- 2 1)'
         }
         policy_dir = tempfile.mkdtemp()
-        for name, policy in policies.items():
+        for name, policy in list(policies.items()):
             with open(os.path.join(policy_dir, name + '.policy'), 'w') as f:
                 f.write(policy)
 
 
-        config = ConfigParser.SafeConfigParser()
+        config = configparser.SafeConfigParser()
         config.add_section('main')
         config.set('main', 'policy-dir', policy_dir)
         config.add_section('logging')
@@ -118,7 +119,7 @@ class ConfigTests(TestCaseBase):
             mom_instance.resetPolicies()
             self.assertEquals('(+ 1 1)', policies['01_foo'])
             self.assertEquals('(- 2 1)', policies['02_bar'])
-            self.assertTrue('03_baz' not in policies.iterkeys())
+            self.assertTrue('03_baz' not in iter(policies.keys()))
         finally:
             shutil.rmtree(policy_dir)
 
@@ -158,7 +159,7 @@ class RpcTests(TestCaseBase):
         data = funcs.getStatistics()
 
         mom.enable_i8()
-        packet = xmlrpclib.dumps((data,))
-        (reply,), func = xmlrpclib.loads(packet)
+        packet = xmlrpc_client.dumps((data,))
+        (reply,), func = xmlrpc_client.loads(packet)
 
         self.assertEqual(data, reply)

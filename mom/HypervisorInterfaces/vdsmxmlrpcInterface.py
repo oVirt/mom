@@ -41,7 +41,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def _check_status(self, response):
@@ -72,7 +72,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def setVmCpuTune(self, uuid, quota, period):
@@ -81,14 +81,14 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
         try:
             response = self.vdsm_api.vmSetCpuTunePeriod(uuid, period)
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def getVmIoTunePolicy(self, vmId):
@@ -98,7 +98,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
         except socket.error as e:
             self.handle_connection_error(e)
             return None
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
             return None
 
@@ -111,7 +111,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
         except socket.error as e:
             self.handle_connection_error(e)
             return None
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
             return None
 
@@ -123,7 +123,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def ksmTune(self, tuningParams):
@@ -132,7 +132,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
             self._check_status(response)
         except socket.error as e:
             self.handle_connection_error(e)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def handle_connection_error(self, e):

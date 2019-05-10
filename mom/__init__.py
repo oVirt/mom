@@ -1,4 +1,4 @@
-import ConfigParser
+from six.moves import configparser
 import os
 import time
 import re
@@ -76,7 +76,7 @@ class MOM:
                 setattr(self, funcName, funcObj)
 
     def _load_config(self, fname, overrides):
-        self.config = ConfigParser.SafeConfigParser()
+        self.config = configparser.SafeConfigParser()
 
         # Set built-in defaults
         self.config.add_section('main')
@@ -168,7 +168,7 @@ class MOM:
         regex = re.compile('^momplot-(\d{3})$')
         try:
             names = os.listdir(basedir)
-        except OSError, e:
+        except OSError as e:
             self.logger.warn("Cannot read plot-basedir %s: %s", basedir, e.strerror)
             return ''
         seq_num = -1
@@ -186,7 +186,7 @@ class MOM:
             return ''
         try:
             os.mkdir(dir)
-        except OSError, e:
+        except OSError as e:
             self.logger.warn("Cannot create plot-dir %s: %s", dir, e.strerror)
             return ''
         return dir

@@ -26,7 +26,7 @@ class OptionalTests(unittest.TestCase):
         self.assertEqual(False, Optional.missing()["key"].present)
 
     def test_missing_iter(self):
-        self.assertRaises(StopIteration, iter(Optional.missing()).next)
+        self.assertRaises(StopIteration, iter(Optional.missing()).__next__)
 
     def test_value(self):
         self.assertEqual(True, Optional("val").present)
@@ -51,4 +51,4 @@ class OptionalTests(unittest.TestCase):
         self.assertEqual(False, Optional({"key": "val"})["key2"].present)
 
     def test_iter(self):
-        self.assertEqual("val", iter(Optional(["val"])).next())
+        self.assertEqual("val", next(iter(Optional(["val"]))))

@@ -15,7 +15,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import threading
-import ConfigParser
 import logging
 from collections import deque
 from mom.Collectors import Collector
@@ -100,9 +99,9 @@ class Monitor(object):
                 for (key, val) in collected.items():
                     if key not in data or data[key] is None:
                         data[key] = val
-            except Collector.CollectionError, e:
+            except Collector.CollectionError as e:
                 self._disp_collection_error("Collection error: %s" % e.msg)
-            except Collector.FatalError, e:
+            except Collector.FatalError as e:
                 self._set_not_ready("Fatal Collector error: %s" % e.msg)
                 self.terminate()
                 return None

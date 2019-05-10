@@ -16,9 +16,9 @@
 
 import logging
 import threading
-from Parser import Evaluator
-from Parser import get_code
-from Parser import PolicyError
+from .Parser import Evaluator
+from .Parser import get_code
+from .Parser import PolicyError
 
 DEFAULT_POLICY_NAME = "50_main_"
 
@@ -44,7 +44,7 @@ class Policy:
         Concatenate the policies together.  If there are no policies, use '0'
         to work around a bug in the policy evaluator.
         """
-        keys = sorted(self.policy_strings.iterkeys())
+        keys = sorted(self.policy_strings.keys())
         return '\n'.join(self.policy_strings[k] for k in keys) or '0'
 
     def set_policy(self, name, policyStr):
@@ -62,7 +62,7 @@ class Policy:
                 self.policy_strings[name] = policyStr
             try:
                 self.code = get_code(Evaluator(), self._cat_policies())
-            except PolicyError, e:
+            except PolicyError as e:
                 self.logger.warn("Unable to load policy: %s" % e)
                 if oldStr is None:
                     del self.policy_strings[name]

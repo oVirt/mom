@@ -33,8 +33,10 @@ Requires:	libvirt
 %endif
 %if 0%{?fedora}
 Requires:	python2-libvirt
+Requires:	python2-six
 %else
 Requires:	libvirt-python
+Requires:	python-six
 %endif
 Requires:	procps
 

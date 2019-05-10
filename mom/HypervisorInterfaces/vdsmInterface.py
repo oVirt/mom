@@ -38,7 +38,7 @@ class vdsmInterface(HypervisorInterface):
             self.vdsm_api = API.Global()
             response = self.vdsm_api.ping()
             self._check_status(response)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def _check_status(self, response):
@@ -56,7 +56,7 @@ class vdsmInterface(HypervisorInterface):
             response = self.vdsm_api.getVMList(True, [uuid])
             self._check_status(response)
             return response['vmList'][0]['vmName']
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
             return None
 
@@ -65,7 +65,7 @@ class vdsmInterface(HypervisorInterface):
             response = self.vdsm_api.getVMList(True, [uuid])
             self._check_status(response)
             return response['vmList'][0]['pid']
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
             return None
 
@@ -80,7 +80,7 @@ class vdsmInterface(HypervisorInterface):
                     vmIds.append(vm['vmId'])
             self.logger.debug('VM List: %s', vmIds)
             return vmIds
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
             return None
 
@@ -114,7 +114,7 @@ class vdsmInterface(HypervisorInterface):
 
             self.logger.debug('Memory stats: %s', ret)
             return ret
-        except vdsmException, e:
+        except vdsmException as e:
             raise HypervisorInterfaceError(e.msg)
 
     def setVmBalloonTarget(self, uuid, target):
@@ -122,7 +122,7 @@ class vdsmInterface(HypervisorInterface):
             vm = API.VM(uuid)
             response = vm.setBalloonTarget(target)
             self._check_status(response)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def getVmInfo(self, id):
@@ -160,7 +160,7 @@ class vdsmInterface(HypervisorInterface):
                         continue
                     balloon_info[key] = int(balloon_info[key])
                 return balloon_info
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def getVmCpuTuneInfo(self, uuid):
@@ -195,7 +195,7 @@ class vdsmInterface(HypervisorInterface):
             for key in list(ret.keys()):
                 ret[key] = int(ret[key])
             return ret
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def setVmCpuTune(self, uuid, quota, period):
@@ -203,12 +203,12 @@ class vdsmInterface(HypervisorInterface):
         try:
             response = vm.setCpuTuneQuota(quota)
             self._check_status(response)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
         try:
             response = vm.setCpuTunePeriod(period)
             self._check_status(response)
-        except vdsmException, e:
+        except vdsmException as e:
             e.handle_exception()
 
     def ksmTune(self, tuningParams):

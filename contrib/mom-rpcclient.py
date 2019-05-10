@@ -15,52 +15,53 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-import xmlrpclib
+from six.moves import xmlrpc_client
 from optparse import *
 import sys
+from functools import reduce
 
 default_port = 8989
 
 def ping(mom):
     if mom.ping():
-        print "OK"
+        print("OK")
 
 def getPolicy(mom):
-    print mom.getPolicy()
+    print(mom.getPolicy())
 
 def setPolicy(mom, fname):
     f = open(fname, 'r')
     policy = f.read()
     f.close()
     if not mom.setPolicy(policy):
-        print "Failed to set policy! Check the syntax."
+        print("Failed to set policy! Check the syntax.")
 
 def setVerbosity(mom, verbosity):
     valid_levels = ('1','2','3','4','5','debug','info','warn','error','critical')
     if verbosity not in valid_levels:
-        print "Invalid level specified!"
+        print("Invalid level specified!")
         return False
     mom.setVerbosity(verbosity)
 
 def _print_stats(stats):
-    f_max = reduce(lambda x, y: max(x, len(y)), stats.keys(), 0)
-    for (key, val) in stats.items():
+    f_max = reduce(lambda x, y: max(x, len(y)), list(stats.keys()), 0)
+    for (key, val) in list(stats.items()):
         pad = f_max - len(key)
-        print "%s:%s %s" % (key, ' '*pad, val)
+        print("%s:%s %s" % (key, ' '*pad, val))
 
 def getStatistics(mom):
     stats = mom.getStatistics()
 
-    print "Host:\n====="
+    print("Host:\n=====")
     _print_stats(stats['host'])
-    for (key, val) in stats['guests'].items():
-        print "\nGuest %s:\n=======%s" % (key, len(key)*'=')
+    for (key, val) in list(stats['guests'].items()):
+        print("\nGuest %s:\n=======%s" % (key, len(key)*'='))
         _print_stats(val)
 
 def getActiveGuests(mom):
     guests = mom.getActiveGuests()
     for guest in guests:
-        print guest
+        print(guest)
 
 def usage(parser):
     parser.usageExit()
@@ -92,7 +93,7 @@ def main():
     if options.cmd is None or len(options.cmd) != 1:
         parser.error("Exactly one command argument is required")
 
-    mom = xmlrpclib.ServerProxy('http://localhost:%i' % options.port)
+    mom = xmlrpc_client.ServerProxy('http://localhost:%i' % options.port)
     try:
         if options.cmd[0] == 'ping':
             ping(mom)
@@ -110,8 +111,8 @@ def main():
             getStatistics(mom)
         elif options.cmd[0] == 'get_active_guests':
             getActiveGuests(mom)
-    except Exception, e:
-        print "Command '%s' failed: %s" % (options.cmd[0], e)
+    except Exception as e:
+        print("Command '%s' failed: %s" % (options.cmd[0], e))
         sys.exit(1)
     sys.exit(0)
 

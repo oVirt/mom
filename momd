@@ -22,7 +22,7 @@ import os
 import atexit
 import re
 from optparse import OptionParser
-import ConfigParser
+from six.moves import configparser
 import logging
 import logging.handlers
 import mom
@@ -34,7 +34,7 @@ def daemonize(pid_file):
         pid = os.fork()
         if pid > 0:
             sys.exit(0)
-    except OSError, e:
+    except OSError as e:
         sys.stderr.write("momd: fork failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
@@ -45,14 +45,14 @@ def daemonize(pid_file):
         pid = os.fork()
         if pid > 0:
             sys.exit(0)
-    except OSError, e:
+    except OSError as e:
         sys.stderr.write("momd: fork failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
     pid = str(os.getpid())
     try:
         file(pid_file,'w+').write("%s\n" % pid)
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         sys.stderr.write("momd: failed to write pid file: %d (%s)\n" %
                          (e.errno, e.strerror))
         sys.exit(1)
@@ -70,7 +70,7 @@ def daemonize(pid_file):
 def delpid(pid_file):
     try:
         os.remove(pid_file)
-    except OSError, e:
+    except OSError as e:
         logger = logging.getLogger('momd')
         logger.error("Unable to remove pid file (%s): %s", pid_file, e.strerror)
 
@@ -81,7 +81,7 @@ def signal_quit(signum, frame):
     mom_instance.shutdown()
 
 def get_option_overrides(options):
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
     config.add_section('main')
     config.add_section('logging')
     if options.plot_dir is not None:

@@ -18,7 +18,7 @@ import threading
 import time
 import logging
 import os
-from Policy.Policy import Policy, PolicyError
+from .Policy.Policy import Policy, PolicyError
 
 class PolicyEngine(threading.Thread):
     """
@@ -46,7 +46,7 @@ class PolicyEngine(threading.Thread):
             try:
                 with open(file_name, 'r') as f:
                     policyStr = f.read()
-            except IOError, e:
+            except IOError as e:
                 self.logger.warn("Unable to read policy file: %s" % e)
                 return False
             return self.policy.set_policy(policy_name, policyStr)
@@ -59,7 +59,7 @@ class PolicyEngine(threading.Thread):
         if policy_dir:
             try:
                 names = sorted(os.listdir(policy_dir))
-            except OSError, e:
+            except OSError as e:
                 self.logger.warn("Unable to read directory '%s': %s" % (
                                     policy_dir, e.strerror))
                 return False

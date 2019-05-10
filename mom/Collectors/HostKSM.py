@@ -65,8 +65,8 @@ class HostKSM(Collector):
             name = '/sys/kernel/mm/ksm/%s' % datum
             try:
                 self.files[datum] = open(name, 'r')
-            except IOError, (errno, msg):
-                raise FatalError("HostKSM: open %s failed: %s" % (name, msg))
+            except IOError as e:
+                raise FatalError("HostKSM: open %s failed: %s" % (name, e.strerror))
 
     def get_ksmd_jiffies(self):
         if self.pid is None:

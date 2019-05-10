@@ -1,19 +1,17 @@
 import os
-import SocketServer
-import SimpleXMLRPCServer
-from xmlrpclib import ServerProxy, Transport
-import httplib
+from six.moves import xmlrpc_server, socketserver, http_client
+from six.moves.xmlrpc_client import ServerProxy, Transport
 import socket
 import string
 import base64
 
-class UnixXmlRpcHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+class UnixXmlRpcHandler(xmlrpc_server.SimpleXMLRPCRequestHandler):
     disable_nagle_algorithm = False
 
 # This class implements a XML-RPC server that binds to a UNIX socket. The path
 # to the UNIX socket to create methods must be provided.
-class UnixXmlRpcServer(SocketServer.UnixStreamServer,
-                       SimpleXMLRPCServer.SimpleXMLRPCDispatcher):
+class UnixXmlRpcServer(socketserver.UnixStreamServer,
+                       xmlrpc_server.SimpleXMLRPCDispatcher):
     address_family = socket.AF_UNIX
     allow_address_reuse = True
 
@@ -22,10 +20,10 @@ class UnixXmlRpcServer(SocketServer.UnixStreamServer,
         if os.path.exists(sock_path):
             os.unlink(sock_path)
         self.logRequests = logRequests
-        SimpleXMLRPCServer.SimpleXMLRPCDispatcher.__init__(self,
+        xmlrpc_server.SimpleXMLRPCDispatcher.__init__(self,
                                                            encoding=None,
                                                            allow_none=1)
-        SocketServer.UnixStreamServer.__init__(self, sock_path,
+        socketserver.UnixStreamServer.__init__(self, sock_path,
                                                request_handler)
 
 # This class implements a XML-RPC client that connects to a UNIX socket. The
@@ -42,7 +40,7 @@ class UnixXmlRpcTransport(Transport):
     def make_connection(self, host):
         return UnixXmlRpcHttpConnection(host)
 
-class UnixXmlRpcHttpConnection(httplib.HTTPConnection):
+class UnixXmlRpcHttpConnection(http_client.HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.connect(base64.b16decode(self.host))

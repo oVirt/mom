@@ -16,19 +16,20 @@
 
 import threading
 import os.path
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
-from unixrpc import UnixXmlRpcServer
-from xmlrpclib import Marshaller
 from types import IntType, LongType
+from six.moves.xmlrpc_client import Marshaller
+from six.moves.xmlrpc_server import SimpleXMLRPCServer
+from six.moves.xmlrpc_server import SimpleXMLRPCRequestHandler
+from .unixrpc import UnixXmlRpcServer
+from .LogUtils import *
 
-from LogUtils import *
 
 def big_int_marshaller(m, value, writer):
     if value >= 2**31 or value <= -2**31:
         writer("<value><i8>%d</i8></value>" % value)
     else:
         writer("<value><int>%d</int></value>" % value)
+
 
 def enable_i8():
     """
@@ -38,8 +39,10 @@ def enable_i8():
     Marshaller.dispatch[IntType] = big_int_marshaller
     Marshaller.dispatch[LongType] = big_int_marshaller
 
+
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
+
 
 class RPCServer(threading.Thread):
     """
@@ -75,8 +78,11 @@ class RPCServer(threading.Thread):
         if unix_port:
             self.server = UnixXmlRpcServer(unix_port)
         else:
-            self.server = SimpleXMLRPCServer(("localhost", port),
-                            requestHandler=RequestHandler, logRequests=0)
+            self.server = SimpleXMLRPCServer(
+                ("localhost", port),
+                requestHandler=RequestHandler,
+                logRequests=0
+            )
 
         self.server.register_introspection_functions()
         self.server.register_instance(self.momFuncs)

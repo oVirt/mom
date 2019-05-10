@@ -75,10 +75,10 @@ class Entity:
                 stat_str = stat_str + " " + i
         else:
             stat_str = ""
-        print "Entity: %s {" % name
-        print "    properties = { %s }" % prop_str
-        print "    statistics = { %s }" % stat_str
-        print "}"
+        print("Entity: %s {" % name)
+        print("    properties = { %s }" % prop_str)
+        print("    statistics = { %s }" % stat_str)
+        print("}")
 
     ### Rule-accesible Methods
     def Prop(self, name):

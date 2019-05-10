@@ -87,7 +87,7 @@ class _QemuGuestAgentLibvirtClient:
         try:
             getattr(hypervisor_iface, 'qemuAgentCommand')
         except KeyError:
-            raise Exception, "hypervisor does not support qemuAgentCommand"
+            raise Exception("hypervisor does not support qemuAgentCommand")
         self.hypervisor_iface = hypervisor_iface
         self.uuid = uuid
         self.api = _QemuGuestAgentAPI(self)
@@ -149,7 +149,7 @@ class _QemuGuestAgentSocketClient:
     def _connect(self):
         sock_type = socket.AF_UNIX
         if self.verbose:
-            print "Connecting to %s" % self.where
+            print("Connecting to %s" % self.where)
         try:
             self.sock = socket.socket(sock_type, socket.SOCK_STREAM)
             self.sock.settimeout(2)
@@ -159,7 +159,7 @@ class _QemuGuestAgentSocketClient:
             self._sock_close(self.sock)
             self.sock = None
             raise ProtocolError(-1, "Timed out")
-        except socket.error, e:
+        except socket.error as e:
             self._sock_close(self.sock)
             self.sock = None
             raise ProtocolError(e.errno, "Connection failed: %s" % e.strerror)
@@ -185,7 +185,7 @@ class _QemuGuestAgentSocketClient:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(-1, "Timed out")
-            except socket.error, e:
+            except socket.error as e:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(e.errno, e.strerror)
@@ -205,7 +205,7 @@ class _QemuGuestAgentSocketClient:
         while 1:
             try:
                 data = sock.recv(remainder)
-            except socket.error, e:
+            except socket.error as e:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(e.errno, e.strerror)
@@ -236,12 +236,12 @@ class _QemuGuestAgentSocketClient:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(-1, "Timed out")
-            except socket.error, e:
+            except socket.error as e:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(e.errno, e.strerror)
             if ch == '':
-                print "Connection closed"
+                print("Connection closed")
                 return None
             data += ch
             if data[-len(token):] == token:

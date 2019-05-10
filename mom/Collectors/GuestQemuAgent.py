@@ -17,7 +17,6 @@
 import sys
 import signal
 import socket
-import ConfigParser
 import logging
 from mom.Collectors.Collector import *
 from mom.Collectors.QemuGuestAgentClient import *
@@ -52,7 +51,7 @@ class GuestQemuAgent(Collector):
 
         try:
             socket_name = socket_name_template % {'name' : self.name}
-        except KeyError, e:
+        except KeyError as e:
             socket_name = self.name + '.agent'
             self.logger.warn("Error substituting socket name " \
                               "template. Invalid key: %s" % e)
@@ -79,7 +78,7 @@ class GuestQemuAgent(Collector):
 
         try:
             ret = func(*args)
-        except ProtocolError, e:
+        except ProtocolError as e:
             raise CollectionError("Agent communication failed: %s" % e)
         if ret.error:
             # Convert error data into a string of the form:
@@ -120,7 +119,7 @@ class GuestQemuAgent(Collector):
                 if not ret.error:
                     self.agent = agent
                     break
-            except Exception, e:
+            except Exception as e:
                 self.logger.debug("Connection failed: %s" % e)
         return self.agent is not None
 

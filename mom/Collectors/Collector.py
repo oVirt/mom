@@ -94,7 +94,7 @@ def get_collectors(config_str, properties, global_config):
         except ImportError:
             logger.warn("Unable to import collector: %s", name)
             return None
-        except FatalError, e:
+        except FatalError as e:
             logger.error("Fatal Collector error: %s", e.msg)
             return None
     return collectors
@@ -127,9 +127,9 @@ def open_datafile(filename):
     """
     try:
         filevar = open(filename, 'r')
-    except IOError, (errno, strerror):
+    except IOError as e:
         logger = logging.getLogger('mom.Collector')
-        logger.error("Cannot open %s: %s" % (filename, strerror))
+        logger.error("Cannot open %s: %s" % (filename, e.strerror))
         sys.exit(1)
     return filevar
 

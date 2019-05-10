@@ -18,7 +18,6 @@ import sys
 import signal
 import socket
 from subprocess import *
-import ConfigParser
 import logging
 from mom.Collectors.Collector import *
 from mom.Collectors.HostMemory import HostMemory
@@ -98,8 +97,8 @@ class GuestNetworkDaemon(Collector):
             return None
         try:
             output = Popen([prog, name], stdout=PIPE).communicate()[0]
-        except OSError, (errno, strerror):
-            self.logger.warn("Cannot call name-to-ip-helper: %s", strerror)
+        except OSError as e:
+            self.logger.warn("Cannot call name-to-ip-helper: %s", e.strerror)
             return None
         matches = re.findall("^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
                              output, re.M)
@@ -117,7 +116,7 @@ class GuestNetworkDaemon(Collector):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.settimeout(5)
             self.socket.connect((self.ip, self.port))
-        except socket.error, msg:
+        except socket.error as msg:
             sock_close(self.socket)
             self.socket = None
             raise CollectionError('Network connection to %s failed: %s' %
@@ -136,7 +135,7 @@ class GuestNetworkDaemon(Collector):
         try:
             sock_send(self.socket, "stats")
             data = sock_receive(self.socket, self.logger)
-        except socket.error, msg:
+        except socket.error as msg:
             sock_close(self.socket)
             self.socket = None
             raise CollectionError('Network communication to %s failed: %s' %
@@ -220,7 +219,7 @@ class _Server:
                     self.send_stats(conn)
                 else:
                     break
-            except socket.error, msg:
+            except socket.error as msg:
                 self.logger.warn("Exception: %s" % msg)
                 break
         sock_close(conn)

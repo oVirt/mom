@@ -52,7 +52,7 @@ class libvirtInterface(HypervisorInterface):
     def _connect(self):
         try:
             self.conn = libvirt.open(self.uri)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self.logger.error("libvirtInterface: error setting up " \
                     "connection: %s", e)
 
@@ -63,7 +63,7 @@ class libvirtInterface(HypervisorInterface):
             pass # The connection is in a strange state so ignore these
         try:
             self._connect()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self.logger.error("libvirtInterface: Exception while " \
                     "reconnecting: %s", e);
 
@@ -71,7 +71,7 @@ class libvirtInterface(HypervisorInterface):
     def _getDomainFromID(self, dom_id):
         try:
             dom = self.conn.lookupByID(dom_id)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return None
         else:
@@ -80,7 +80,7 @@ class libvirtInterface(HypervisorInterface):
     def _getDomainFromUUID(self, dom_uuid):
         try:
             dom = self.conn.lookupByUUIDString(dom_uuid)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return None
         else:
@@ -90,14 +90,14 @@ class libvirtInterface(HypervisorInterface):
         try:
             if domain.info()[0] == libvirt.VIR_DOMAIN_RUNNING:
                 return True
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
         return False
 
     def _domainGetName(self, domain):
         try:
             name = domain.name()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return None
         return name
@@ -105,7 +105,7 @@ class libvirtInterface(HypervisorInterface):
     def _domainGetUUID(self, domain):
         try:
             uuid = domain.UUIDString()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return None
         return uuid
@@ -113,7 +113,7 @@ class libvirtInterface(HypervisorInterface):
     def _domainGetInfo(self, domain):
         try:
             info = domain.info()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return None
         return info
@@ -139,15 +139,15 @@ class libvirtInterface(HypervisorInterface):
     def _domainSetMemoryStatsPeriod(self, domain, period):
         try:
             domain.setMemoryStatsPeriod(period)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
-        except AttributeError, e:
+        except AttributeError as e:
             pass # Older versions of libvirt don't have the method
 
     def _domainGetMemoryStats(self, domain):
         try:
             stats = domain.memoryStats()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return None
         return stats
@@ -169,14 +169,14 @@ class libvirtInterface(HypervisorInterface):
     def _domainSetBalloonTarget(self, domain, target):
         try:
             return domain.setMemory(target)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return False
 
     def getVmList(self):
         try:
             dom_list = self.conn.listDomainsID()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self._handleException(e)
             return []
         return dom_list
@@ -298,7 +298,7 @@ class libvirtInterface(HypervisorInterface):
         dom = self._getDomainFromUUID(uuid)
         try:
             dom.setSchedulerParameters({ 'vcpu_quota': quota, 'vcpu_period': period})
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             self.logger.error("libvirtInterface: Exception while " \
                     "setSchedulerParameters: %s", e);
 
@@ -307,8 +307,8 @@ class libvirtInterface(HypervisorInterface):
             try:
                 with open(fname, 'w') as f:
                     f.write(str(value))
-            except IOError, (errno, strerror):
-                self.logger.warn("KSM: Failed to write %s: %s", fname, strerror)
+            except IOError as e:
+                self.logger.warn("KSM: Failed to write %s: %s", fname, e.strerror)
 
         for (key, val) in tuningParams.items():
             write_value('/sys/kernel/mm/ksm/%s' % key, val)

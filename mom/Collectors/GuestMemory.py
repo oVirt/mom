@@ -48,7 +48,7 @@ class GuestMemory(Collector):
     def collect(self):
         try:
             stat = self.hypervisor_iface.getVmMemoryStats(self.uuid)
-        except HypervisorInterfaceError, e:
+        except HypervisorInterfaceError as e:
             self.stats_error('getVmMemoryStats(): %s' % e)
             # We don't raise a CollectionError here because a different
             # Collector (such as GuestQemuAgent) may be able to get them.

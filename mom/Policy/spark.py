@@ -1,5 +1,5 @@
 #  Copyright (c) 1998-2000 John Aycock
-#  
+#
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
 #  "Software"), to deal in the Software without restriction, including
@@ -7,10 +7,10 @@
 #  distribute, sublicense, and/or sell copies of the Software, and to
 #  permit persons to whom the Software is furnished to do so, subject to
 #  the following conditions:
-#  
+#
 #  The above copyright notice and this permission notice shall be
 #  included in all copies or substantial portions of the Software.
-#  
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 #  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 #  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -22,7 +22,6 @@
 __version__ = 'SPARK-0.6.1'
 
 import re
-import sys
 import string
 
 def _namelist(instance):
@@ -31,7 +30,7 @@ def _namelist(instance):
 		for b in c.__bases__:
 			classlist.append(b)
 		for name in dir(c):
-			if not namedict.has_key(name):
+			if name not in namedict:
 				namelist.append(name)
 				namedict[name] = 1
 	return namelist
@@ -42,7 +41,7 @@ class GenericScanner:
 		self.re = re.compile(pattern, re.VERBOSE)
 
 		self.index2func = {}
-		for name, number in self.re.groupindex.items():
+		for name, number in list(self.re.groupindex.items()):
 			self.index2func[number-1] = getattr(self, 't_' + name)
 
 	def makeRE(self, name):
@@ -62,7 +61,7 @@ class GenericScanner:
 		return string.join(rv, '|')
 
 	def error(self, s, pos):
-		print "Lexical error at position %s" % pos
+		print("Lexical error at position %s" % pos)
 		raise SystemExit
 
 	def tokenize(self, s):
@@ -76,7 +75,7 @@ class GenericScanner:
 
 			groups = m.groups()
 			for i in range(len(groups)):
-				if groups[i] and self.index2func.has_key(i):
+				if groups[i] and i in self.index2func:
 					add_lines = self.index2func[i](groups[i], line)
 					if add_lines:
 						line += add_lines
@@ -119,7 +118,7 @@ class GenericParser:
 
 			rule, fn = self.preprocess(rule, func)
 
-			if self.rules.has_key(lhs):
+			if lhs in self.rules:
 				self.rules[lhs].append(rule)
 			else:
 				self.rules[lhs] = [ rule ]
@@ -149,10 +148,10 @@ class GenericParser:
 	def makeFIRST(self):
 		union = {}
 		self.first = {}
-		
-		for rulelist in self.rules.values():
+
+		for rulelist in list(self.rules.values()):
 			for lhs, rhs in rulelist:
-				if not self.first.has_key(lhs):
+				if lhs not in self.first:
 					self.first[lhs] = {}
 
 				if len(rhs) == 0:
@@ -160,14 +159,14 @@ class GenericParser:
 					continue
 
 				sym = rhs[0]
-				if not self.rules.has_key(sym):
+				if sym not in self.rules:
 					self.first[lhs][sym] = 1
 				else:
 					union[(sym, lhs)] = 1
 		changes = 1
 		while changes:
 			changes = 0
-			for src, dest in union.keys():
+			for src, dest in list(union.keys()):
 				destlen = len(self.first[dest])
 				self.first[dest].update(self.first[src])
 				if len(self.first[dest]) != destlen:
@@ -179,27 +178,27 @@ class GenericParser:
 	#  "An Efficient Context-Free Parsing Algorithm", Ph.D. thesis,
 	#  Carnegie-Mellon University, August 1968, p. 27.
 	#
-	
+
 	def typestring(self, token):
 		return None
 
 	def error(self, token):
-		print "Syntax error at or near `%s' token" % token
+		print("Syntax error at or near `%s' token" % token)
 		raise SystemExit
 
 	def parse(self, tokens):
 		tree = {}
 		tokens.append(self._EOF)
 		states = { 0: [ (self.startRule, 0, 0) ] }
-		
+
 		if self.ruleschanged:
 			self.makeFIRST()
 
-		for i in xrange(len(tokens)):
+		for i in range(len(tokens)):
 			states[i+1] = []
 
 			if states[i] == []:
-				break				
+				break
 			self.buildState(tokens[i], states, i, tree)
 
 		#_dump(tokens, states)
@@ -215,7 +214,7 @@ class GenericParser:
 		needsCompletion = {}
 		state = states[i]
 		predicted = {}
-		
+
 		for item in state:
 			rule, pos, parent = item
 			lhs, rhs = rule
@@ -250,7 +249,7 @@ class GenericParser:
 			#
 			#  A -> a . B (predictor)
 			#
-			if self.rules.has_key(nextSym):
+			if nextSym in self.rules:
 				#
 				#  Work on completer step some more; for rules
 				#  with empty RHS, the "parent state" is the
@@ -258,7 +257,7 @@ class GenericParser:
 				#  so the Earley items the completer step needs
 				#  may not all be present when it runs.
 				#
-				if needsCompletion.has_key(nextSym):
+				if nextSym in needsCompletion:
 					new = (rule, pos+1, parent)
 					olditem_i = needsCompletion[nextSym]
 					if new not in state:
@@ -270,7 +269,7 @@ class GenericParser:
 				#
 				#  Has this been predicted already?
 				#
-				if predicted.has_key(nextSym):
+				if nextSym in predicted:
 					continue
 				predicted[nextSym] = 1
 
@@ -294,15 +293,15 @@ class GenericParser:
 							state.append(new)
 							continue
 						prhs0 = prhs[0]
-						if not self.rules.has_key(prhs0):
+						if prhs0 not in self.rules:
 							if prhs0 != ttype:
 								continue
 							else:
 								state.append(new)
 								continue
 						first = self.first[prhs0]
-						if not first.has_key(None) and \
-						   not first.has_key(ttype):
+						if None not in first and \
+						   ttype not in first:
 							continue
 						state.append(new)
 					continue
@@ -315,7 +314,7 @@ class GenericParser:
 					#
 					prhs = prule[1]
 					if len(prhs) > 0 and \
-					   not self.rules.has_key(prhs[0]) and \
+					   prhs[0] not in self.rules and \
 					   token != prhs[0]:
 						continue
 					state.append((prule, 0, i))
@@ -334,10 +333,10 @@ class GenericParser:
 
 	def buildTree_r(self, stack, tokens, tokpos, tree, root):
 		(rule, pos, parent), state = root
-		
+
 		while pos > 0:
 			want = ((rule, pos, parent), state)
-			if not tree.has_key(want):
+			if want not in tree:
 				#
 				#  Since pos > 0, it didn't come from closure,
 				#  and if it isn't in tree[], then there must
@@ -363,14 +362,14 @@ class GenericParser:
 					child = self.ambiguity(children)
 				else:
 					child = children[0]
-				
+
 				tokpos = self.buildTree_r(stack,
 							  tokens, tokpos,
 							  tree, child)
 				pos = pos - 1
 				(crule, cpos, cparent), cstate = child
 				state = cparent
-				
+
 		lhs, rhs = rule
 		result = self.rule2func[rule](stack[:len(rhs)])
 		stack[:len(rhs)] = [result]
@@ -393,7 +392,7 @@ class GenericParser:
 			sortlist.append((len(rhs), name))
 			name2index[name] = i
 		sortlist.sort()
-		list = map(lambda (a,b): b, sortlist)
+		list = [a_b[1] for a_b in sortlist]
 		return children[name2index[self.resolve(list)]]
 
 	def resolve(self, list):
@@ -558,14 +557,14 @@ class GenericASTMatcher(GenericParser):
 
 def _dump(tokens, states):
 	for i in range(len(states)):
-		print 'state', i
+		print('state {state}'.format(state=i))
 		for (lhs, rhs), pos, parent in states[i]:
-			print '\t', lhs, '::=',
-			print string.join(rhs[:pos]),
-			print '.',
-			print string.join(rhs[pos:]),
-			print ',', parent
+			print('\t {lhs} ::= '.format(lhs=lhs))
+			print(string.join(rhs[:pos]))
+			print('. ')
+			print(string.join(rhs[pos:]))
+			print(', {parent}'.format(parent=parent))
 		if i < len(tokens):
-			print
-			print 'token', str(tokens[i])
-			print
+			print()
+			print('token {t}'.format(t=str(tokens[i])))
+			print()

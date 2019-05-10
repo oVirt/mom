@@ -17,13 +17,13 @@
 
 import socket
 import signal
-import ConfigParser
+from six.moves import configparser
 import logging
 from mom.Collectors.GuestNetworkDaemon import _Server
 from mom.Collectors.Collector import *
 
 def signal_quit(signum, frame):
-    print "Received signal", signum, "shutting down."
+    print("Received signal", signum, "shutting down.")
     sys.exit(0)
 
 def configure_logger(config):
@@ -48,7 +48,7 @@ def configure_logger(config):
     if log.lower() == 'stdio':
         handler = logging.StreamHandler()
     else:
-        print "logging to file %s" % log
+        print("logging to file %s" % log)
         bytes = config.getint('logging', 'max-bytes')
         backups = config.getint('logging', 'backup-count')
         handler = logging.handlers.RotatingFileHandler(log, 'a', bytes, backups)
@@ -64,7 +64,7 @@ def main():
     signal.signal(signal.SIGINT, signal_quit)
     signal.signal(signal.SIGTERM, signal_quit)
 
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.add_section('main')
     config.set('main', 'host', '')
     config.set('main', 'port', '2187')  

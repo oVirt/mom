@@ -16,7 +16,7 @@
 import logging
 
 import re
-from spark import GenericScanner, GenericParser
+from .spark import GenericScanner, GenericParser
 
 class PolicyError(Exception): pass
 
@@ -215,7 +215,7 @@ class GenericEvaluator(object):
     def _dispatch(self, fn, args, line):
         doc = fn.__doc__
         if doc == None:
-            args = map(self.eval, args)
+            args = list(map(self.eval, args))
         else:
             types = self.parse_doc(doc)
 
@@ -272,7 +272,7 @@ class GenericEvaluator(object):
 
         node = code[0]
         if not isinstance(node, Token):
-            print code
+            print(code)
             raise PolicyError('Expected simple token as arg 1')
 
         if node.kind == 'symbol':
@@ -285,7 +285,7 @@ class GenericEvaluator(object):
 
         func = self.stack.get(name, line=node.line, allow_undefined=True)
         if func is not None:
-            args = map(self.eval, code[1:])
+            args = list(map(self.eval, code[1:]))
             return func(*args)
         elif hasattr(self, 'c_%s' % name):
             return self._dispatch(getattr(self, 'c_%s' % name), code[1:], line=node.line)
@@ -310,7 +310,7 @@ class VariableStack(object):
         parts = name.split('.')
         obj = parts[0]
         for scope in self.stack:
-            if scope.has_key(obj):
+            if obj in scope:
                 if len(parts) > 1:
                     if hasattr(scope[obj], parts[1]):
                         return getattr(scope[obj], parts[1])
@@ -326,7 +326,7 @@ class VariableStack(object):
             return self.stack[0][name]
 
         for scope in self.stack:
-            if scope.has_key(name):
+            if name in scope:
                 scope[name] = value
                 return value
 
@@ -546,13 +546,13 @@ def eval(e, string):
 
 def repl(e):
     while True:
-        print '>>>',
+        print('>>>')
         try:
-            string = raw_input()
+            string = input()
         except EOFError:
             break
 
-        print eval(e, string)[0]
+        print(eval(e, string)[0])
 
 if __name__ == '__main__':
     import sys
@@ -567,6 +567,6 @@ if __name__ == '__main__':
             f.close()
         results = eval(e, lines)
         for result in results:
-            print result
+            print(result)
     else:
         repl(e)

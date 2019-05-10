@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import logging
-from LogUtils import *
+from .LogUtils import *
 import numbers
 
 EXPORTED_ATTRIBUTE = "__mom_exported__"
