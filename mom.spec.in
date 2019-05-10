@@ -31,7 +31,11 @@ Requires:	libvirt-daemon-driver-qemu
 %else
 Requires:	libvirt
 %endif
+%if 0%{?fedora}
 Requires:	python2-libvirt
+%else
+Requires:	libvirt-python
+%endif
 Requires:	procps
 
 
