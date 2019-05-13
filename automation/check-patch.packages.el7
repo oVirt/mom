@@ -2,9 +2,12 @@ automake
 autoconf
 dnf
 make
+libvirt-python
+python-coverage
+python2-six
+python2-mock
 python-devel
 python-nose
-python-mock
 git
 systemd
 yum
