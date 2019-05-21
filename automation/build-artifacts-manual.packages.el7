@@ -1,0 +1,10 @@
+automake
+autoconf
+dnf
+make
+python-devel
+python-nose
+python-mock
+git
+systemd
+yum

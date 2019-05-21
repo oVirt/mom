@@ -1,10 +1,12 @@
 automake
 autoconf
-dnf
 make
-python-devel
-python-nose
-python-mock
+python3-devel
+python3-nose
+python3-mock
+python2-devel
+python2-nose
+python2-mock
 git
 systemd
-yum
+dnf

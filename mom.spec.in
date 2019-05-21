@@ -1,9 +1,18 @@
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 %{!?with_check: %global with_check 0}
 
 %global		package_version @PACKAGE_VERSION@
 %global		package_name @PACKAGE_NAME@
+
+%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
+%global     python_interpreter %{__python3}
+%global     python_target_version python3
+%global     python_sitelib %{python3_sitelib}
+%else
+%global     python_interpreter %{__python2}
+%global     python_target_version python2
+%global     python_sitelib %{python2_sitelib}
+%endif
 
 Name:		%{package_name}
 Version:	@PACKAGE_RPM_VERSION@
@@ -15,9 +24,9 @@ License:	GPLv2
 URL:		http://www.ovirt.org
 Source:		 %{package_name}-%{package_version}.tar.gz
 BuildArch:	noarch
-BuildRequires:	python2-devel
-BuildRequires:	python2-nose
-BuildRequires:	python2-mock
+BuildRequires:	%{python_target_version}-devel
+BuildRequires:	%{python_target_version}-nose
+BuildRequires:	%{python_target_version}-mock
 
 Requires(post): systemd
 Requires(preun): systemd
@@ -32,8 +41,7 @@ Requires:	libvirt-daemon-driver-qemu
 Requires:	libvirt
 %endif
 %if 0%{?fedora}
-Requires:	python2-libvirt
-Requires:	python2-six
+Requires:	%{python_target_version}-libvirt
 %else
 Requires:	libvirt-python
 Requires:	python-six
@@ -58,7 +66,9 @@ designed to accommodate new mechanisms such as cgroups.
 %setup -q -n %{package_name}-%{package_version}
 
 %build
-%configure --docdir="%{_pkgdocdir}"
+%configure \
+        PYTHON="%{python_interpreter}" \
+        --docdir="%{_pkgdocdir}"
 make %{?_smp_mflags}
 
 %install
@@ -94,7 +104,7 @@ make check %{?_smp_mflags}
 
 %{_unitdir}/momd.service
 %{_sbindir}/momd
-%{python2_sitelib}/mom/
+%{python_sitelib}/mom/
 %{_pkgdocdir}/*
 
 %changelog
