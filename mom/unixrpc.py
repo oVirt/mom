@@ -2,7 +2,6 @@ import os
 from six.moves import xmlrpc_server, socketserver, http_client
 from six.moves.xmlrpc_client import ServerProxy, Transport
 import socket
-import string
 import base64
 
 class UnixXmlRpcHandler(xmlrpc_server.SimpleXMLRPCRequestHandler):

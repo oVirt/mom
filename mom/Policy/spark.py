@@ -22,7 +22,6 @@
 __version__ = 'SPARK-0.6.1'
 
 import re
-import string
 
 def _namelist(instance):
 	namelist, namedict, classlist = [], {}, [instance.__class__]
@@ -58,7 +57,7 @@ class GenericScanner:
 				rv.append(self.makeRE(name))
 
 		rv.append(self.makeRE('t_default'))
-		return string.join(rv, '|')
+		return '|'.join(rv)
 
 	def error(self, s, pos):
 		print("Lexical error at position %s" % pos)
@@ -103,7 +102,7 @@ class GenericParser:
 	def preprocess(self, rule, func):	return rule, func
 
 	def addRule(self, doc, func):
-		rules = string.split(doc)
+		rules = doc.split()
 
 		index = []
 		for i in range(len(rules)):
@@ -560,9 +559,9 @@ def _dump(tokens, states):
 		print('state {state}'.format(state=i))
 		for (lhs, rhs), pos, parent in states[i]:
 			print('\t {lhs} ::= '.format(lhs=lhs))
-			print(string.join(rhs[:pos]))
+			print(' '.join(rhs[:pos]))
 			print('. ')
-			print(string.join(rhs[pos:]))
+			print(' '.join(rhs[pos:]))
 			print(', {parent}'.format(parent=parent))
 		if i < len(tokens):
 			print()
