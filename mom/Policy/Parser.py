@@ -194,7 +194,7 @@ class GenericEvaluator(object):
         eg. << must appear before <
         """
         return sorted(self.operator_map.keys(),
-                      cmp = lambda x,y: cmp(len(x), len(y)),
+                      key = lambda x:len(x),
                       reverse = True)
 
     def parse_doc(self, doc):
