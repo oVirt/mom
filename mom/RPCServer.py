@@ -16,7 +16,7 @@
 
 import threading
 import os.path
-from types import IntType, LongType
+import six
 from six.moves.xmlrpc_client import Marshaller
 from six.moves.xmlrpc_server import SimpleXMLRPCServer
 from six.moves.xmlrpc_server import SimpleXMLRPCRequestHandler
@@ -36,9 +36,8 @@ def enable_i8():
     Enable i8 extension
     Python 2.7 knows how to read it, but sending needs to be configured
     """
-    Marshaller.dispatch[IntType] = big_int_marshaller
-    Marshaller.dispatch[LongType] = big_int_marshaller
-
+    for type in six.integer_types:
+        Marshaller.dispatch[type] = big_int_marshaller
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
