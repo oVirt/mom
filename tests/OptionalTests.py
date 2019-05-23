@@ -1,5 +1,6 @@
 import unittest
 from mom.optional import Optional
+import sys
 
 
 class OptionalTests(unittest.TestCase):
@@ -26,7 +27,10 @@ class OptionalTests(unittest.TestCase):
         self.assertEqual(False, Optional.missing()["key"].present)
 
     def test_missing_iter(self):
-        self.assertRaises(StopIteration, iter(Optional.missing()).__next__)
+        if sys.version_info[0] >= 3:
+            self.assertRaises(StopIteration, iter(Optional.missing()).__next__)
+        else:
+            self.assertRaises(StopIteration, iter(Optional.missing()).next)
 
     def test_value(self):
         self.assertEqual(True, Optional("val").present)
