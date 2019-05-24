@@ -49,9 +49,9 @@ def configure_logger(config):
         handler = logging.StreamHandler()
     else:
         print("logging to file %s" % log)
-        bytes = config.getint('logging', 'max-bytes')
+        max_bytes = config.getint('logging', 'max-bytes')
         backups = config.getint('logging', 'backup-count')
-        handler = logging.handlers.RotatingFileHandler(log, 'a', bytes, backups)
+        handler = logging.handlers.RotatingFileHandler(log, 'a', max_bytes, backups)
     handler.setLevel(level)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)

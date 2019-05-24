@@ -14,6 +14,7 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+import six
 import threading
 import time
 import re
@@ -53,9 +54,16 @@ class GuestMonitor(Monitor):
 
 class GuestMonitorThread(threading.Thread):
     def __init__(self, info, monitor):
-        threading.Thread.__init__(self, name="guest:%s" % id)
+        threading.Thread.__init__(self)
 
-        self.setName("GuestMonitor-%s" % info['name'])
+        name = "GuestMonitor-%s" % info['name']
+        if six.PY2:
+            # In python 2 the name should not have type 'unicode'.
+            # The name is only used for logging, so it should
+            # be safe to represent it in utf-8 encoding.
+            name = name.encode('utf-8')
+
+        self.setName(name)
         self.setDaemon(True)
         self.logger = logging.getLogger('mom.GuestMonitor.Thread')
 

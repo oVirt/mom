@@ -133,11 +133,11 @@ class _QemuGuestAgentSocketClient:
         seq = int(time.time() % 2147483647) # Long_max
         request = { 'execute': 'guest-sync', 'arguments': { 'id': seq } }
         req_str = json.dumps(request)
-        self._sock_send(sock, req_str)
+        self._sock_send(sock, req_str.encode('utf-8'))
 
         # Read data from the channel until we get a matching response
         while True:
-            response = self._sock_recv_until(sock, "\n")
+            response = self._sock_recv_until(sock, b"\n").decode('utf-8')
             resp_obj = json.loads(response)
             if 'return' in resp_obj:
                 try:
@@ -226,7 +226,7 @@ class _QemuGuestAgentSocketClient:
         """
         Receive data from the socket one byte at a time until the token is read
         """
-        data = ""
+        data = b""
         while True:
             if len(data) > 4096:
                 return None
@@ -240,7 +240,7 @@ class _QemuGuestAgentSocketClient:
                 self._sock_close(self.sock)
                 self.sock = None
                 raise ProtocolError(e.errno, e.strerror)
-            if ch == '':
+            if ch == b'':
                 print("Connection closed")
                 return None
             data += ch
@@ -267,8 +267,8 @@ class _QemuGuestAgentSocketClient:
         json_str = json.dumps(request)
 
         sock = self._make_connection()
-        self._sock_send(sock, json_str)
-        response = self._sock_recv_until(sock, "\n")
+        self._sock_send(sock, json_str.encode('utf-8'))
+        response = self._sock_recv_until(sock, b"\n").decode('utf-8')
         return QemuAgentRet(response)
 
 class _QemuGuestAgentAPI():

@@ -125,7 +125,7 @@ class libvirtInterface(HypervisorInterface):
         Something is probably wrong if more or less than 1 match is returned.
         """
         p1 = Popen(["ps", "axww"], stdout=PIPE).communicate()[0]
-        matches = re.findall("^\s*(\d+)\s+.*" + uuid, p1, re.M)
+        matches = re.findall(r"^\s*(\d+)\s+.*" + uuid, p1, re.M)
         if len(matches) < 1:
             self.logger.warn("No matching process for domain with uuid %s", \
                              uuid)

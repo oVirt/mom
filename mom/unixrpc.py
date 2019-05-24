@@ -31,7 +31,7 @@ class UnixXmlRpcClient(ServerProxy):
     def __init__(self, sock_path):
         # We can't pass funny characters in the host part of a URL, so we
         # encode the socket path in base16.
-        ServerProxy.__init__(self, 'http://' + base64.b16encode(sock_path),
+        ServerProxy.__init__(self, 'http://' + base64.b16encode(sock_path.encode('utf-8')),
                              transport=UnixXmlRpcTransport(),
                              allow_none=1)
 
@@ -42,6 +42,6 @@ class UnixXmlRpcTransport(Transport):
 class UnixXmlRpcHttpConnection(http_client.HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.connect(base64.b16decode(self.host))
+        self.sock.connect(base64.b16decode(self.host).decode('utf-8'))
 
 

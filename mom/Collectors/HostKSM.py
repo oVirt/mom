@@ -72,7 +72,7 @@ class HostKSM(Collector):
         if self.pid is None:
             return 0
         else:
-            return sum(map(int, file('/proc/%s/stat' % self.pid) \
+            return sum(map(int, open('/proc/%s/stat' % self.pid)
                        .read().split()[13:15]))
 
     def get_ksmd_cpu_usage(self):

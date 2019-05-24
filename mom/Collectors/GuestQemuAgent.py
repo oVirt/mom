@@ -128,7 +128,7 @@ class GuestQemuAgent(Collector):
         Convenience function to fetch a whole file using open/read/close APIs
         """
         fh = self.agent_cmd('file_open', path, "r")
-        data = ""
+        data = b""
         while True:
             ret = self.agent_cmd('file_read', fh, 1024)
             data += ret['buf']
@@ -138,7 +138,7 @@ class GuestQemuAgent(Collector):
                 raise CollectionError("Remote file '%s' is too large" % \
                                       path)
         self.agent_cmd('file_close', fh)
-        return data
+        return data.decode('utf-8')
 
     def collect(self):
         if not self.connect():

@@ -26,7 +26,7 @@ def sock_send(conn, msg):
     """
     Send a message via a socket connection.  '\n' marks the end of the message.
     """
-    msg = msg + "\n"
+    msg = msg + b"\n"
     sent = 0
     while sent < len(msg):
         ret = conn.send(msg[sent:])
@@ -38,7 +38,7 @@ def sock_receive(conn, logger=None):
     """
     Receive a '\n' terminated message via a socket connection.
     """
-    msg = ""
+    msg = b""
     done = False
     if logger:
         logger.debug('sock_receive(%s)' % conn)
@@ -46,15 +46,15 @@ def sock_receive(conn, logger=None):
         chunk = conn.recv(4096)
         if logger:
             logger.debug("sock_receive: received next chunk: %s" % repr(chunk))
-        if chunk == '':
+        if chunk == b'':
             done = True
         msg = msg + chunk
-        if msg[-1:] == '\n':
+        if msg[-1:] == b'\n':
             done = True
     if len(msg) == 0:
         raise socket.error("Unable to receive on socket")
     else:
-        return msg.rstrip("\n")
+        return msg.rstrip(b"\n")
 
 def sock_close(sock):
     try:
@@ -100,7 +100,7 @@ class GuestNetworkDaemon(Collector):
         except OSError as e:
             self.logger.warn("Cannot call name-to-ip-helper: %s", e.strerror)
             return None
-        matches = re.findall("^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
+        matches = re.findall(r"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
                              output, re.M)
         if len(matches) is not 1:
             self.logger.warn("Output from name-to-ip-helper %s is not an IP " \
@@ -133,8 +133,8 @@ class GuestNetworkDaemon(Collector):
         if self.socket is None:
             self.connect()
         try:
-            sock_send(self.socket, "stats")
-            data = sock_receive(self.socket, self.logger)
+            sock_send(self.socket, b"stats")
+            data = sock_receive(self.socket, self.logger).decode('utf-8')
         except socket.error as msg:
             sock_close(self.socket)
             self.socket = None
@@ -192,7 +192,7 @@ class _Server:
 
     def send_props(self, conn):
         response = "min_free:" + self.min_free + ",max_free:" + self.max_free
-        sock_send(conn, response)
+        sock_send(conn, response.encode('utf-8'))
 
     def send_stats(self, conn):
         data = self.collector.collect()
@@ -205,7 +205,7 @@ class _Server:
                    "major_fault:%i,minor_fault:%i" % \
                    (data['mem_available'], data['mem_free'], data['swap_in'], \
                     data['swap_out'], majflt, minflt)
-        sock_send(conn, response)
+        sock_send(conn, response.encode('utf-8'))
 
     def session(self, conn, addr):
         self.logger.debug("Connection received from %s", addr)
@@ -213,9 +213,9 @@ class _Server:
         while self.running:
             try:
                 cmd = sock_receive(conn)
-                if cmd == "props":
+                if cmd == b"props":
                     self.send_props(conn)
-                elif cmd == "stats":
+                elif cmd == b"stats":
                     self.send_stats(conn)
                 else:
                     break
