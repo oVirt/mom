@@ -377,7 +377,7 @@ class Evaluator(GenericEvaluator):
 
     def default(self, name, args, line):
         if name == 'eval':
-            return map(self.eval, args)[-1]
+            return list(map(self.eval, args))[-1]
 
         params, code = self.funcs[name]
         if len(params) != len(args):
