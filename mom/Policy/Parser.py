@@ -13,9 +13,10 @@
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+from __future__ import division
+
 import logging
 from functools import total_ordering
-
 import re
 from .spark import GenericScanner, GenericParser
 
@@ -96,11 +97,11 @@ class Scanner(GenericScanner):
         self.rv.append(NumericToken('float', s, line))
 
     def t_integer(self, s, line):
-        r' -?(0(?![0-9Xx])|[1-9][0-9]*)(?![0-9eE]) '
+        r' -?(0(?![0-9oXx])|[1-9][0-9]*)(?![0-9eE]) '
         self.rv.append(NumericToken('integer', s, line))
 
     def t_integer_with_exponent(self, s, line):
-        r' -?(0(?![0-9Xx])|[1-9][0-9]*)[Ee][+-]?[0-9]+ '
+        r' -?(0(?![0-9oXx])|[1-9][0-9]*)[Ee][+-]?[0-9]+ '
         # Python only recognizes scientific notation on float types
         self.rv.append(NumericToken('float', s, line))
 
@@ -109,7 +110,7 @@ class Scanner(GenericScanner):
         self.rv.append(NumericToken('hex', s, line))
 
     def t_octal(self, s, line):
-        r' 0[0-9]+ '
+        r' 0o[0-9]+ '
         self.rv.append(NumericToken('octal', s, line))
 
     def t_builtin_op(self, s, line):

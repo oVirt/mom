@@ -55,7 +55,7 @@ class TestEval(unittest.TestCase):
     def test_basic_math(self):
         pol = """
         10
-        00                  # Octal
+        0o0                  # Octal
         .3                  # The leading 0 on a float is not required
         (* 0 1)
         (+ 1 2)
@@ -66,11 +66,11 @@ class TestEval(unittest.TestCase):
         (* (- 8 6) 9)
         (>> (<< 1 4) 2)
         (+ 0xFF 0x1)        # Hex numbers
-        (* 011 02)
+        (* 0o11 0o2)
         (+ 0xa 10)          # Numeric type mixing
         (+ 10.0e3 100e-2)   # Scientific notation for integers and floats
         """
-        self.verify(pol, [ 10, 0, 0.3, 0, 3, 5, 5.5, 18, -8, 18, 4, 256, 18, 20,
+        self.verify(pol, [ 10, 0, 0.3, 0, 3, 5.5, 5.5, 18, -8, 18, 4, 256, 18, 20,
                            10001.0 ])
 
     def test_compare(self):
