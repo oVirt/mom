@@ -14,12 +14,14 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 import logging
+from functools import total_ordering
 
 import re
 from .spark import GenericScanner, GenericParser
 
 class PolicyError(Exception): pass
 
+@total_ordering
 class Token(object):
     def __init__(self, kind, value=None, line=None):
         self.kind = kind
@@ -29,8 +31,14 @@ class Token(object):
         else:
             self.value = value
 
-    def __cmp__(self, rhs):
-        return cmp(self.kind, rhs)
+    def __eq__(self, rhs):
+        return self.kind == rhs
+
+    def __ne__(self, rhs):
+        return not self == rhs
+
+    def __lt__(self, rhs):
+        return self.kind < rhs
 
     def __repr__(self):
         return '[%s %s]' % (self.kind, self.value)
