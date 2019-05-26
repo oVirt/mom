@@ -37,7 +37,7 @@ def _namelist(instance):
 class GenericScanner:
 	def __init__(self):
 		pattern = self.reflect()
-		self.re = re.compile(pattern, re.VERBOSE)
+		self.re = re.compile(pattern, re.VERBOSE | re.UNICODE)
 
 		self.index2func = {}
 		for name, number in list(self.re.groupindex.items()):
