@@ -1,0 +1,10 @@
+archs:
+  - x86_64:
+      distributions:
+        - el7
+        - fc28
+        - fc29
+        - fc30
+
+release_branches:
+  master: ["ovirt-master", "ovirt-4.3", "ovirt-4.2"]
