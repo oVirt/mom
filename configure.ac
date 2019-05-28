@@ -56,6 +56,7 @@ AC_CONFIG_FILES([
 	mom.spec
 	Makefile
 	contrib/Makefile
+	contrib/mom-rpcclient.py
 	doc/Makefile
 	mom/Makefile
 	mom/Collectors/Makefile
@@ -64,6 +65,8 @@ AC_CONFIG_FILES([
 	mom/HypervisorInterfaces/Makefile
 	mom/Policy/Makefile
 	tests/Makefile
+	momd
+	mom-guestd
 ])
 AC_CONFIG_FILES(
 	[tests/run_tests_local.sh],
