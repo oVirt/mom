@@ -22,7 +22,7 @@ Summary:	Dynamically manage system resources on virtualization hosts
 Group:		Applications/System
 License:	GPLv2
 URL:		http://www.ovirt.org
-Source:		 %{package_name}-%{package_version}.tar.gz
+Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_version}.tar.gz
 BuildArch:	noarch
 BuildRequires:	%{python_target_version}-devel
 BuildRequires:	%{python_target_version}-nose
@@ -72,7 +72,6 @@ designed to accommodate new mechanisms such as cgroups.
 make %{?_smp_mflags}
 
 %install
-rm -rf "%{buildroot}"
 make DESTDIR="%{buildroot}" install
 
 install -dm 755 %{buildroot}%{_unitdir}
@@ -101,11 +100,12 @@ make check %{?_smp_mflags}
 
 %dir %{_pkgdocdir}/examples
 %{_pkgdocdir}/examples/*
+# COPYING is handled by license macro, avoid to ship duplicates
+%exclude %{_pkgdocdir}/COPYING
 
 %{_unitdir}/momd.service
 %{_sbindir}/momd
 %{python_sitelib}/mom/
-%{_pkgdocdir}/*
 
 %changelog
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.6-6
