@@ -1,5 +1,5 @@
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
-%{!?with_check: %global with_check 0}
+%{!?with_check: %global with_check 1}
 
 %global		package_version @PACKAGE_VERSION@
 %global		package_name @PACKAGE_NAME@
@@ -19,7 +19,6 @@ Version:	@PACKAGE_RPM_VERSION@
 Release:	@PACKAGE_RPM_RELEASE@%{?release_suffix}%{?dist}
 Summary:	Dynamically manage system resources on virtualization hosts
 
-Group:		Applications/System
 License:	GPLv2
 URL:		http://www.ovirt.org
 Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_version}.tar.gz
@@ -108,6 +107,15 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Tue Jul 02 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.5.13-1
+- Rebase on upstream 0.5.13
+
+* Fri Jun 14 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.5.12-1
+- Rebase on upstream 0.5.12
+
+* Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.6-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.6-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
