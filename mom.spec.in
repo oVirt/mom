@@ -34,13 +34,10 @@ BuildRequires: systemd
 
 # MOM makes use of libvirt by way of the python bindings to monitor and
 # interact with virtual machines.
-%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
 Requires:	libvirt-daemon-driver-qemu
-%else
-Requires:	libvirt
-%endif
-%if 0%{?fedora}
+%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
 Requires:	%{python_target_version}-libvirt
+Requires:	%{python_target_version}-six
 %else
 Requires:	libvirt-python
 Requires:	python-six
