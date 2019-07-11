@@ -5,11 +5,11 @@
 %global		package_name @PACKAGE_NAME@
 
 %if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
-%global     python_interpreter %{__python3}
+%global     python_interpreter /usr/bin/python3
 %global     python_target_version python3
 %global     python_sitelib %{python3_sitelib}
 %else
-%global     python_interpreter %{__python2}
+%global     python_interpreter /usr/bin/python2
 %global     python_target_version python2
 %global     python_sitelib %{python2_sitelib}
 %endif
