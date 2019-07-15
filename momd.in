@@ -17,10 +17,8 @@
 
 import sys
 import signal
-import time
 import os
 import atexit
-import re
 from optparse import OptionParser
 from six.moves import configparser
 import logging
@@ -51,7 +49,7 @@ def daemonize(pid_file):
 
     pid = str(os.getpid())
     try:
-        file(pid_file,'w+').write("%s\n" % pid)
+        open(pid_file,'w+').write("%s\n" % pid)
     except EnvironmentError as e:
         sys.stderr.write("momd: failed to write pid file: %d (%s)\n" %
                          (e.errno, e.strerror))
@@ -60,9 +58,9 @@ def daemonize(pid_file):
 
     sys.stdout.flush()
     sys.stderr.flush()
-    si = file('/dev/null', 'r')
-    so = file('/dev/null', 'a+')
-    se = file('/dev/null', 'a+', 0)
+    si = open('/dev/null', 'r')
+    so = open('/dev/null', 'a+')
+    se = open('/dev/null', 'a+')
     os.dup2(si.fileno(), sys.stdin.fileno())
     os.dup2(so.fileno(), sys.stdout.fileno())
     os.dup2(se.fileno(), sys.stderr.fileno())
