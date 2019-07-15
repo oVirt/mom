@@ -104,6 +104,9 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Mon Jul 15 2019 Andrej Krejcir <akrejcir@redhat.com> - 0.5.14-1
+- Rebase on upstream 0.5.14
+
 * Tue Jul 02 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.5.13-1
 - Rebase on upstream 0.5.13
 
