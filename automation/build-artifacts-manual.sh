@@ -12,7 +12,7 @@ BUILD_DIR="$PWD/rpmbuild"
 
 SUFFIX=
 . automation/config.sh
-[ -n "${VERSION_SUFFIX}" ] && SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
+[ -n "${RELEASE_SUFFIX}" ] && SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
 
 # build the rpms assuming the tarball is in the project's directory
 rpmbuild \

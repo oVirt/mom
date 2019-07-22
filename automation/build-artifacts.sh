@@ -13,7 +13,7 @@ make dist
 
 SUFFIX=
 . automation/config.sh
-[ -n "${VERSION_SUFFIX}" ] && SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
+[ -n "${RELEASE_SUFFIX}" ] && SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
 
 rpmbuild \
     -D "_topdir $BUILD_DIR" \
