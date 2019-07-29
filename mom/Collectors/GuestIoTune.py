@@ -30,22 +30,22 @@ class GuestIoTune(Collector):
             return {'name': self.name, 'path':self.path, 'ioTune':self.current.vals}
 
         def setTotalBytesSec(self, val):
-            self.current.vals['total_bytes_sec'] = val
+            self.current.vals['total_bytes_sec'] = int(val)
 
         def setReadBytesSec(self, val):
-            self.current.vals['read_bytes_sec'] = val
+            self.current.vals['read_bytes_sec'] = int(val)
 
         def setWriteBytesSec(self, val):
-            self.current.vals['write_bytes_sec'] = val
+            self.current.vals['write_bytes_sec'] = int(val)
 
         def setTotalIopsSec(self, val):
-            self.current.vals['total_iops_sec'] = val
+            self.current.vals['total_iops_sec'] = int(val)
 
         def setReadIopsSec(self, val):
-            self.current.vals['read_iops_sec'] = val
+            self.current.vals['read_iops_sec'] = int(val)
 
         def setWriteIopsSec(self, val):
-            self.current.vals['write_iops_sec'] = val
+            self.current.vals['write_iops_sec'] = int(val)
 
 
     def __init__(self, properties):

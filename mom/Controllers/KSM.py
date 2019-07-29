@@ -43,7 +43,7 @@ class KSM:
     def process(self, host, guests):
         outputs = {}
         for key in self.cur.keys():
-            rule_var =  host.GetControl('ksm_' + key)
+            rule_var =  int(host.GetControl('ksm_' + key))
             if rule_var is not None and rule_var != self.cur[key]:
                 outputs[key] = rule_var
                 self.cur[key] = rule_var
