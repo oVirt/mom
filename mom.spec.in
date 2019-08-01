@@ -104,6 +104,10 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Thu Aug 01 2019 Andrej Krejcir <akrejcir@redhat.com> - 0.5.15-1
+- Controllers convert floating point values to integers
+  Resolves: rhbz#1733546
+
 * Mon Jul 15 2019 Andrej Krejcir <akrejcir@redhat.com> - 0.5.14-1
 - Rebase on upstream 0.5.14
 
