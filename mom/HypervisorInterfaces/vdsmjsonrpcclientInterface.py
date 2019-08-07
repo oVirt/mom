@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 from vdsm import client
+from vdsm.config import config as vdsmconfig
 
 from .vdsmCommon import memoize
 from .vdsmRpcBase import VdsmRpcBase
@@ -28,7 +29,14 @@ CACHE_EXPIRATION = 5
 class JsonRpcVdsmClientInterface(VdsmRpcBase):
     def __init__(self):
         super(JsonRpcVdsmClientInterface, self).__init__()
-        self._vdsm_api = client.connect(host="localhost")
+
+        try:
+            use_tls = vdsmconfig.getboolean('vars', 'ssl')
+        except Exception as e:
+            self._logger.warn("Failed to read VDSM config file, using SSL connection. %s", e)
+            use_tls = True
+
+        self._vdsm_api = client.connect(host="localhost", use_tls=use_tls)
         self.checked_call(self._vdsm_api.Host.ping2)
 
     @memoize(expiration=CACHE_EXPIRATION)
