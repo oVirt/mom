@@ -30,22 +30,22 @@ class GuestIoTune(Collector):
             return {'name': self.name, 'path':self.path, 'ioTune':self.current.vals}
 
         def setTotalBytesSec(self, val):
-            self.current.vals['total_bytes_sec'] = int(val)
+            self.current.vals['total_bytes_sec'] = int_or_none(val)
 
         def setReadBytesSec(self, val):
-            self.current.vals['read_bytes_sec'] = int(val)
+            self.current.vals['read_bytes_sec'] = int_or_none(val)
 
         def setWriteBytesSec(self, val):
-            self.current.vals['write_bytes_sec'] = int(val)
+            self.current.vals['write_bytes_sec'] = int_or_none(val)
 
         def setTotalIopsSec(self, val):
-            self.current.vals['total_iops_sec'] = int(val)
+            self.current.vals['total_iops_sec'] = int_or_none(val)
 
         def setReadIopsSec(self, val):
-            self.current.vals['read_iops_sec'] = int(val)
+            self.current.vals['read_iops_sec'] = int_or_none(val)
 
         def setWriteIopsSec(self, val):
-            self.current.vals['write_iops_sec'] = int(val)
+            self.current.vals['write_iops_sec'] = int_or_none(val)
 
 
     def __init__(self, properties):
@@ -110,3 +110,6 @@ class GuestIoTune(Collector):
 
         return {'io_tune': resList, 'io_tune_current': currentList}
 
+
+def int_or_none(val):
+    return int(val) if val is not None else None

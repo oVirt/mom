@@ -29,8 +29,8 @@ class KSM:
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']
         self.logger = logging.getLogger('mom.Controllers.KSM')
-        self.cur = {'run': '0', 'pages_to_scan': '0', 'sleep_millisecs': '0', \
-                    'merge_across_nodes': '8'}
+        self.cur = {'run': 0, 'pages_to_scan': 0, 'sleep_millisecs': 0,
+                    'merge_across_nodes': 8}
         self.logger.debug("KSM policy initialized")
 
     def write_value(self, fname, value):
@@ -43,8 +43,12 @@ class KSM:
     def process(self, host, guests):
         outputs = {}
         for key in self.cur.keys():
-            rule_var =  int(host.GetControl('ksm_' + key))
-            if rule_var is not None and rule_var != self.cur[key]:
+            rule_var = host.GetControl('ksm_' + key)
+            if rule_var is None:
+                continue
+
+            rule_var = int(rule_var)
+            if rule_var != self.cur[key]:
                 outputs[key] = rule_var
                 self.cur[key] = rule_var
 
