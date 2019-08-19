@@ -86,7 +86,7 @@ class HostKSM(Collector):
         total_jiffs = os.sysconf('SC_CLK_TCK') * self.interval
         # Calculate percentage of total jiffies during this interval.
         self.last_jiff = cur_jiff
-        return 100 * interval_jiffs / total_jiffs
+        return int(100 * interval_jiffs / total_jiffs)
 
     def get_shareable_mem(self):
         """
