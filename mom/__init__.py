@@ -54,11 +54,21 @@ class MOM:
             if not rpc_server.thread_ok():
                 self.config.set('__int__', 'running', '0')
 
+        self.logger.info("Shutting down RPC server.")
         rpc_server.shutdown()
+
+        self.logger.info("Waiting for RPC server thread.")
         self._wait_for_thread(rpc_server, 5)
+
+        self.logger.info("Waiting for policy engine thread.")
         self._wait_for_thread(policy_engine, 10)
+
+        self.logger.info("Waiting for guest manager thread.")
         self._wait_for_thread(guest_manager, 5)
+
+        self.logger.info("Waiting for host monitor thread.")
         self._wait_for_thread(host_monitor, 5)
+
         self.logger.info("MOM ending")
 
     def shutdown(self):
