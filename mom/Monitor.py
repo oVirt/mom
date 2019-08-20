@@ -29,8 +29,8 @@ class Monitor(object):
     time and queued so averages and trends can be analyzed.
     """
     def __init__(self, config, name):
-        # Guard the data with a semaphore to ensure consistency.
-        self.data_sem = threading.Semaphore()
+        # Guard the data with a lock to ensure consistency.
+        self.data_lock = threading.Lock()
         self.properties = {}
         self.statistics = deque()
         self.variables = {}
@@ -117,11 +117,11 @@ class Monitor(object):
         for k in self.optional_fields:
             data.setdefault(k, None)
 
-        self.data_sem.acquire()
-        self.statistics.append(data)
-        if len(self.statistics) > self.config.getint('main', 'sample-history-length'):
-            self.statistics.popleft()
-        self.data_sem.release()
+        with self.data_lock:
+            self.statistics.append(data)
+            if len(self.statistics) > self.config.getint('main', 'sample-history-length'):
+                self.statistics.popleft()
+
         self._set_ready()
 
         if self.plotter is not None:
@@ -138,13 +138,13 @@ class Monitor(object):
         if self.ready is not True:
             return None
         ret = Entity(monitor=self)
-        self.data_sem.acquire()
-        for prop in self.properties.keys():
-            ret._set_property(prop, self.properties[prop])
-        for var in self.variables.keys():
-            ret._set_variable(var, self.variables[var])
-        ret._set_statistics(self.statistics)
-        self.data_sem.release()
+        with self.data_lock:
+            for prop in self.properties.keys():
+                ret._set_property(prop, self.properties[prop])
+            for var in self.variables.keys():
+                ret._set_variable(var, self.variables[var])
+            ret._set_statistics(self.statistics)
+
         ret._finalize()
         return ret
 
@@ -152,10 +152,9 @@ class Monitor(object):
         """
         Update the variables array to store any updates from an Entity
         """
-        self.data_sem.acquire()
-        for (var, val) in variables.items():
-            self.variables[var] = val
-        self.data_sem.release()
+        with self.data_lock:
+            for (var, val) in variables.items():
+                self.variables[var] = val
 
     def terminate(self):
         """

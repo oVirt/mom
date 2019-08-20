@@ -48,7 +48,7 @@ class GuestManager(threading.Thread):
         self.hypervisor_iface = hypervisor_iface
         self.logger = logging.getLogger('mom.GuestManager')
         self.guests = {}
-        self.guests_sem = threading.Semaphore()
+        self.guests_lock = threading.Lock()
         self._threaded = config.getboolean('main',
                                            'guest-manager-multi-thread')
 
@@ -58,23 +58,23 @@ class GuestManager(threading.Thread):
         Return: A dictionary of Entities, indexed by guest id
         """
         ret = {}
-        self.guests_sem.acquire()
-        for id, guest in self.guests.items():
-            entity = guest.monitor.interrogate()
-            if entity is not None:
-                ret[id] = entity
-        self.guests_sem.release()
+        with self.guests_lock:
+            for id, guest in self.guests.items():
+                entity = guest.monitor.interrogate()
+                if entity is not None:
+                    ret[id] = entity
+
         return ret
 
     def rpc_get_active_guests(self):
         ret = []
-        self.guests_sem.acquire()
-        for id, guest in self.guests.items():
-            if guest.monitor.isReady():
-                name = guest.monitor.getGuestName()
-                if name is not None:
-                    ret.append(name)
-        self.guests_sem.release()
+        with self.guests_lock:
+            for id, guest in self.guests.items():
+                if guest.monitor.isReady():
+                    name = guest.monitor.getGuestName()
+                    if name is not None:
+                        ret.append(name)
+
         return ret
 
     def run(self):
@@ -106,9 +106,10 @@ class GuestManager(threading.Thread):
         we are not already tracking.  The GuestMonitor constructor might block
         so don't hold guests_sem while calling it.
         """
-        self.guests_sem.acquire()
-        spawn_list = set(domain_list) - set(self.guests)
-        self.guests_sem.release()
+        with self.guests_lock:
+            spawn_list = set(domain_list) - set(self.guests)
+
+        new_guests = {}
         for id in spawn_list:
             info = self.hypervisor_iface.getVmInfo(id)
             if info is None:
@@ -116,11 +117,13 @@ class GuestManager(threading.Thread):
                     "can't start", id)
                 continue
 
-            guest = self._create_monitor(info)
+            new_guests[id] = self._create_monitor(info)
 
-            if is_running(guest):
-                with self.guests_sem:
-                    self._register_guest(id, guest)
+        if new_guests:
+            with self.guests_lock:
+                for id, guest in new_guests.items():
+                    if is_running(guest):
+                        self._register_guest(id, guest)
 
     def _create_monitor(self, info):
         guest = GuestMonitor(self.config, info, self.hypervisor_iface)
@@ -136,12 +139,12 @@ class GuestManager(threading.Thread):
         Wait for GuestMonitors to exit
         """
         while True:
-            self.guests_sem.acquire()
-            if self.guests:
-                id, guest = self.guests.popitem()
-            else:
-                id = None
-            self.guests_sem.release()
+            with self.guests_lock:
+                if self.guests:
+                    id, guest = self.guests.popitem()
+                else:
+                    id = None
+
             if id is not None:
                 if guest.thread is not None:
                     guest.thread.join(0)
@@ -152,23 +155,24 @@ class GuestManager(threading.Thread):
         """
         Check for stale and/or deceased guest monitors and remove them.
         """
-        self.guests_sem.acquire()
-        for id, guest in self.guests.items():
-            if guest.thread is None:
-                # no thread to babysit
-                # but maybe a Monitor to shutdown
-                if id not in domain_list:
+        with self.guests_lock:
+            # Iterating over a copy of dictionary, otherwise
+            # deleting an element will raise RuntimeError
+            for id, guest in self.guests.copy().items():
+                if guest.thread is None:
+                    # no thread to babysit
+                    # but maybe a Monitor to shutdown
+                    if id not in domain_list:
+                        self._unregister_guest(id)
+                # Check if the thread has died
+                elif not guest.thread.is_alive():
+                    del self.guests[id]
+                # Check if the domain has ended according to hypervisor interface
+                elif id not in domain_list:
                     self._unregister_guest(id)
-            # Check if the thread has died
-            elif not guest.thread.is_alive():
-                del self.guests[id]
-            # Check if the domain has ended according to hypervisor interface
-            elif id not in domain_list:
-                self._unregister_guest(id)
-        self.guests_sem.release()
 
     def _collect_from_guest_monitors(self):
-        with self.guests_sem:
+        with self.guests_lock:
             for uuid, guest in self.guests.items():
                 if guest.monitor.should_run():
                     guest.monitor.collect()

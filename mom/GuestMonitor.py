@@ -33,10 +33,9 @@ class GuestMonitor(Monitor):
         self.interval = self.config.getint('main', 'guest-monitor-interval')
 
         Monitor.__init__(self, config, info['name'])
-        self.data_sem.acquire()
-        self.properties.update(info)
-        self.properties['hypervisor_iface'] = hypervisor_iface
-        self.data_sem.release()
+        with self.data_lock:
+            self.properties.update(info)
+            self.properties['hypervisor_iface'] = hypervisor_iface
 
         collector_list = self.config.get('guest', 'collectors')
         self.collectors = Collector.get_collectors(collector_list,
