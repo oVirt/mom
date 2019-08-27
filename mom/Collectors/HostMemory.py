@@ -76,6 +76,6 @@ class HostMemory(Collector):
                  'swap_usage': swap_total - swap_free }
         return data
 
-    def getFields(self=None):
-        return set(['mem_available', 'mem_unused', 'mem_free', 'swap_in', \
-                   'swap_out', 'anon_pages', 'swap_total', 'swap_usage'])
+    def getFields(self):
+        return {'mem_available', 'mem_unused', 'mem_free', 'swap_in', 'swap_out',
+                'anon_pages', 'swap_total', 'swap_usage'}

@@ -126,18 +126,18 @@ class vdsmInterface(HypervisorInterface):
             e.handle_exception()
 
     def getVmInfo(self, id):
-        data = {}
-        data['uuid'] = id
-        data['pid'] = self.getVmPid(id)
-        data['name'] = self.getVmName(id)
+        data = {'uuid': id,
+                'pid': self.getVmPid(id),
+                'name': self.getVmName(id)}
+
         if None in data.values():
             return None
         return data
 
-    def getStatsFields(self=None):
-        return set(['mem_available', 'mem_unused', 'mem_free',
-                    'major_fault', 'minor_fault', 'swap_in', 'swap_out',
-                    'swap_total', 'swap_usage'])
+    def getStatsFields(self):
+        return {'mem_available', 'mem_unused', 'mem_free', 'major_fault',
+                'minor_fault', 'swap_in', 'swap_out', 'swap_total',
+                'swap_usage'}
 
     def getVmBalloonInfo(self, uuid):
         try:
@@ -182,7 +182,7 @@ class vdsmInterface(HypervisorInterface):
 
             #Get num of vCPUs
             vcpuCount = response['statsList'][0].get('vcpuCount', None)
-            if vcpuCount == None:
+            if vcpuCount is None:
                 return None
             else:
                 ret['vcpu_count'] = vcpuCount

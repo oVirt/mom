@@ -17,8 +17,6 @@
 from collections import namedtuple
 import threading
 import time
-import sys
-import re
 import logging
 from mom.GuestMonitor import GuestMonitor
 from mom.GuestMonitor import GuestMonitorThread

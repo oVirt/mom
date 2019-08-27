@@ -2,7 +2,6 @@ from six.moves import configparser
 import os
 import time
 import re
-import logging
 import logging.handlers
 from mom.LogUtils import *
 from mom.HostMonitor import HostMonitor
@@ -175,7 +174,7 @@ class MOM:
         if basedir == '':
             return ''
 
-        regex = re.compile('^momplot-(\d{3})$')
+        regex = re.compile(r'^momplot-(\d{3})$')
         try:
             names = os.listdir(basedir)
         except OSError as e:

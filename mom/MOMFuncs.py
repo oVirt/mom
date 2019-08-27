@@ -14,9 +14,7 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-import logging
 from .LogUtils import *
-import numbers
 
 EXPORTED_ATTRIBUTE = "__mom_exported__"
 

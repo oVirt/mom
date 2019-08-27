@@ -18,7 +18,7 @@ import threading
 import time
 import logging
 import os
-from .Policy.Policy import Policy, PolicyError
+from .Policy.Policy import Policy
 
 class PolicyEngine(threading.Thread):
     """

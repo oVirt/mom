@@ -14,10 +14,6 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-import sys
-import signal
-import socket
-import logging
 from mom.Collectors.Collector import *
 from mom.Collectors.QemuGuestAgentClient import *
 
@@ -84,9 +80,9 @@ class GuestQemuAgent(Collector):
             # Convert error data into a string of the form:
             #    "foo=bar, whiz=bang"
             try:
-                details = reduce(lambda x, y: x + ", %s" % y,
-                                 map(lambda x: "%s=%s" % x,
-                                     ret.error['data'].items()))
+                details = ", ".join(
+                    ("%s=%s" % (k, v) for k, v in ret.error['data'].items())
+                )
             except KeyError:
                 details = ""
 
@@ -177,7 +173,7 @@ class GuestQemuAgent(Collector):
                  'swap_usage': swap_total - swap_free }
         return data
 
-    def getFields(self=None):
-        return set(['mem_available', 'mem_unused', 'mem_free',
-                    'major_fault', 'minor_fault', 'swap_in', 'swap_out',
-                    'swap_total', 'swap_usage'])
+    def getFields(self):
+        return {'mem_available', 'mem_unused', 'mem_free', 'major_fault',
+                'minor_fault', 'swap_in', 'swap_out', 'swap_total',
+                'swap_usage'}

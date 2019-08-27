@@ -14,11 +14,8 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-import sys
-import signal
 import socket
 from subprocess import *
-import logging
 from mom.Collectors.Collector import *
 from mom.Collectors.HostMemory import HostMemory
 
@@ -156,9 +153,9 @@ class GuestNetworkDaemon(Collector):
                 ret[key] = result[key]
         return ret
 
-    def getFields(self=None):
-        return set(['mem_available', 'mem_unused', 'major_fault', 'minor_fault',
-                    'swap_in', 'swap_out'])
+    def getFields(self):
+        return {'mem_available', 'mem_unused', 'major_fault', 'minor_fault',
+                'swap_in', 'swap_out'}
 
 #
 # Begin Server-side code that runs on the guest

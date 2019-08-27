@@ -17,7 +17,6 @@
 import six
 import threading
 import time
-import re
 import logging
 from mom.Monitor import Monitor
 from mom.Collectors import Collector

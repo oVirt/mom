@@ -32,6 +32,6 @@ class HostTime(Collector):
                  'time_second': now.second, 'time_microsecond': now.microsecond }
         return data
 
-    def getFields(self=None):
-        return set(['time_year', 'time_month', 'time_day', 'time_hour', \
-                   'time_minute', 'time_second', 'time_microsecond'])
+    def getFields(self):
+        return {'time_year', 'time_month', 'time_day', 'time_hour',
+                'time_minute', 'time_second', 'time_microsecond'}

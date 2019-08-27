@@ -116,7 +116,6 @@ class HostKSM(Collector):
         data['ksmd_cpu_usage'] = self.get_ksmd_cpu_usage()
         return data
 
-    def getFields(self=None):
-        f = lambda x: 'ksm_' + x
-        return set(map(f, HostKSM.sysfs_keys)) | set(['ksm_shareable', \
-                   'ksmd_cpu_usage'])
+    def getFields(self):
+        return {'ksm_' + x for x in HostKSM.sysfs_keys} | \
+               {'ksm_shareable', 'ksmd_cpu_usage'}

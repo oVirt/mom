@@ -15,7 +15,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import threading
-import os.path
 import six
 from six.moves.xmlrpc_client import Marshaller
 from six.moves.xmlrpc_server import SimpleXMLRPCServer

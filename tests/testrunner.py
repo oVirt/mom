@@ -21,9 +21,7 @@ import os
 import unittest
 from nose import config
 from nose import core
-from nose import result
 
-import mom
 
 class MomTestCase(unittest.TestCase):
     def __init__(self, *args, **kwargs):

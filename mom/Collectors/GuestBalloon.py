@@ -19,8 +19,8 @@ class GuestBalloon(Collector):
     """
     This Collector uses hypervisor interface to collect guest balloon info
     """
-    def getFields(self=None):
-        return set(['balloon_cur', 'balloon_max', 'balloon_min'])
+    def getFields(self):
+        return {'balloon_cur', 'balloon_max', 'balloon_min'}
 
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']
@@ -39,7 +39,7 @@ class GuestBalloon(Collector):
 
     def collect(self):
         stat = self.hypervisor_iface.getVmBalloonInfo(self.uuid)
-        if stat == None:
+        if stat is None:
             self.stats_error('getVmBalloonInfo() is not ready')
         else:
             self.balloon_info_available = True

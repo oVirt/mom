@@ -271,10 +271,10 @@ class libvirtInterface(HypervisorInterface):
         # Retrieve the current cpu tuning params
         ret.update(domain.schedulerParameters())
 
-        if ret['vcpu_quota'] == None:
+        if ret['vcpu_quota'] is None:
             ret['vcpu_quota'] = 0
 
-        if ret['vcpu_period'] == None:
+        if ret['vcpu_period'] is None:
             ret['vcpu_period'] = 0
 
         # Get the number of vcpus

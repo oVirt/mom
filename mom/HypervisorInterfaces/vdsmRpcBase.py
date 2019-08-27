@@ -47,18 +47,20 @@ class VdsmRpcBase(HypervisorInterface):
                   "please upgrade guest agent"
             raise HypervisorInterfaceError(msg)
 
-        ret = {}
-        ret['mem_available'] = int(stats['mem_total'])
-        ret['mem_unused'] = int(stats['mem_unused'])
-        ret['mem_free'] = int(stats['mem_free'])
-        ret['major_fault'] = int(stats['majflt'])
-        ret['minor_fault'] = int(stats['pageflt']) - int(stats['majflt'])
-        ret['swap_in'] = int(stats['swap_in'])
-        ret['swap_out'] = int(stats['swap_out'])
+        ret = {
+            'mem_available': int(stats['mem_total']),
+            'mem_unused': int(stats['mem_unused']),
+            'mem_free': int(stats['mem_free']),
+            'major_fault': int(stats['majflt']),
+            'minor_fault': int(stats['pageflt']) - int(stats['majflt']),
+            'swap_in': int(stats['swap_in']),
+            'swap_out': int(stats['swap_out']),
 
-        # get swap size and usage information if available
-        ret['swap_total'] = int(stats.get('swap_total', 0))
-        ret['swap_usage'] = int(stats.get('swap_usage', 0))
+            # get swap size and usage information if available
+            'swap_total': int(stats.get('swap_total', 0)),
+            'swap_usage': int(stats.get('swap_usage', 0))
+        }
+
 
         self._logger.debug('Memory stats: %s', ret)
         return ret

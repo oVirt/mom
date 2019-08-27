@@ -54,8 +54,8 @@ class GuestIoTune(Collector):
         self.logger = logging.getLogger('mom.Collectors.IoTuneInfo')
         self.info_available = True
 
-    def getFields(self=None):
-        return set(['io_tune', 'io_tune_current'])
+    def getFields(self):
+        return {'io_tune', 'io_tune_current'}
 
     def stats_error(self, msg):
         if self.info_available:

@@ -41,7 +41,7 @@ class Collector:
         """
         return {}
 
-    def getFields(self=None):
+    def getFields(self):
         """
         Used to query the names of mandatory statistics fields that this
         Collector will return.
@@ -55,7 +55,7 @@ class Collector:
         """
         return set()
 
-    def getOptionalFields(self=None):
+    def getOptionalFields(self):
         """
         Used to query the names of optional statistics fields that this
         Collector will return.

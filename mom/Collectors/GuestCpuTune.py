@@ -22,8 +22,8 @@ class GuestCpuTune(Collector):
         consumption, this number refers to a percentage value [0 -100].
     vcpu_count - Number of cpus on the vm.
     """
-    def getFields(self=None):
-        return set(['vcpu_quota', 'vcpu_period', 'vcpu_user_limit', 'vcpu_count'])
+    def getFields(self):
+        return {'vcpu_quota', 'vcpu_period', 'vcpu_user_limit', 'vcpu_count'}
 
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']
@@ -43,7 +43,7 @@ class GuestCpuTune(Collector):
     def collect(self):
         stat = self.hypervisor_iface.getVmCpuTuneInfo(self.uuid)
 
-        if stat == None:
+        if stat is None:
             self.stats_error('getVmCpuTuneInfo() is not ready')
         else:
             self.cpu_tune_info_available = True

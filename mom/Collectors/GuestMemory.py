@@ -23,11 +23,11 @@ class GuestMemory(Collector):
     This Collector uses hypervisor interface to collect guest memory statistics
     """
     def getFields(self):
-        return set(( 'mem_available', 'mem_unused', 'major_fault', 'minor_fault',
-                     'swap_in', 'swap_out' ))
+        return {'mem_available', 'mem_unused', 'major_fault', 'minor_fault',
+                'swap_in', 'swap_out'}
 
     def getOptionalFields(self):
-        return set(["swap_total", "swap_usage"])
+        return {"swap_total", "swap_usage"}
 
     def __init__(self, properties):
         self.hypervisor_iface = properties['hypervisor_iface']

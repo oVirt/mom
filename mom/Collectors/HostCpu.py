@@ -35,5 +35,5 @@ class HostCpu(Collector):
         data = { 'cpu_count': cpu_count }
         return data
 
-    def getFields(self=None):
-        return set(['cpu_count'])
+    def getFields(self):
+        return {'cpu_count'}
