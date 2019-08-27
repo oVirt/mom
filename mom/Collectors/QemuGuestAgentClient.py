@@ -14,6 +14,7 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+import logging
 import socket
 import time
 import json
@@ -67,12 +68,12 @@ class QemuGuestAgentClient:
     file_read:   Read some data from an open file
     file_write:  Write to an open file
     """
-    def __init__(self, uuid, hypervisor_iface, where, verbose=False):
+    def __init__(self, uuid, hypervisor_iface, where):
         if where is None:
             self.client = _QemuGuestAgentLibvirtClient(
-                uuid, hypervisor_iface, verbose)
+                uuid, hypervisor_iface)
         else:
-            self.client = _QemuGuestAgentSocketClient(where, verbose)
+            self.client = _QemuGuestAgentSocketClient(where)
         self.api = self.client.api
 
 class _QemuGuestAgentLibvirtClient:
@@ -80,7 +81,7 @@ class _QemuGuestAgentLibvirtClient:
     Communicate with the Qemu guest agent using hypervisor_iface's
     qemuAgentCommand method. If the method is unavailable, it raises KeyError.
     """
-    def __init__(self, uuid, hypervisor_iface, verbose=False):
+    def __init__(self, uuid, hypervisor_iface):
         """
         Initialize the client for a particular guest
         """
@@ -91,7 +92,6 @@ class _QemuGuestAgentLibvirtClient:
         self.hypervisor_iface = hypervisor_iface
         self.uuid = uuid
         self.api = _QemuGuestAgentAPI(self)
-        self.verbose = verbose
 
     def _call(self, command, args={}):
         """
@@ -111,14 +111,14 @@ class _QemuGuestAgentSocketClient:
     The class should be initialized with the path to the local unix socket
     over which a connection to the agent will be attempted.
     """
-    def __init__(self, where, verbose=False):
+    def __init__(self, where):
         """
         Initialize the client for a particular unix socket
         """
+        self.logger = logging.getLogger('mom.Collectors._QemuGuestAgentSocketClient')
         self.api = _QemuGuestAgentAPI(self)
         self.where = where
         self.sock = None
-        self.verbose = verbose
 
     def _reset_conn(self, sock):
         """
@@ -148,8 +148,7 @@ class _QemuGuestAgentSocketClient:
 
     def _connect(self):
         sock_type = socket.AF_UNIX
-        if self.verbose:
-            print("Connecting to %s" % self.where)
+        self.logger.debug("Connecting to %s" % self.where)
         try:
             self.sock = socket.socket(sock_type, socket.SOCK_STREAM)
             self.sock.settimeout(2)
@@ -241,7 +240,7 @@ class _QemuGuestAgentSocketClient:
                 self.sock = None
                 raise ProtocolError(e.errno, e.strerror)
             if ch == b'':
-                print("Connection closed")
+                self.logger.debug("Connection closed")
                 return None
             data += ch
             if data[-len(token):] == token:
