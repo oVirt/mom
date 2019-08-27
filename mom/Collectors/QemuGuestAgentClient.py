@@ -195,32 +195,6 @@ class _QemuGuestAgentSocketClient:
                 raise ProtocolError(-1, "Unable to send on socket")
             sent = sent + ret
 
-    def _sock_recv(self, sock, nr):
-        """
-        Try to receive the specified number of bytes.
-        """
-        remainder = nr
-        msg = ""
-        while 1:
-            try:
-                data = sock.recv(remainder)
-            except socket.error as e:
-                self._sock_close(self.sock)
-                self.sock = None
-                raise ProtocolError(e.errno, e.strerror)
-            except socket.timeout:
-                self._sock_close(self.sock)
-                self.sock = None
-                raise ProtocolError(-1, "Timed out")
-
-            if not data:
-                break
-            msg += data
-            remainder -= len(data)
-            if remainder <= 0:
-                break
-        return msg
-
     def _sock_recv_until(self, sock, token):
         """
         Receive data from the socket one byte at a time until the token is read
