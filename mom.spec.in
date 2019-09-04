@@ -104,6 +104,9 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Wed Sep 04 2019 Andrej Krejcir <akrejcir@redhat.com> - 0.5.16-1
+- Python 3 compatibility fixes
+
 * Thu Aug 01 2019 Andrej Krejcir <akrejcir@redhat.com> - 0.5.15-1
 - Controllers convert floating point values to integers
   Resolves: rhbz#1733546
