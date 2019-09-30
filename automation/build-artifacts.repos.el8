@@ -1,0 +1,4 @@
+# powertools provides python3-mock
+powertools8,http://mirror.centos.org/centos/8-stream/PowerTools/x86_64/os/
+# el8collection provides python3-coverage
+el8collection,https://copr-be.cloud.fedoraproject.org/results/sbonazzo/EL8_collection/epel-8-x86_64/

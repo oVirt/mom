@@ -2,6 +2,7 @@ archs:
   - x86_64:
       distributions:
         - el7
+        - el8
         - fc29
         - fc30
 
