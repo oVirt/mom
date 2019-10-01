@@ -3,7 +3,6 @@ automake
 make
 python3-coverage
 python3-libvirt
-python3-mock
 python3-six
 python3-devel
 python3-nose

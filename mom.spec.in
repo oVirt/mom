@@ -25,7 +25,10 @@ Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_v
 BuildArch:	noarch
 BuildRequires:	%{python_target_version}-devel
 BuildRequires:	%{python_target_version}-nose
+
+%if %{python_target_version} == python2
 BuildRequires:	%{python_target_version}-mock
+%endif
 
 Requires(post): systemd
 Requires(preun): systemd

@@ -23,7 +23,12 @@ import os
 import os.path
 import shutil
 import mom
-import mock
+
+try:
+    import mock  # py2
+except ImportError:
+    from unittest import mock  # py3
+
 from six.moves import configparser
 from six.moves import xmlrpc_client
 
