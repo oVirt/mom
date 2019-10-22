@@ -75,3 +75,7 @@ class HypervisorInterface(object):
 
 class HypervisorInterfaceError(Exception):
     pass
+
+
+class ConnectionError(Exception):
+    pass

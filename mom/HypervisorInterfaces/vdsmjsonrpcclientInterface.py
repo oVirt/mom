@@ -17,6 +17,7 @@
 from vdsm import client
 from vdsm.config import config as vdsmconfig
 
+from .HypervisorInterface import ConnectionError
 from .vdsmCommon import memoize
 from .vdsmRpcBase import VdsmRpcBase
 
@@ -36,7 +37,11 @@ class JsonRpcVdsmClientInterface(VdsmRpcBase):
             self._logger.warn("Failed to read VDSM config file, using SSL connection. %s", e)
             use_tls = True
 
-        self._vdsm_api = client.connect(host="localhost", use_tls=use_tls)
+        try:
+            self._vdsm_api = client.connect(host="localhost", use_tls=use_tls)
+        except client.ConnectionError as e:
+            raise ConnectionError(str(e))
+
         self.checked_call(self._vdsm_api.Host.ping2)
 
     @memoize(expiration=CACHE_EXPIRATION)

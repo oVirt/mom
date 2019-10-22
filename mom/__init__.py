@@ -5,6 +5,7 @@ import re
 import logging.handlers
 from mom.LogUtils import *
 from mom.HostMonitor import HostMonitor
+from mom.HypervisorInterfaces.HypervisorInterface import ConnectionError
 from mom.GuestManager import GuestManager
 from mom.PolicyEngine import PolicyEngine
 from mom.RPCServer import RPCServer, enable_i8
@@ -39,6 +40,13 @@ class MOM:
             momFuncs = MOMFuncs(self.config, threads)
             self._setupAPI(momFuncs)
             rpc_server = RPCServer(self.config, momFuncs)
+        except ConnectionError as e:
+            self.logger.error(
+                "Cannot connect to VDSM. "
+                "This can happen when VDSM is starting. Error: %s",
+                str(e)
+            )
+            return
         except Exception as e:
             self.logger.exception("Failed to initialize MOM threads")
             return

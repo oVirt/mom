@@ -18,6 +18,7 @@ import socket
 
 from vdsm import jsonrpcvdscli
 
+from .HypervisorInterface import ConnectionError
 from .vdsmCommon import memoize, vdsmException
 from .vdsmRpcBase import VdsmRpcBase
 
@@ -38,7 +39,7 @@ class JsonRpcVdsmInterface(VdsmRpcBase):
     def __init__(self):
         super(JsonRpcVdsmInterface, self).__init__()
         self._vdsm_api = self.checked_call(jsonrpcvdscli.connect)\
-                .orRaise(RuntimeError, 'No connection to VDSM.')
+                .orRaise(ConnectionError, 'No connection to VDSM.')
 
         self.checked_call(self._vdsm_api.ping)
 
