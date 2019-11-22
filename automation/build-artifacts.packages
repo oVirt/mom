@@ -3,15 +3,10 @@ automake
 make
 python3-coverage
 python3-libvirt
+python3-mock
 python3-six
 python3-devel
 python3-nose
-python2-coverage
-python2-libvirt
-python2-mock
-python2-six
-python2-devel
-python2-nose
 git
 systemd
 dnf
