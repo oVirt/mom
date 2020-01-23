@@ -44,7 +44,7 @@ def start_mom(config=None):
     t.setDaemon(True)
     t.start()
     while True:
-        if not t.isAlive():
+        if not t.is_alive():
             return None
         try:
             mom_instance.setVerbosity('critical')
