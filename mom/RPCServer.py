@@ -59,7 +59,7 @@ class RPCServer(threading.Thread):
     def thread_ok(self):
         if self.server is None:
             return True
-        return self.isAlive()
+        return self.is_alive()
 
     def create_server(self):
         try:

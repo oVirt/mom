@@ -213,7 +213,7 @@ class MOM:
         Check to make sure a list of expected threads are still alive
         """
         for t in threads:
-            if not t.isAlive():
+            if not t.is_alive():
                 self.logger.error("Thread '%s' has exited" % t.getName())
                 return False
         return True
@@ -222,7 +222,7 @@ class MOM:
         """
         Join a thread only if it is still running
         """
-        if t.isAlive():
+        if t.is_alive():
             t.join(timeout)
 
     def get_hypervisor_interface(self):
