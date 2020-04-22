@@ -93,7 +93,7 @@ class GuestNetworkDaemon(Collector):
         except KeyError:
             return None
         try:
-            output = Popen([prog, name], stdout=PIPE).communicate()[0]
+            output = Popen([prog, name], stdout=PIPE).communicate()[0].decode("utf-8")
         except OSError as e:
             self.logger.warn("Cannot call name-to-ip-helper: %s", e.strerror)
             return None
