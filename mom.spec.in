@@ -26,7 +26,7 @@ BuildArch:	noarch
 BuildRequires:	%{python_target_version}-devel
 BuildRequires:	%{python_target_version}-nose
 
-%if %{python_target_version} == python2
+%if "%{python_target_version}" == "python2"
 BuildRequires:	%{python_target_version}-mock
 %endif
 
