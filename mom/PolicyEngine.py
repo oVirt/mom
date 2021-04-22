@@ -18,6 +18,7 @@ import threading
 import time
 import logging
 import os
+from .Collectors.HostKSM import HostKSM
 from .Policy.Policy import Policy
 
 class PolicyEngine(threading.Thread):
@@ -97,6 +98,14 @@ class PolicyEngine(threading.Thread):
             name = name.lstrip()
             if name == '':
                 continue
+            if name == "KSM":
+                # Make sure HostKSM collector is enabled in configuration when
+                # KSM controller is in use
+                collectors = self.properties["host_monitor"].collectors
+                if not any([isinstance(c, HostKSM) for c in collectors]):
+                    raise RuntimeError(
+                        "KSM controller in use but HostKSM collector is"
+                        " not enabled")
             try:
                 module = __import__('mom.Controllers.' + name, None, None, name)
                 self.logger.debug("Loaded %s controller", name)
