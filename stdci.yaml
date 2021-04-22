@@ -2,7 +2,7 @@ archs:
   - x86_64:
       distributions:
         - el8
-        - fc30
+        - rhel8
 
 release_branches:
   master: "ovirt-master"
