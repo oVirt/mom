@@ -25,6 +25,7 @@ Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_v
 BuildArch:	noarch
 BuildRequires:	%{python_target_version}-devel
 BuildRequires:	%{python_target_version}-nose
+BuildRequires:	%{python_target_version}-six
 
 %if "%{python_target_version}" == "python2"
 BuildRequires:	%{python_target_version}-mock
