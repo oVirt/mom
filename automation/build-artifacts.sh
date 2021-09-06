@@ -2,6 +2,12 @@
 [[ -d exported-artifacts ]] \
 || mkdir -p exported-artifacts
 
+# mock runner is not setting up the system correctly
+# https://issues.redhat.com/browse/CPDEVOPS-242
+readarray -t pkgs < automation/build-artifacts.packages
+dnf install -y "${pkgs[@]}"
+
+
 BUILD_DIR="$PWD/rpmbuild"
 
 [[ -d "$BUILD_DIR/SOURCES" ]] \
