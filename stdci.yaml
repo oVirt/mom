@@ -8,4 +8,4 @@ archs:
             runtime-requirements:
               host_distro: newer
 release_branches:
-  master: "ovirt-master"
+  master: [ovirt-master, ovirt-4.4]
