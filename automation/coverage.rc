@@ -24,8 +24,5 @@ ignore_errors = True
 
 omit =
     /usr/lib/python2.7/site-packages/mock
-    /usr/lib/python2.7/site-packages/nose/*
-    /usr/lib/python2.7/site-packages/nose/plugins/*
-    /usr/lib/python2.7/site-packages/nose/tools/*
     /usr/lib/python2.7/site-packages/pkg_resources
 

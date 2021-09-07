@@ -19,29 +19,8 @@ import sys
 import os
 
 import unittest
-from nose import config
-from nose import core
-
 
 class MomTestCase(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         unittest.TestCase.__init__(self, *args, **kwargs)
         self.log = logging.getLogger(self.__class__.__name__)
-
-def run():
-    argv = sys.argv
-    stream = sys.stdout
-    verbosity = 3
-    testdir = os.path.dirname(os.path.abspath(__file__))
-
-    conf = config.Config(stream=stream,
-                      env=os.environ,
-                      verbosity=verbosity,
-                      workingDir=testdir,
-                      plugins=core.DefaultPluginManager())
-
-    sys.exit(not core.run(config=conf, argv=argv))
-
-
-if __name__ == '__main__':
-    run()
