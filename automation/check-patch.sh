@@ -9,7 +9,7 @@ if [[ "${DISTVER}" == "el7" ]]; then
     PYTHONDONTWRITEBYTECODE=1 \
 	LC_ALL=C \
 	PYTHONPATH="..:./:$PYTHONPATH" \
-	python2 -m coverage run --rcfile=../automation/coverage.rc testrunner.py *.py
+	python2 -m coverage run --rcfile=../automation/coverage.rc testrunner.py ./*.py
     coverage html --rcfile=../automation/coverage.rc
     mv htmlcov ../exported-artifacts/htmlcov-py2
     cd ..
@@ -20,7 +20,7 @@ else
     PYTHONDONTWRITEBYTECODE=1 \
 	LC_ALL=C \
 	PYTHONPATH="..:.:$PYTHONPATH" \
-	python3 -m coverage run --rcfile=../automation/coverage.rc testrunner.py *.py
+	python3 -m coverage run --rcfile=../automation/coverage.rc testrunner.py ./*.py
     coverage3 html --rcfile=../automation/coverage.rc
     mv htmlcov ../exported-artifacts/htmlcov-py3
     cd ..
