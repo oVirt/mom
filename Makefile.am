@@ -41,5 +41,5 @@ dist_sbin_SCRIPTS = \
 
 dist_doc_DATA = \
 	COPYING \
-	README \
+	README.md \
 	$(NULL)

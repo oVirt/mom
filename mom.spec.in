@@ -95,7 +95,7 @@ make check %{?_smp_mflags}
 %files
 %config(noreplace) %{_sysconfdir}/momd.conf
 %license COPYING
-%doc README
+%doc README.md
 
 %dir %{_pkgdocdir}/examples
 %{_pkgdocdir}/examples/*
