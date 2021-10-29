@@ -1,6 +1,8 @@
 Memory Overcommitment Manager
 =============================
 
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/mom/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/mom/)
+
 INTRODUCTION
 ------------
 
