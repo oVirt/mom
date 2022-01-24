@@ -3,6 +3,11 @@ Memory Overcommitment Manager
 
 [![Copr build status](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/mom/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/mom/)
 
+
+Welcome to the oVirt MOM source repository. This repository is hosted on
+https://github.com/oVirt/mom.
+
+
 INTRODUCTION
 ------------
 
@@ -76,9 +81,16 @@ Example MOM configuration files and policies can be found in the doc/
 subdirectory of this distribution.
 
 
+REPORTING BUGS
+--------------
+
+Bugs can be reported in [Bugzilla](https://bugzilla.redhat.com/). For more
+detailed instruction see the [oVirt
+documentation](https://www.ovirt.org/community/report-a-bug.html) page.
+
+
 CONTRIBUTING
 ------------
 
 MOM is part of the oVirt family of projects.  For contact information including:
-IRC, mailing lists, and bugs, see: http://www.ovirt.org/Community
-
+IRC, mailing lists, and bugs, see: http://www.ovirt.org/community/
