@@ -19,8 +19,7 @@ make dist
 
 SUFFIX=
 # shellcheck source=config.sh
-. automation/config.sh
-[ -n "${RELEASE_SUFFIX}" ] && SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
+SUFFIX=".$(date -u +%Y%m%d%H%M%S).git$(git rev-parse --short HEAD)"
 
 rpmbuild \
     -D "_topdir $BUILD_DIR" \
