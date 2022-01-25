@@ -67,7 +67,6 @@ AC_CONFIG_FILES([
 	tests/Makefile
 	momd
 	mom-guestd
-	automation/config.sh
 ])
 AC_CONFIG_FILES(
 	[tests/run_tests_local.sh],
