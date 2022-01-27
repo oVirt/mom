@@ -12,14 +12,13 @@ jobs:
         distro: [ el8stream, el9stream ]
     steps:
     - name: Prepare env
-      run: mkdir -p ${PWD}/${EXPORT_DIR}/
+      run: mkdir -p ${PWD}/${EXPORT_DIR}
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Check patch
       run: ./automation/check-patch.sh
     - name: Upload artifacts
-      uses: ovirt/upload-rpms-action@v1
+      uses: ovirt/upload-rpms-action@v2
       with:
         directory: ${{ env.EXPORT_DIR }}
-        distro: ${{ matrix.distro }}
