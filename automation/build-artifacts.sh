@@ -1,6 +1,6 @@
 #!/bin/bash -xe
-[[ -d exported-artifacts ]] \
-|| mkdir -p exported-artifacts
+[[ -d "${EXPORT_DIR}" ]] \
+|| mkdir -p "${EXPORT_DIR}"
 
 # mock runner is not setting up the system correctly
 # https://issues.redhat.com/browse/CPDEVOPS-242
@@ -27,7 +27,7 @@ rpmbuild \
     -ta ./*.tar.gz
 
 # Move tarball to exported artifacts
-mv ./*.tar.gz exported-artifacts/
+mv ./*.tar.gz "${EXPORT_DIR}/"
 
 # Move RPMs to exported artifacts
-find "$BUILD_DIR" -iname \*rpm -exec mv "{}" exported-artifacts/ \;
+find "$BUILD_DIR" -iname \*rpm -exec mv "{}" "${EXPORT_DIR}/" \;
