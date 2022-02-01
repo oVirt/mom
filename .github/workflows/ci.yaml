@@ -12,8 +12,6 @@ jobs:
       matrix:
         distro: [el8stream, el9stream]
     steps:
-      - name: Prepare env
-        run: mkdir -p ${PWD}/${EXPORT_DIR}/
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0

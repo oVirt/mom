@@ -8,7 +8,7 @@ PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH="..:.:$PYTHONPATH" \
     python3 -m coverage run --rcfile=../automation/coverage.rc testrunner.py ./*.py
 python3 -m coverage html --rcfile=../automation/coverage.rc
-mv htmlcov ../exported-artifacts/htmlcov-py3
+mv htmlcov "../${EXPORT_DIR}/htmlcov-py3"
 cd ..
 
-dnf --downloadonly install -y exported-artifacts/*noarch*.rpm
+dnf --downloadonly install -y "${EXPORT_DIR}"/*noarch*.rpm
