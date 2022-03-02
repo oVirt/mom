@@ -20,7 +20,7 @@ Release:	@PACKAGE_RPM_RELEASE@%{?release_suffix}%{?dist}
 Summary:	Dynamically manage system resources on virtualization hosts
 
 License:	GPLv2
-URL:		http://www.ovirt.org
+URL:		https://www.ovirt.org
 Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_version}.tar.gz
 BuildArch:	noarch
 BuildRequires:	%{python_target_version}-devel
@@ -107,6 +107,12 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Wed Mar 02 2022 Sandro Bonazzola <sbonazzo@redhat.com> - 0.6.2-1
+- use ConfigParser instead of SafeConfigParser
+- Resolves: rhbz#2001789
+- test: move from nose to unittest
+- Resolves: rhbz#2001759
+
 * Tue Apr 27 2021 Andrej Krejcir <akrejcir@redhat.com> - 0.6.1-1
 - Python 3 compatibility fix for libvirt interface and GuestNetworkDaemon collector
 - Fix in KSM Controller
@@ -149,7 +155,7 @@ make check %{?_smp_mflags}
 * Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.6-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
-* Tue Sep 07 2016 Martin Sivak <msivak@redhat.com> - 0.5.6-1
+* Wed Sep 07 2016 Martin Sivak <msivak@redhat.com> - 0.5.6-1
 - Apply IO QoS even when no QoS exists yet
   Resolves: rhbz#1346754
 
