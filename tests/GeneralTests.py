@@ -35,7 +35,7 @@ from six.moves import xmlrpc_client
 
 def start_mom(config=None):
     if not config:
-        config = configparser.SafeConfigParser()
+        config = configparser.ConfigParser()
         config.add_section('logging')
         config.set('logging', 'verbosity', 'error')
 
@@ -106,7 +106,7 @@ class ConfigTests(TestCaseBase):
                 f.write(policy)
 
 
-        config = configparser.SafeConfigParser()
+        config = configparser.ConfigParser()
         config.add_section('main')
         config.set('main', 'policy-dir', policy_dir)
         config.add_section('logging')
