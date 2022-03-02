@@ -93,7 +93,7 @@ class MOM:
                 setattr(self, funcName, funcObj)
 
     def _load_config(self, fname, overrides):
-        self.config = configparser.SafeConfigParser()
+        self.config = configparser.ConfigParser()
 
         # Set built-in defaults
         self.config.add_section('main')

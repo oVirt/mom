@@ -79,7 +79,7 @@ def signal_quit(signum, frame):
     mom_instance.shutdown()
 
 def get_option_overrides(options):
-    config = configparser.SafeConfigParser()
+    config = configparser.ConfigParser()
     config.add_section('main')
     config.add_section('logging')
     if options.plot_dir is not None:
