@@ -49,7 +49,7 @@ class RPCServer(threading.Thread):
     """
     def __init__(self, config, momFuncs):
         threading.Thread.__init__(self, name="RPCServer")
-        self.setDaemon(True)
+        self.daemon = True
         self.config = config
         self.momFuncs = momFuncs
         self.logger = logging.getLogger('mom.RPCServer')
