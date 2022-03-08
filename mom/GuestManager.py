@@ -41,7 +41,7 @@ class GuestManager(threading.Thread):
     """
     def __init__(self, config, hypervisor_iface):
         threading.Thread.__init__(self, name='GuestManager')
-        self.setDaemon(True)
+        self.daemon = True
         self.config = config
         self.hypervisor_iface = hypervisor_iface
         self.logger = logging.getLogger('mom.GuestManager')

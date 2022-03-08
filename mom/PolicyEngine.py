@@ -29,7 +29,7 @@ class PolicyEngine(threading.Thread):
     """
     def __init__(self, config, hypervisor_iface, host_monitor, guest_manager):
         threading.Thread.__init__(self, name="PolicyEngine")
-        self.setDaemon(True)
+        self.daemon = True
         self.config = config
         self.logger = logging.getLogger('mom.PolicyEngine')
         self.properties = {

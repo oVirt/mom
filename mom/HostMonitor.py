@@ -26,8 +26,8 @@ class HostMonitor(Monitor, threading.Thread):
     """
     def __init__(self, config):
         threading.Thread.__init__(self, name="HostMonitor")
-        Monitor.__init__(self, config, self.getName())
-        self.setDaemon(True)
+        Monitor.__init__(self, config, self.name)
+        self.daemon = True
         self.config = config
         self.logger = logging.getLogger('mom.HostMonitor')
         self.interval = self.config.getint('main', 'host-monitor-interval')

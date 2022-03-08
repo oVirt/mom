@@ -214,7 +214,7 @@ class MOM:
         """
         for t in threads:
             if not t.is_alive():
-                self.logger.error("Thread '%s' has exited" % t.getName())
+                self.logger.error("Thread '%s' has exited" % t.name)
                 return False
         return True
 

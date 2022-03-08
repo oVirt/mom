@@ -41,7 +41,7 @@ def start_mom(config=None):
 
     mom_instance = mom.MOM("", config)
     t = threading.Thread(target=mom_instance.run)
-    t.setDaemon(True)
+    t.daemon = True
     t.start()
     while True:
         if not t.is_alive():
@@ -68,27 +68,27 @@ class GeneralTests(TestCaseBase):
         self.assertTrue(isinstance(self.mom_instance.getActiveGuests(),
                                      list))
     def testPolicyAPI(self):
-        self.assertEquals('0', self.mom_instance.getPolicy())
+        self.assertEqual('0', self.mom_instance.getPolicy())
 
         badPolicy = "("
         self.assertFalse(self.mom_instance.setPolicy(badPolicy))
-        self.assertEquals('0', self.mom_instance.getPolicy())
+        self.assertEqual('0', self.mom_instance.getPolicy())
 
         goodPolicy = "(+ 1 1)"
         self.assertTrue(self.mom_instance.setPolicy(goodPolicy))
-        self.assertEquals(goodPolicy, self.mom_instance.getPolicy())
+        self.assertEqual(goodPolicy, self.mom_instance.getPolicy())
 
         self.assertTrue(self.mom_instance.setPolicy(None))
-        self.assertEquals('0', self.mom_instance.getPolicy())
+        self.assertEqual('0', self.mom_instance.getPolicy())
 
     def testMultiplePolicies(self):
-        self.assertEquals(0, len(list(self.mom_instance.getNamedPolicies().keys())))
+        self.assertEqual(0, len(list(self.mom_instance.getNamedPolicies().keys())))
 
         self.mom_instance.setNamedPolicy("10_test", "(+ 1 1)")
         self.mom_instance.setNamedPolicy("20_test", "(- 1 1)")
         policies = self.mom_instance.getNamedPolicies()
-        self.assertEquals("(+ 1 1)", policies["10_test"])
-        self.assertEquals("(- 1 1)", policies["20_test"])
+        self.assertEqual("(+ 1 1)", policies["10_test"])
+        self.assertEqual("(- 1 1)", policies["20_test"])
 
         self.mom_instance.setNamedPolicy("20_test", None)
         policies = self.mom_instance.getNamedPolicies()
@@ -115,15 +115,15 @@ class ConfigTests(TestCaseBase):
 
         try:
             policies = mom_instance.getNamedPolicies()
-            self.assertEquals('(+ 1 1)', policies['01_foo'])
-            self.assertEquals('(- 2 1)', policies['02_bar'])
+            self.assertEqual('(+ 1 1)', policies['01_foo'])
+            self.assertEqual('(- 2 1)', policies['02_bar'])
 
             mom_instance.setNamedPolicy('02_bar', None)
             mom_instance.setNamedPolicy('03_baz', '(/ 10 5)')
-            self.assertEquals("(+ 1 1)\n(/ 10 5)", mom_instance.getPolicy())
+            self.assertEqual("(+ 1 1)\n(/ 10 5)", mom_instance.getPolicy())
             mom_instance.resetPolicies()
-            self.assertEquals('(+ 1 1)', policies['01_foo'])
-            self.assertEquals('(- 2 1)', policies['02_bar'])
+            self.assertEqual('(+ 1 1)', policies['01_foo'])
+            self.assertEqual('(- 2 1)', policies['02_bar'])
             self.assertTrue('03_baz' not in iter(policies.keys()))
         finally:
             shutil.rmtree(policy_dir)

@@ -62,18 +62,18 @@ class GuestMonitorThread(threading.Thread):
             name = name.encode('utf-8')
 
         self.setName(name)
-        self.setDaemon(True)
+        self.daemon = True
         self.logger = logging.getLogger('mom.GuestMonitor.Thread')
 
         self._mon = monitor
 
     def run(self):
         try:
-            self.logger.info("%s starting", self.getName())
+            self.logger.info("%s starting", self.name)
             while self._mon.should_run():
                 self._mon.collect()
                 time.sleep(self._mon.interval)
         except Exception:
-            self.logger.exception("%s crashed", self.getName())
+            self.logger.exception("%s crashed", self.name)
         else:
-            self.logger.info("%s ending", self.getName())
+            self.logger.info("%s ending", self.name)
