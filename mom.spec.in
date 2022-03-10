@@ -74,7 +74,7 @@ make %{?_smp_mflags}
 make DESTDIR="%{buildroot}" install
 
 install -dm 755 %{buildroot}%{_unitdir}
-install contrib/momd.service %{buildroot}%{_unitdir}
+install -m 0644 contrib/momd.service %{buildroot}%{_unitdir}
 install -d -m 0755 "%{buildroot}/%{_sysconfdir}"
 install -m 0644 doc/mom-balloon+ksm.conf "%{buildroot}/%{_sysconfdir}/momd.conf"
 
