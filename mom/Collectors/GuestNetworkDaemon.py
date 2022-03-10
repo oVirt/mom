@@ -99,7 +99,7 @@ class GuestNetworkDaemon(Collector):
             return None
         matches = re.findall(r"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
                              output, re.M)
-        if len(matches) is not 1:
+        if len(matches) != 1:
             self.logger.warn("Output from name-to-ip-helper %s is not an IP " \
                              "address. (output = '%s')", name, output)
             return None
