@@ -17,7 +17,7 @@
 from .vdsmCommon import memoize
 
 from mom.HypervisorInterfaces.vdsmjsonrpcInterface import JsonRpcVdsmInterface, \
-    CACHE_EXPIRATION
+    CACHE_EXPIRATION_IOTUNE
 
 class JsonRpcVdsmBulkInterface(JsonRpcVdsmInterface):
     """
@@ -28,7 +28,7 @@ class JsonRpcVdsmBulkInterface(JsonRpcVdsmInterface):
     def __init__(self):
         super(JsonRpcVdsmBulkInterface, self).__init__()
 
-    @memoize(expiration=CACHE_EXPIRATION)
+    @memoize(expiration=CACHE_EXPIRATION_IOTUNE)
     def getAllVmIoTunePolicies(self):
         ret = self.checked_call(self._vdsm_api.getAllVmIoTunePolicies)
         return ret

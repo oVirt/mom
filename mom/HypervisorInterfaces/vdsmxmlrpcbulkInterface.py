@@ -17,7 +17,7 @@
 from .vdsmCommon import memoize
 
 from mom.HypervisorInterfaces.vdsmxmlrpcInterface import XmlRpcVdsmInterface, \
-    CACHE_EXPIRATION
+    CACHE_EXPIRATION_IOTUNE
 
 from mom.optional import Optional
 
@@ -31,7 +31,7 @@ class XmlRpcVdsmBulkInterface(XmlRpcVdsmInterface):
     def __init__(self):
         super(XmlRpcVdsmBulkInterface, self).__init__()
 
-    @memoize(expiration=CACHE_EXPIRATION)
+    @memoize(expiration=CACHE_EXPIRATION_IOTUNE)
     def getAllVmIoTunePolicies(self):
         try:
             ret = self.vdsm_api.getAllVmIoTunePolicies()
