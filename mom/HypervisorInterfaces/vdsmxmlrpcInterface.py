@@ -22,7 +22,8 @@ from .vdsmCommon import memoize, vdsmException
 from .vdsmRpcBase import VdsmRpcBase
 
 # Time validity of the cache in seconds
-CACHE_EXPIRATION = 5
+CACHE_EXPIRATION_IOTUNE = 300
+CACHE_EXPIRATION_STATS = 5
 
 
 class XmlRpcVdsmInterface(VdsmRpcBase):
@@ -48,7 +49,7 @@ class XmlRpcVdsmInterface(VdsmRpcBase):
         if response['status']['code']:
             raise vdsmException(response, self._logger)
 
-    @memoize(expiration=CACHE_EXPIRATION)
+    @memoize(expiration=CACHE_EXPIRATION_STATS)
     def getAllVmStats(self):
         vms = {}
 

@@ -25,7 +25,8 @@ from .vdsmRpcBase import VdsmRpcBase
 from mom.optional import Optional
 
 # Time validity of the cache in seconds
-CACHE_EXPIRATION = 5
+CACHE_EXPIRATION_IOTUNE = 300
+CACHE_EXPIRATION_STATS = 5
 
 
 class JsonRpcVdsmInterface(VdsmRpcBase):
@@ -53,7 +54,7 @@ class JsonRpcVdsmInterface(VdsmRpcBase):
             pass
 
 
-    @memoize(expiration=CACHE_EXPIRATION)
+    @memoize(expiration=CACHE_EXPIRATION_STATS)
     def getAllVmStats(self):
         vms = {}
         ret = self.checked_call(self._vdsm_api.getAllVmStats)
