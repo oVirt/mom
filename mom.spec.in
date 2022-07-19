@@ -107,11 +107,16 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Tue Jul 19 2022 Tomáš Golembiovský <tgolembi@redhat.com> - 0.6.3-1
+- Increase cache expiration time for IO tune
+  Resolves: rhbz#1720976
+- Build fixes and improved compatibility with Python 3
+
 * Wed Mar 02 2022 Sandro Bonazzola <sbonazzo@redhat.com> - 0.6.2-1
 - use ConfigParser instead of SafeConfigParser
-- Resolves: rhbz#2001789
+  Resolves: rhbz#2001789
 - test: move from nose to unittest
-- Resolves: rhbz#2001759
+  Resolves: rhbz#2001759
 
 * Tue Apr 27 2021 Andrej Krejcir <akrejcir@redhat.com> - 0.6.1-1
 - Python 3 compatibility fix for libvirt interface and GuestNetworkDaemon collector
