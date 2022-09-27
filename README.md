@@ -84,7 +84,7 @@ subdirectory of this distribution.
 REPORTING BUGS
 --------------
 
-Bugs can be reported in [Bugzilla](https://bugzilla.redhat.com/). For more
+Bugs can be reported in [GitHub issues](https://github.com/oVirt/mom/issues). For more
 detailed instruction see the [oVirt
 documentation](https://www.ovirt.org/community/report-a-bug.html) page.
 
