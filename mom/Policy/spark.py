@@ -80,7 +80,7 @@ class GenericScanner:
 						line += add_lines
 			pos = m.end()
 
-	def t_default(self, s):
+	def t_default(self, s, line):
 		r'( . | \n )+'
 		pass
 
