@@ -107,6 +107,10 @@ make check %{?_smp_mflags}
 %{python_sitelib}/mom/
 
 %changelog
+* Tue Oct 25 2022 Tomáš Golembiovský <tgolembi@redhat.com> - 0.6.4-1
+- Add a missing argument to GenericScanner.t_default
+  Resolves: rhbz#2137532
+
 * Tue Jul 19 2022 Tomáš Golembiovský <tgolembi@redhat.com> - 0.6.3-1
 - Increase cache expiration time for IO tune
   Resolves: rhbz#1720976
