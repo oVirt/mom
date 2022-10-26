@@ -13,9 +13,9 @@ git-safe:
 	git config --global --add safe.directory "$(shell pwd)"
 
 srpm: installdeps git-safe
-	#$(eval SUFFIX=$(shell sh -c " echo '.$$(date -u +%Y%m%d%H%M%S).git$$(git rev-parse --short HEAD)'"))
+	$(eval SUFFIX=$(shell sh -c " echo '.$$(date -u +%Y%m%d%H%M%S).git$$(git rev-parse --short HEAD)'"))
 	# changing the spec file as passing -D won't preserve the suffix when rebuilding in mock
-	#sed "s:%{?release_suffix}:${SUFFIX}:" -i mom.spec.in
+	sed "s:%{?release_suffix}:${SUFFIX}:" -i mom.spec.in
 	mkdir -p tmp.repos
 	./autogen.sh
 	./configure --prefix=/usr --disable-python-syntax-check
