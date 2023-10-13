@@ -95,13 +95,13 @@ class GuestNetworkDaemon(Collector):
         try:
             output = Popen([prog, name], stdout=PIPE).communicate()[0].decode("utf-8")
         except OSError as e:
-            self.logger.warn("Cannot call name-to-ip-helper: %s", e.strerror)
+            self.logger.warning("Cannot call name-to-ip-helper: %s", e.strerror)
             return None
         matches = re.findall(r"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
                              output, re.M)
         if len(matches) != 1:
-            self.logger.warn("Output from name-to-ip-helper %s is not an IP " \
-                             "address. (output = '%s')", name, output)
+            self.logger.warning("Output from name-to-ip-helper %s is not an IP " \
+                                "address. (output = '%s')", name, output)
             return None
         else:
             ip = matches[0]
@@ -217,7 +217,7 @@ class _Server:
                 else:
                     break
             except socket.error as msg:
-                self.logger.warn("Exception: %s" % msg)
+                self.logger.warning("Exception: %s" % msg)
                 break
         sock_close(conn)
         self.logger.debug("Connection closed")

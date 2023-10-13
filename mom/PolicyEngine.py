@@ -48,7 +48,7 @@ class PolicyEngine(threading.Thread):
                 with open(file_name, 'r') as f:
                     policyStr = f.read()
             except IOError as e:
-                self.logger.warn("Unable to read policy file: %s" % e)
+                self.logger.warning("Unable to read policy file: %s" % e)
                 return False
             return self.policy.set_policy(policy_name, policyStr)
 
@@ -61,7 +61,7 @@ class PolicyEngine(threading.Thread):
             try:
                 names = sorted(os.listdir(policy_dir))
             except OSError as e:
-                self.logger.warn("Unable to read directory '%s': %s" % (
+                self.logger.warning("Unable to read directory '%s': %s" % (
                                     policy_dir, e.strerror))
                 return False
             for name in names:
@@ -110,7 +110,7 @@ class PolicyEngine(threading.Thread):
                 module = __import__('mom.Controllers.' + name, None, None, name)
                 self.logger.debug("Loaded %s controller", name)
             except ImportError:
-                self.logger.warn("Unable to import controller: %s", name)
+                self.logger.warning("Unable to import controller: %s", name)
                 continue
             self.controllers.append(getattr(module, name)(self.properties))
 

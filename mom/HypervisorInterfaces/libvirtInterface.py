@@ -127,12 +127,12 @@ class libvirtInterface(HypervisorInterface):
         p1 = Popen(["ps", "axww"], stdout=PIPE).communicate()[0].decode("utf-8")
         matches = re.findall(r"^\s*(\d+)\s+.*" + uuid, p1, re.M)
         if len(matches) < 1:
-            self.logger.warn("No matching process for domain with uuid %s", \
-                             uuid)
+            self.logger.warning("No matching process for domain with uuid %s", \
+                                uuid)
             return None
         elif len(matches) > 1:
-            self.logger.warn("Too many process matches for domain with uuid %s",\
-                             uuid)
+            self.logger.warning("Too many process matches for domain with uuid %s",\
+                                uuid)
             return None
         return int(matches[0])
 
@@ -158,13 +158,13 @@ class libvirtInterface(HypervisorInterface):
         do_nothing_errors = (libvirt.VIR_ERR_NO_DOMAIN,)
         error = e.get_error_code()
         if error in reconnect_errors:
-            self.logger.warn('libvirtInterface: connection lost, reconnecting.')
+            self.logger.warning('libvirtInterface: connection lost, reconnecting.')
             self._reconnect()
         elif error in do_nothing_errors:
             pass
         else:
-            self.logger.warn('libvirtInterface: Unhandled libvirt exception '\
-                             '(%i).', error)
+            self.logger.warning('libvirtInterface: Unhandled libvirt exception '\
+                                '(%i).', error)
 
     def _domainSetBalloonTarget(self, domain, target):
         try:
@@ -292,7 +292,7 @@ class libvirtInterface(HypervisorInterface):
         if dom is not None:
             if self._domainSetBalloonTarget(dom, target):
                 name = self._domainGetName(dom)
-                self.logger.warn("Error while ballooning guest:%i", name)
+                self.logger.warning("Error while ballooning guest:%i", name)
 
     def setVmCpuTune(self, uuid, quota, period):
         dom = self._getDomainFromUUID(uuid)
@@ -308,7 +308,7 @@ class libvirtInterface(HypervisorInterface):
                 with open(fname, 'w') as f:
                     f.write(str(value))
             except IOError as e:
-                self.logger.warn("KSM: Failed to write %s: %s", fname, e.strerror)
+                self.logger.warning("KSM: Failed to write %s: %s", fname, e.strerror)
 
         for (key, val) in tuningParams.items():
             write_value('/sys/kernel/mm/ksm/%s' % key, val)

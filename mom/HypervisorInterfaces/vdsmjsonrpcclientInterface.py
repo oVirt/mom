@@ -35,7 +35,7 @@ class JsonRpcVdsmClientInterface(VdsmRpcBase):
         try:
             use_tls = vdsmconfig.getboolean('vars', 'ssl')
         except Exception as e:
-            self._logger.warn("Failed to read VDSM config file, using SSL connection. %s", e)
+            self._logger.warning("Failed to read VDSM config file, using SSL connection. %s", e)
             use_tls = True
 
         try:

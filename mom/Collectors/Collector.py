@@ -92,7 +92,7 @@ def get_collectors(config_str, properties, global_config):
             module = __import__('mom.Collectors.' + name, None, None, name)
             collectors.append(getattr(module, name)(properties))
         except ImportError:
-            logger.warn("Unable to import collector: %s", name)
+            logger.warning("Unable to import collector: %s", name)
             return None
         except FatalError as e:
             logger.error("Fatal Collector error: %s", e.msg)

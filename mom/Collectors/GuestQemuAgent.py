@@ -49,9 +49,9 @@ class GuestQemuAgent(Collector):
             socket_name = socket_name_template % {'name' : self.name}
         except KeyError as e:
             socket_name = self.name + '.agent'
-            self.logger.warn("Error substituting socket name " \
-                              "template. Invalid key: %s" % e)
-            self.logger.warn("Using socket name %s." % socket_name)
+            self.logger.warning("Error substituting socket name " \
+                                "template. Invalid key: %s" % e)
+            self.logger.warning("Using socket name %s." % socket_name)
 
         self.sockets = [ None, "%s/%s" % (socket_path, socket_name) ]
         self.agent = None
