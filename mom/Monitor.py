@@ -178,7 +178,7 @@ class Monitor(object):
             if self.ready is False:
                 self.logger.debug('%s: %s', self.name, message)
             else: # True or None
-                self.logger.warn('%s: %s', self.name, message)
+                self.logger.warning('%s: %s', self.name, message)
 
     def _set_not_ready(self, message=None):
         self.ready = False

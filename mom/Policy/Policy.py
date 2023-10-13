@@ -63,7 +63,7 @@ class Policy:
             try:
                 self.code = get_code(Evaluator(), self._cat_policies())
             except PolicyError as e:
-                self.logger.warn("Unable to load policy: %s" % e)
+                self.logger.warning("Unable to load policy: %s" % e)
                 if oldStr is None:
                     del self.policy_strings[name]
                 else:

@@ -27,7 +27,7 @@ class Plotter:
             self.file = open(filename, 'a')
         except IOError as e:
             logger = logging.getLogger('mom.Plotter')
-            logger.warn("Cannot open plot file %s: %s" , filename, e.strerror)
+            logger.warning("Cannot open plot file %s: %s" , filename, e.strerror)
 
     def __del__(self):
         if self.file is not None:

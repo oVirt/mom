@@ -186,7 +186,7 @@ class MOM:
         try:
             names = os.listdir(basedir)
         except OSError as e:
-            self.logger.warn("Cannot read plot-basedir %s: %s", basedir, e.strerror)
+            self.logger.warning("Cannot read plot-basedir %s: %s", basedir, e.strerror)
             return ''
         seq_num = -1
         for name in names:
@@ -198,13 +198,13 @@ class MOM:
         seq_num = seq_num + 1
         dir = "%s/momplot-%03d" % (basedir, seq_num)
         if seq_num > 999:
-            self.logger.warn("Cannot create plot-dir because the sequence number "\
+            self.logger.warning("Cannot create plot-dir because the sequence number "\
                   "is out of range.  Clear the directory or choose a different one")
             return ''
         try:
             os.mkdir(dir)
         except OSError as e:
-            self.logger.warn("Cannot create plot-dir %s: %s", dir, e.strerror)
+            self.logger.warning("Cannot create plot-dir %s: %s", dir, e.strerror)
             return ''
         return dir
 
