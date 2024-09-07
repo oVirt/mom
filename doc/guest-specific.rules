@@ -1,0 +1,44 @@
+# A modified example of the shrink_guest function, demonstrating how to
+# customize policy based on the guest hostname
+
+(def shrink_guest (guest)
+{
+    # Determine the degree of host memory pressure
+    (if (<= host_free_percent pressure_critical)
+        # Pressure is critical:
+        #   Force guest to swap by making free memory negative
+        (defvar guest_free_percent (+ -0.05 host_free_percent))
+        # Normal pressure situation
+        #   Scale the guest free memory back according to host pressure
+        (defvar guest_free_percent (* min_guest_free_percent
+                                    (/ host_free_percent pressure_threshold))))
+
+    # Given current conditions, determine the ideal guest memory size
+    (defvar guest_used_mem (- (guest.StatAvg "balloon_cur")
+                              (guest.StatAvg "mem_unused")))
+    (defvar balloon_min (max guest.balloon_min (+ guest_used_mem
+                           (* guest_free_percent guest.balloon_cur))))
+    # But do not change it too fast
+    (defvar balloon_size (* guest.balloon_cur
+                            (- 1 max_balloon_change_percent)))
+    (if (< balloon_size balloon_min)
+        (set balloon_size balloon_min)
+        0)
+
+# Set a variable based on the guest's name
+   (defvar guest_name (guest.Prop "name"))
+    (defvar is_orchestrator 0)
+    (if (or (== guest_name "kubernetes")
+        (== guest_name "nomad"))
+        (set is_orchestrator 1)
+        0)
+
+    # Set the new target for the BalloonController.  Only set it if the
+    # value makes sense and is a large enough change to be worth it.
+    (if (and (and (<= balloon_size guest.balloon_cur)
+            (change_big_enough guest balloon_size)
+    # Apply policy conditionally based on the variable we set early
+            (== is_orchestrator 0)))
+        (guest.Control "balloon_target" balloon_size)
+        0)
+})
