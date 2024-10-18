@@ -12,7 +12,7 @@ jobs:
       matrix:
         distro: [el8stream, el9stream]
     steps:
-      - uses: actions/checkout@v2
+      - uses: ovirt/checkout-action@main
         with:
           fetch-depth: 0
       - name: Mark repository as safe
@@ -20,7 +20,6 @@ jobs:
       - name: Check patch
         run: ./automation/check-patch.sh
       - name: Upload artifacts
-        uses: ovirt/upload-rpms-action@v1
+        uses: ovirt/upload-rpms-action@main
         with:
           directory: ${{ env.EXPORT_DIR }}
-          distro: ${{ matrix.distro }}
