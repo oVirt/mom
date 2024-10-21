@@ -10,7 +10,7 @@ jobs:
     container: quay.io/ovirt/buildcontainer:${{ matrix.distro }}
     strategy:
       matrix:
-        distro: [el8stream, el9stream]
+        distro: [el9stream]
     steps:
       - uses: actions/checkout@v2
         with:
