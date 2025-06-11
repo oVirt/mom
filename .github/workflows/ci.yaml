@@ -9,8 +9,9 @@ jobs:
     name: rpm-${{ matrix.distro }}
     container: quay.io/ovirt/buildcontainer:${{ matrix.distro }}
     strategy:
+      fail-fast: false
       matrix:
-        distro: [el9stream]
+        distro: [el9stream, el10stream]
     steps:
       - uses: ovirt/checkout-action@main
         with:
