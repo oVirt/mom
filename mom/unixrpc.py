@@ -1,16 +1,18 @@
 import os
-from six.moves import xmlrpc_server, socketserver, http_client
-from six.moves.xmlrpc_client import ServerProxy, Transport
+import http.client
+import socketserver
+import xmlrpc.server
+from xmlrpc.client import ServerProxy, Transport
 import socket
 import base64
 
-class UnixXmlRpcHandler(xmlrpc_server.SimpleXMLRPCRequestHandler):
+class UnixXmlRpcHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
     disable_nagle_algorithm = False
 
 # This class implements a XML-RPC server that binds to a UNIX socket. The path
 # to the UNIX socket to create methods must be provided.
 class UnixXmlRpcServer(socketserver.UnixStreamServer,
-                       xmlrpc_server.SimpleXMLRPCDispatcher):
+                       xmlrpc.server.SimpleXMLRPCDispatcher):
     address_family = socket.AF_UNIX
     allow_address_reuse = True
 
@@ -19,7 +21,7 @@ class UnixXmlRpcServer(socketserver.UnixStreamServer,
         if os.path.exists(sock_path):
             os.unlink(sock_path)
         self.logRequests = logRequests
-        xmlrpc_server.SimpleXMLRPCDispatcher.__init__(self,
+        xmlrpc.server.SimpleXMLRPCDispatcher.__init__(self,
                                                            encoding=None,
                                                            allow_none=1)
         socketserver.UnixStreamServer.__init__(self, sock_path,
@@ -39,7 +41,7 @@ class UnixXmlRpcTransport(Transport):
     def make_connection(self, host):
         return UnixXmlRpcHttpConnection(host)
 
-class UnixXmlRpcHttpConnection(http_client.HTTPConnection):
+class UnixXmlRpcHttpConnection(http.client.HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.connect(base64.b16decode(self.host).decode('utf-8'))

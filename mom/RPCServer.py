@@ -15,10 +15,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import threading
-import six
-from six.moves.xmlrpc_client import Marshaller
-from six.moves.xmlrpc_server import SimpleXMLRPCServer
-from six.moves.xmlrpc_server import SimpleXMLRPCRequestHandler
+from xmlrpc.client import Marshaller
+from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
 from .unixrpc import UnixXmlRpcServer
 from .LogUtils import *
 
@@ -33,10 +31,9 @@ def big_int_marshaller(m, value, writer):
 def enable_i8():
     """
     Enable i8 extension
-    Python 2.7 knows how to read it, but sending needs to be configured
+    For handling large integers in XML-RPC, we need to override the default
     """
-    for type in six.integer_types:
-        Marshaller.dispatch[type] = big_int_marshaller
+    Marshaller.dispatch[int] = big_int_marshaller
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)

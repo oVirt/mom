@@ -20,7 +20,7 @@ import signal
 import os
 import atexit
 from optparse import OptionParser
-from six.moves import configparser
+import configparser
 import logging
 import logging.handlers
 import mom

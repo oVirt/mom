@@ -1,4 +1,4 @@
-from six.moves import configparser
+import configparser
 import os
 import time
 import re

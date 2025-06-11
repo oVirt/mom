@@ -17,7 +17,7 @@
 
 import socket
 import signal
-from six.moves import configparser
+import configparser
 import logging
 from mom.Collectors.GuestNetworkDaemon import _Server
 from mom.Collectors.Collector import *
