@@ -68,8 +68,4 @@ AC_CONFIG_FILES([
 	momd
 	mom-guestd
 ])
-AC_CONFIG_FILES(
-	[tests/run_tests_local.sh],
-	[chmod a+x tests/run_tests_local.sh],
-)
 AC_OUTPUT

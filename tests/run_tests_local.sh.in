@@ -1,8 +1,0 @@
-#!/bin/sh
-
-srcdir="${srcdir:-$(dirname "$0")}"
-
-PYTHONDONTWRITEBYTECODE=1 \
-	LC_ALL=C \
-	PYTHONPATH="${srcdir}/..:$PYTHONPATH" \
-	@PYTHON@ -m unittest *.py

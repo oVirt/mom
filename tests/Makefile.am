@@ -22,15 +22,10 @@ MAINTAINERCLEANFILES = \
 dist_noinst_PYTHON = \
 	GeneralTests.py \
 	ParserTests.py \
-	testrunner.py \
 	$(NULL)
 
 dist_noinst_SCRIPTS = \
-	run_tests_local.sh \
 	$(NULL)
-
-check-local:
-	srcdir="$(srcdir)" "$(srcdir)/run_tests_local.sh" "$(srcdir)"/*.py
 
 clean-local: \
 	python-clean \
