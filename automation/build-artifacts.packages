@@ -1,10 +1,10 @@
 autoconf
 automake
 make
-python3-coverage
 python3-libvirt
-python3-mock
 python3-devel
 git
 systemd
 dnf
+pytest
+python3-pip

@@ -17,6 +17,8 @@ jobs:
           fetch-depth: 0
       - name: Mark repository as safe
         run: git config --global --add safe.directory "$(pwd)"
+      - name: Install tox
+        run: pip3 install tox
       - name: Check patch
         run: ./automation/check-patch.sh
       - name: Upload artifacts
