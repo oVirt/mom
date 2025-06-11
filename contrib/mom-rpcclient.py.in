@@ -15,7 +15,7 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-from six.moves import xmlrpc_client
+import xmlrpc.client
 from optparse import *
 import sys
 from functools import reduce
@@ -93,7 +93,7 @@ def main():
     if options.cmd is None or len(options.cmd) != 1:
         parser.error("Exactly one command argument is required")
 
-    mom = xmlrpc_client.ServerProxy('http://localhost:%i' % options.port)
+    mom = xmlrpc.client.ServerProxy('http://localhost:%i' % options.port)
     try:
         if options.cmd[0] == 'ping':
             ping(mom)

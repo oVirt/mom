@@ -24,11 +24,6 @@ URL:		https://www.ovirt.org
 Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_version}.tar.gz
 BuildArch:	noarch
 BuildRequires:	%{python_target_version}-devel
-BuildRequires:	%{python_target_version}-six
-
-%if "%{python_target_version}" == "python2"
-BuildRequires:	%{python_target_version}-mock
-%endif
 
 Requires(post): systemd
 Requires(preun): systemd
@@ -40,10 +35,8 @@ BuildRequires: systemd
 Requires:	libvirt-daemon-driver-qemu
 %if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
 Requires:	%{python_target_version}-libvirt
-Requires:	%{python_target_version}-six
 %else
 Requires:	libvirt-python
-Requires:	python-six
 %endif
 Requires:	procps
 
