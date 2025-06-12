@@ -4,15 +4,9 @@
 %global		package_version @PACKAGE_VERSION@
 %global		package_name @PACKAGE_NAME@
 
-%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
 %global     python_interpreter /usr/bin/python3
 %global     python_target_version python3
 %global     python_sitelib %{python3_sitelib}
-%else
-%global     python_interpreter /usr/bin/python2
-%global     python_target_version python2
-%global     python_sitelib %{python2_sitelib}
-%endif
 
 Name:		%{package_name}
 Version:	@PACKAGE_RPM_VERSION@
@@ -23,6 +17,8 @@ License:	GPLv2
 URL:		https://www.ovirt.org
 Source:		https://resources.ovirt.org/pub/src/%{name}/%{package_name}-%{package_version}.tar.gz
 BuildArch:	noarch
+
+BuildRequires:  make
 BuildRequires:	%{python_target_version}-devel
 
 Requires(post): systemd
@@ -33,11 +29,7 @@ BuildRequires: systemd
 # MOM makes use of libvirt by way of the python bindings to monitor and
 # interact with virtual machines.
 Requires:	libvirt-daemon-driver-qemu
-%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8
 Requires:	%{python_target_version}-libvirt
-%else
-Requires:	libvirt-python
-%endif
 Requires:	procps
 
 
