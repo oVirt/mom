@@ -19,15 +19,17 @@ define([VERSION_MAJOR], [0])
 define([VERSION_MINOR], [6])
 define([VERSION_FIX], [6])
 define([VERSION_NUMBER], VERSION_MAJOR[.]VERSION_MINOR[.]VERSION_FIX)
-define([VERSION_SUFFIX], [_master])
 
-AC_INIT([mom], VERSION_NUMBER[]VERSION_SUFFIX, [mom-devel@googlegroups.com])
+AC_INIT([mom], VERSION_NUMBER, [devel@ovirt.org])
 PACKAGE_RPM_VERSION="VERSION_NUMBER"
-PACKAGE_RPM_RELEASE="0.0.$(echo VERSION_SUFFIX | sed 's/^_//')"
-RELEASE_SUFFIX="VERSION_SUFFIX"
+
+AC_ARG_VAR([PACKAGE_RPM_RELEASE],
+    [RPM release field (default: 0.master for development, release number for release builds)])
+AS_IF([test -z "$PACKAGE_RPM_RELEASE"],
+    [PACKAGE_RPM_RELEASE="0.master"])
+
 AC_SUBST([PACKAGE_RPM_VERSION])
 AC_SUBST([PACKAGE_RPM_RELEASE])
-AC_SUBST([RELEASE_SUFFIX])
 
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([mom/GuestManager.py])
@@ -43,7 +45,7 @@ AC_ARG_ENABLE(
 
 AC_PROG_INSTALL
 
-AM_PATH_PYTHON([2.6])
+AM_PATH_PYTHON([3.9])
 
 AC_ARG_VAR([PYFLAKES], [path to pyflakes utility])
 AC_CHECK_PROGS([PYFLAKES], [pyflakes])
