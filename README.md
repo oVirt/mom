@@ -1,7 +1,6 @@
 Memory Overcommitment Manager
 =============================
 
-[![Copr build status](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/mom/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/ovirt/ovirt-master-snapshot/package/mom/)
 
 
 Welcome to the oVirt MOM source repository. This repository is hosted on
